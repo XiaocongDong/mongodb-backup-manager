@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
-const databaseUtil = require('../../utility/database');
-const object = require('../../utility/object');
+const databaseUtil = require('modules/utility/database');
+const object = require('modules/utility/object');
 const DATABASE_ROLES = ['readWrite', 'dbOwner'];
 const ALL_DATABASE_ROLES = ['readWriteAnyDatabase'];
 
