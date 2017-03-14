@@ -25,6 +25,7 @@
   "homepage": "https://github.com/XiaocongDong/mongodb-backup-manager#readme",
   "dependencies": {
     "app-module-path": "^2.2.0",
+    "basic-logger": "^0.4.4",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "mongodb": "^2.2.24",

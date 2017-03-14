@@ -2,7 +2,9 @@ const BackupManager = require('modules/controller/backupManager');
 const object = require('modules/utility/object');
 const constants = require('modules/constants');
 const response = require('modules/helper/response');
-const BackupConfig = require('modules/controller/backupConfig');
+const backupConfigUtil = require('modules/utility/backupConfig');
+const MongoDB = require('modules/controller/mongoDB');
+const log = require('modules/utility/logger');
 
 class Controller {
 
@@ -15,23 +17,23 @@ class Controller {
         this.localDB = localDB;
     }
 
-    NewBackup(backupConfig) {
+    NewBackup(newBackupConfig) {
         return new Promise((resolve, reject) => {
-            const backupConfig = object.selfish(new BackupConfig(backupConfig));
+            const backupConfig = backupConfigUtil.initializeBackupConfig(newBackupConfig);
 
             if (this.backUpsHash.has(backupConfig.id)) {
                 return reject(response.error('created backup failed: back up has existed'))
             }
 
-            this.localDB.updateBackUpConfig(backupConfig.backupConfig)
-                .then(() => {
-                    const backupDB = new MongoDB(backupConfig.server, backupConfig.port,
-                        backupConfig.username, backupConfig.password,
-                        backupConfig.authDB);
+            const {server, port, username, password, auth_db} = backupConfig.database;
+            const backupDB = new MongoDB(server, port, username, password, auth_db);
 
-                    backupDB.connect()
+            backupDB.connect()
+                .then(() => {
+                    this.localDB.updateBackUpConfig(backupConfig)
                         .then(() => {
-                            const backUpManager = object.selfish(new BackupManager(backupDB, this.localDB, backupConfig));
+                            const backUpManager = object.selfish(
+                                new BackupManager(backupConfig.id, backupDB, this.localDB, backupConfig.backup_config));
                             this.backUpsHash.set(backupConfig.id, backUpManager);
                             backUpManager.start();
 
@@ -42,13 +44,13 @@ class Controller {
                             resolve(response.success(result));
                         })
                         .catch(err => {
-                            console.error(`Failed to connect to ${backupDB.url}`);
-                            reject(reject(response.error(err.message)));
+                            log.info(err.message);
+                            reject(response.error(err.message))
                         });
-
                 })
-                .catch(err => reject(response.error(err.message)))
-
+                .catch(err => {
+                    reject(reject(response.error(err.message)));
+                });
         })
     }
 }

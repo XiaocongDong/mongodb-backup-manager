@@ -2,12 +2,11 @@ const MongoClient = require('mongodb').MongoClient;
 const databaseUtil = require('modules/utility/database');
 const object = require('modules/utility/object');
 const config = require('modules/config');
-
+const log = require('modules/utility/logger');
 
 const DATABASE_ROLES = ['readWrite', 'dbOwner'];
 const ALL_DATABASE_ROLES = ['readWriteAnyDatabase'];
 
-object.deployPromiseFinally();
 
 class MongoDB {
 
@@ -31,37 +30,39 @@ class MongoDB {
 
     connect() {
         return new Promise((resolve, reject) => {
-            console.log('connected to database with ' + this.url);
+            log.info(`connecting to database with ${ this.url }`);
             if(this.db) {
                 return resolve();
             }
 
             MongoClient.connect(this.url)
                 .then(db => {
-                    console.log('connected to the database');
+                    log.info(`connected to the mongo DB at ${ this.server }`);
                     this.db = db;
                     resolve()
                 })
                 .catch(err => {
-                    reject(err.message)
+                    const errMessage = `Failed to connect to ${ server } for ${err.message}`;
+                    log.error(errMessage);
+                    reject(new Error(errMessage));
                 });
         });
     }
 
     close() {
         if (this.db == null) {
-            console.error('close failed: database is not connected');
+            log.error('close failed: database is not connected');
                 return;
             }
 
         this.db.close()
             .then(result => {
-                console.log('successfully close the database');
+                log.info('successfully close the database');
                 this.db = null;
                 this.dbHash.clear();
             })
             .catch(err => {
-                console.error(err.message);
+                log.error(err.message);
             });
     }
 
@@ -87,7 +88,7 @@ class MongoDB {
         return new Promise((resolve, reject) => {
             this.getUserRole()
                 .then(user => {
-                    // console.log(user);
+                    // log.info(user);
                     const databases = user.roles.filter(({role}) => rolesFilter.includes(role))
                         .map(({db}) => db);
                     resolve(databases);
@@ -187,7 +188,7 @@ class MongoDB {
 
             configDB.createCollection(backUpsConfigCollection)
                 .then(collection => {
-                    console.log('connected to mongo config collections');
+                    log.info('connected to mongo config collections');
                     this.backUpConfigCollection = collection;
                     resolve()
                 })
@@ -206,22 +207,25 @@ class MongoDB {
                     if(err) {
                         return reject(err);
                     }
-                    resolve(backupConfigs);
+                    if(backupConfigs.length == 0) {
+                        return reject(`Backup config for ${ backUpID } doesn't exist`);
+                    }
+                    resolve(backupConfigs[0]);
                 })
         })
     }
 
     updateBackUpConfig(backUpConfig) {
-        console.log(`updating backup config for ${ backUpConfig.id }`);
+        log.info(`updating backup config for ${ backUpConfig.id }`);
         return new Promise((resolve, reject) => {
             this.backUpConfigCollection.updateOne({ id: backUpConfig.id }, backUpConfig, { upsert: true, w: 1 })
                 .then(result => {
-                    console.log(`updated backup config of ${backUpConfig.id} successfully`);
+                    log.info(`updated backup config of ${backUpConfig.id} successfully`);
                     resolve();
                 })
                 .catch(err => {
-                    console.log(err);
-                    console.error(`can't update backup config for ${backUpConfig.id}`);
+                    log.info(err);
+                    log.error(`can't update backup config for ${backUpConfig.id}`);
                     reject(err);
                 });
         })
@@ -229,16 +233,18 @@ class MongoDB {
 
     readFromCollection(db, collectionName) {
         return new Promise((resolve, reject) => {
-            this.getDB(db).collection(collectionName)
-                .then(collection => {
-                    collection.find({}).toArray((err, docs) => {
-                        if(err) {
-                            return reject(err);
-                        }
-                        resolve(docs);
-                    })
+            this.getDB(db).collection(collectionName, {strict: false}, (err, collection) => {
+                if(err) {
+                    return reject(err);
+                }
+
+                collection.find({}).toArray((err, docs) => {
+                    if(err) {
+                        return reject(err);
+                    }
+                    resolve(docs);
                 })
-                .catch(err => reject(err));
+            })
         })
     }
 
@@ -248,19 +254,19 @@ class MongoDB {
                 return new Promise((resolve, reject) => {
                     this.readFromCollection(db, collection)
                         .then(docs => {
-                            console.log(`Successfully read from ${collection} of ${db}`);
+                            log.info(`Successfully read from ${collection} of ${db}`);
                             resolve({ collection, docs });
                         })
                         .catch(err => {
-                            console.error(`Failed to read from ${collection} of ${db} for ${ err.message }`);
+                            log.error(`Failed to read from ${collection} of ${db} for ${ err.message }`);
                             reject(err);
                         })
                 })
             })).then(collectionsDocs => {
-                console.log(`Finished read data from the ${ collections } of ${db}`);
+                log.info(`Finished read data from the ${ collections } of ${db}`);
                 resolve(collectionsDocs);
             }).catch(err => {
-                console.error(`Failed to read all the data from ${ collections } of ${db}`);
+                log.error(`Failed to read all the data from ${ collections } of ${db}`);
                 reject(err);
             })
         })
@@ -276,10 +282,10 @@ class MongoDB {
                         .catch(err => reject(err));
                 })
             })).then(() => {
-                console.log(`Successfully write to backup data to ${ db }`);
+                log.info(`Successfully write all the data to ${ db }`);
                 resolve();
             }).catch(err => {
-                console.error(`Failed to backup data to ${ db } for ${err.message}`)
+                log.error(`Failed to backup data to ${ db } for ${err.message}`);
                 reject(err)
             })
         })
@@ -287,18 +293,20 @@ class MongoDB {
 
     writeToCollection(db, collectionName, docs) {
         return new Promise((resolve, reject) => {
-            this.getDB(db).collection(collectionName)
-                .then(collection => {
-                    collection.insertMany(docs)
-                        .then(result => {
-                            console.log(`successfully write to ${ collectionName } of ${ db }`);
-                            resolve();
-                        })
-                        .catch(err => {
-                            console.error(`can't write to ${ collectionName } of ${ db }`);
-                            reject(err);
-                        })
-                })
+            this.getDB(db).collection(collectionName, {strict: false},(err, collection) => {
+                if(err) {
+                    reject(err);
+                }
+                collection.insertMany(docs)
+                    .then(result => {
+                        log.info(`successfully write to ${ collectionName } of ${ db }`);
+                        resolve();
+                    })
+                    .catch(err => {
+                        log.error(`can't write to ${ collectionName } of ${ db }`);
+                        reject(err);
+                    })
+            })
         })
     }
 
@@ -306,11 +314,11 @@ class MongoDB {
         return new Promise((resolve, reject) => {
             this.getDB(db).dropDatabase()
                 .then(result => {
-                    console.log(`successfully deleted ${ db } database`);
+                    log.info(`successfully deleted ${ db } database`);
                     resolve()
                 })
                 .catch(err => {
-                    console.error( `failed to deleted ${ db } database`);
+                    log.error( `failed to deleted ${ db } database`);
                     reject(err);
                 })
         })
@@ -318,12 +326,12 @@ class MongoDB {
 
     getDB(dbName) {
         if(!this.db) {
-            console.error(`database is not connected`);
+            log.error(`database is not connected`);
             return;
         }
 
         if(!this.dbHash.has(dbName)) {
-            this.dbHash.set(dbName, this.db.db[dbName])
+            this.dbHash.set(dbName, this.db.db(dbName))
         }
 
         return this.dbHash.get(dbName);
