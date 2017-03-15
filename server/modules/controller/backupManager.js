@@ -11,11 +11,13 @@ class BackupManager {
         this.backupDBName = backupConfig.db;
         this.backupCollections = backupConfig.collections;
         this.startTime = backupConfig.time.start_time;
+        this.nextBackUpTime = this.startTime;
         this.interval = backupConfig.time.interval;
         this.maxNumber = backupConfig.constraints.maximum_number;
         this.duration = backupConfig.constraints.duration;
         this.id = id;
         this.activites = new Set();
+        this.backupStatus = backupCons.status.WAITING;
     }
 
     start() {
@@ -32,9 +34,11 @@ class BackupManager {
             // create a routine backup
             let backUpRoutine = setInterval(
                 () => {
-                    this.backUp.bind(this)
+                    this.nextBackUpTime = new Date(now.valueOf() + this.interval);
+                    this.backUp.call(this);
                 }, this.interval);
 
+            this.nextBackUpTime = new Date(now.valueOf() + this.interval);
             this.activites.add(backUpRoutine);
         }, firstTimeout);
 
@@ -43,70 +47,47 @@ class BackupManager {
 
     backUp() {
         const now = new Date();
-        const nextBackUpTime = new Date(now.valueOf() + this.interval);
         const backupTargetDBName = this.getTargetBackUpDBName(now);
         log.info('target Db Name is ' + backupTargetDBName);
 
-        return new Promise((resolve, reject) => {
+        const backupPromise = new Promise((resolve, reject) => {
              this.backupDB.connect()
                  .then(() => {
-                     this.localDB.getBackUpConfig(this.id)
-                         .then(backupConfig => {
-                             backupConfigUtil.setBackupStatus(backupConfig, backupCons.status.RUNNING);
-                             backupConfigUtil.addBackupLog(backupConfig, now, `Start to run backup for ${this.backupDBName}`);
-                             backupConfigUtil.setNextBackupTime(backupConfig, nextBackUpTime);
-
-                             this.localDB.updateBackUpConfig(backupConfig)
-                                 .then(() => {
-                                     this.getBackupCollections()
-                                         .then((backupCollections) => {
-                                             this.backupDB
-                                                 .readFromCollections(this.backupDBName, backupCollections)
-                                                 .then(collectionsDocs => {
-                                                     this.localDB.writeToCollections(backupTargetDBName, collectionsDocs)
-                                                         .then(() => {
-                                                             this.backupOnSuccess(backupTargetDBName)
-                                                                 .then(() => resolve())
-                                                                 .catch(err => reject(err))
-                                                         })
-                                                         .catch(err => {
-                                                             this.backupOnFailure(backupTargetDBName)
-                                                                 .finally(() => {
-                                                                     reject(err);
-                                                                 })
-                                                         });
-                                                 })
-                                                 .catch((err) => reject(err));
+                     this.backupStatus = backupCons.status.RUNNING;
+                     this.getBackupCollections()
+                         .then((backupCollections) => {
+                             log.info(`Successfully get backup collections ${ backupCollections }`);
+                             this.backupDB
+                                 .readFromCollections(this.backupDBName, backupCollections)
+                                 .then(collectionsDocs => {
+                                     this.localDB.writeToCollections(backupTargetDBName, collectionsDocs)
+                                         .then(() => {
+                                             this.backupOnWriteSuccess(backupTargetDBName)
+                                                 .then(() => resolve())
+                                                 .catch(err => reject(err))
                                          })
                                          .catch(err => {
-                                             log.error(`Failed to get backup collections`);
                                              reject(err);
-                                         })
-                                 })
-                                 .catch(err => {
-                                     log.error(`Failed to update the backupConfig for ${ this.id }`);
-                                     reject(err);
-                                 });
-                         })
-                         .catch(err => {
-                             log.error(`Failed to get backup config from local DB for ${ err.message }`);
-                             console.log(err);
-                             reject(err);
-                         });
-                 })
-                 .catch(err => {
-                     log.error(`Failed to get backup config from db`);
-                     reject(err)
-                 })
+                                         });
+                                 }, err => reject(err))
+                         }, err => reject(err))
+                 }, err => reject(err))
                  .finally(this.backupDB.close)
         });
+
+        backupPromise.catch((err) => {
+            this.backupOnFailure(backupTargetDBName);
+            return Promise.resolve(err);
+        });
+
+        return backupPromise;
     }
 
     stopAllActivities() {
         this.activites.forEach(activity => clearTimeout(activity))
     }
 
-    backupOnSuccess(backupTargetDBName) {
+    backupOnWriteSuccess(backupTargetDBName) {
         return new Promise((resolve, reject) => {
             /**
              * update backup config with successful info
@@ -117,17 +98,17 @@ class BackupManager {
 
             this.localDB.getBackUpConfig(this.id)
                 .then(backupConfig => {
-                    backupConfigUtil.setBackupStatus(backupConfig, backupCons.status.WAITING);
+                    this.backupStatus = backupCons.status.WAITING;
                     backupConfigUtil.addBackupDB(backupConfig, backupTargetDBName, now, deleteTime);
                     backupConfigUtil.addBackupLog(backupConfig, now, `backup ${ this.backupConfig.backupDB } successfully`);
 
                     this.localDB.updateBackUpConfig(backupConfig)
                         .then(() => {
-                            log.info(`backup ${ this.backupConfig.backupDB } successfully`);
+                            log.info(`backup ${ this.backupDBName } successfully`);
 
                             // set timer to delete the database when it expired
                             setTimeout(() => {
-                                this.localDB.deleteDatabase(backupTargetDBName);
+                                this.deleteDB(backupTargetDBName);
                             }, dbDuration);
 
                             log.info(`${ backupTargetDBName } will be deleted at ${ deleteTime }`);
@@ -136,7 +117,7 @@ class BackupManager {
                         })
                         .catch((updateErr) => {
                             /**
-                             * when the status can' be updated, the backup failed, delete copy database
+                             * when the status can't be updated, the backup failed, delete copy database
                              */
                             this.localDB.deleteDatabase(backupTargetDBName)
                                 .then(() => {
@@ -163,7 +144,7 @@ class BackupManager {
 
             this.localDB.getBackUpConfig(this.id)
                 .then(backupConfig => {
-                    backupConfigUtil.setBackupStatus(backupConfig, backupCons.status.WAITING);
+                    this.backupStatus = backupCons.status.WAITING;
                     backupConfigUtil.addBackupLog(backupConfig, now, `backup ${ this.backupDBName } failed`);
                     this.localDB.updateBackUpConfig(backupConfig)
                         .then(() => {
@@ -175,13 +156,15 @@ class BackupManager {
                             reject(err);
                         })
                         .finally(() => {
-                            this.localDB.deleteDatabase(backupTargetDBName)
-                                .then(() => {
-                                    log.info(`Successfully delete ${ backupTargetDBName }`);
-                                })
-                                .catch(() => {
-                                    log.error(`Failed to delete ${ backupTargetDBName }`);
-                                })
+                            if(backupTargetDBName) {
+                                this.localDB.deleteDatabase(backupTargetDBName)
+                                    .then(() => {
+                                        log.info(`Successfully delete ${ backupTargetDBName }`);
+                                    })
+                                    .catch(() => {
+                                        log.error(`Failed to delete ${ backupTargetDBName }`);
+                                    })
+                            }
                         });
                 })
         })
@@ -189,8 +172,9 @@ class BackupManager {
 
     deleteDB(dbName) {
         return new Promise((resolve, reject) => {
+            log.info(`Started to deleted ${ dbName }`);
             const now = new Date();
-            this.localDB.removeBackupDB(dbName)
+            this.localDB.deleteDatabase(dbName)
                 .then(() => {
                     this.localDB.getBackUpConfig(this.id)
                         .then(backupConfig => {
@@ -216,6 +200,7 @@ class BackupManager {
                     reject(err);
                 })
         })
+            .catch(err => console.log(err));
     }
 
     getTargetBackUpDBName(date) {
@@ -228,17 +213,13 @@ class BackupManager {
                 return resolve(this.backupCollections);
             }
 
-            this.backupDB.connect()
-                .then(() => {
-                    this.backupDB.getCollectionNamesWithDB(this.backupDB)
-                        .then(collections => {
-                            resolve(collections);
-                        })
-                        .catch(err => {
-                            reject(err);
-                        })
+            this.backupDB.getCollectionNamesWithDB(this.backupDBName)
+                .then(collections => {
+                    resolve(collections);
                 })
-                .catch(err => reject(err));
+                .catch(err => {
+                    reject(err);
+                })
         })
     }
 }

@@ -27,8 +27,6 @@
         },
         backup_status {
             //information about the back up
-            status: RUNNING/WAITING,
-            next_backup_time: YY/MM/DD/HH/MM/SS,
             dbs: [
                 {
                     name: ${backup_id} + ${ timestamp },
@@ -55,13 +53,13 @@
     }
 
  */
-const constants = require('../constants/index');
+const constants = require('modules/constants');
 
 const backupConfigUtil = {
 
-    setBackupStatus: (backupConfig, status) => {
-        backupConfig.backup_status.status = status;
-    },
+    // setBackupStatus: (backupConfig, status) => {
+    //     backupConfig.backup_status.status = status;
+    // },
 
     addBackupDB: (backupConfig, name, createTime, deleteTime) => {
         backupConfig.backup_status.dbs.push({
@@ -92,21 +90,18 @@ const backupConfigUtil = {
         });
     },
 
-    setNextBackupTime: (backupConfig, nextBackupTime) => {
-        backupConfig.backup_status.next_backup_time = nextBackupTime.toISOString();
-    },
 
     getBackUpID: (backupConfig) => {
-        const { server, username, auth_db } = backupConfig.database;
-        const db = backupConfig.backup_config.db;
-        return `${( server) ? (username + '@' + auth_db + '-') : ''}${ server + '-' }${ db }`
+        // const { server, username, auth_db } = backupConfig.database;
+        // const db = backupConfig.backup_config.db;
+        // return `${( server) ? (username + '@' + auth_db + '-') : ''}${ server + '-' }${ db }`
+        return backupConfig.backup_config.db;
     },
 
     initializeBackupConfig: (backupConfig) => {
         backupConfig.id = backupConfigUtil.getBackUpID(backupConfig);
         if(!backupConfig.hasOwnProperty('backup_status')) {
             backupConfig.backup_status = {
-                'status': constants.backup.status.WAITING,
                 'dbs': [],
                 'logs': []
             };

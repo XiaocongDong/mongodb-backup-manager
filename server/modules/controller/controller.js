@@ -5,6 +5,8 @@ const response = require('modules/helper/response');
 const backupConfigUtil = require('modules/utility/backupConfig');
 const MongoDB = require('modules/controller/mongoDB');
 const log = require('modules/utility/logger');
+const backupCons = require('modules/constants/backup');
+
 
 class Controller {
 
@@ -51,6 +53,36 @@ class Controller {
                 .catch(err => {
                     reject(reject(response.error(err.message)));
                 });
+        })
+    }
+
+    getBackupStatus(backupID) {
+        if(!this.backUpsHash.has(backupID)) {
+            return response.error(`backup ID ${ backupID } doesn't exist`);
+        }
+
+        const backupManager = this.backUpsHash.get(backupID);
+        const status = backupManager.backupStatus;
+        const nextBackupTime = backupManager.nextBackUpTime;
+        const result = { status };
+
+        if(status == backupCons.status.WAITING && nextBackupTime) {
+            result.next_backup_time = nextBackupTime.toISOString();
+        }
+
+        return response.success(result)
+    }
+
+    deleteDB(backupID, dbName) {
+        return new Promise((resolve, reject) => {
+            if(!this.backUpsHash.has(backupID)) {
+                return reject(new Error(`backupID ${ backupID } doesn't exist`));
+            }
+
+            this.backUpsHash.get(backupID)
+                .deleteDB(dbName)
+                .then(() => resolve())
+                .catch(err => reject(err));
         })
     }
 }
