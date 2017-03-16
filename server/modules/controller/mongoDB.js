@@ -25,23 +25,22 @@ class MongoDB {
     }
 
     connect() {
-        return new Promise((resolve, reject) => {
-            if(this.db) {
-                return resolve();
-            }
+        return Promise.resolve()
+            .then(() => {
+                if(this.db) {
+                    return;
+                }
 
-            MongoClient.connect(this.url)
-                .then(db => {
-                    log.info(`connected to ${ this.url }`);
-                    this.db = db;
-                    resolve()
-                })
-                .catch(err => {
-                    const errMessage = `Failed to connect to ${ this.url } for ${err.message}`;
-                    log.error(errMessage);
-                    reject(new Error(errMessage));
-                });
-        });
+                return MongoClient.connect(this.url)
+                        .then(db => {
+                            log.info(`connected to ${ this.url }`);
+                            this.db = db;
+                        })
+                        .catch(err => {
+                            log.error(`Failed to connect to ${ this.url } for ${err.message}`);
+                            throw new Error(err);
+                        });
+            });
     }
 
     close() {
@@ -49,7 +48,7 @@ class MongoDB {
             .then(() => {
                 if (this.db == null) {
                     log.error('close failed: database is not connected');
-                    throw Error(`close failed: ${ this.url } is not connected`);
+                    throw new Error(`Close failed: ${ this.url } is not connected`);
                 }
 
                 return this.db.close()
@@ -58,121 +57,108 @@ class MongoDB {
                         log.info(`Clean DB map`);
                         this.dbHash.clear();
                     })
-                    .catch(err => {
-                        throw new Error(`Failed to connect to ${ this.url } for ${ err.message }`);
-                    });
             })
     }
 
     getUserRole() {
-        return new Promise((resolve, reject) => {
-            this.db.command({usersInfo: this.userName})
-                .then(({users}) => {
-                    if (users.length == 0) {
-                        return reject(new Error(`no user ${this.userName} found`));
-                    }
+        return Promise.resolve()
+            .then(() => {
+                return this.db.command({usersInfo: this.userName});
+            })
+            .catch(err => {
+                log.error(`Failed to get ${ this.userName } for ${ err.message }`);
+                throw err;
+            })
+            .then(({users}) => {
+                console.log("ji");
+                if (users.length == 0) {
+                    throw new Error(`no user ${ this.userName } found`)
+                }
 
-                    resolve(users[0]);
-                })
-                .catch(err => {
-                    const errorMessage = `Failed to get ${ this.userName } for ${ err.message }`;
-                    log.error(errorMessage);
-                    reject(new Error(errorMessage));
-                })
-            }
-        )
+                return users[0]
+            });
     }
 
     getAvailableDBsWithRoles(rolesFilter) {
-        return new Promise((resolve, reject) => {
-            this.getUserRole()
-                .then(user => {
-                    const databases = user.roles.filter(({role}) => rolesFilter.includes(role))
-                        .map(({db}) => db);
-                    resolve(databases);
-                })
-                .catch(err => reject(err));
-        })
+        return Promise.resolve()
+            .then(() => {
+                return this.getUserRole();
+            })
+            .then(user => {
+                return user.roles.filter(({role}) => rolesFilter.includes(role))
+                    .map(({db}) => db);
+            });
     }
 
     getAvailableDBsWithAdminDb() {
-        return new Promise((resolve, reject) => {
-            const adminDb = this.db.admin();
-            try {
-                adminDb.listDatabases()
-                    .then(({databases}) => {
-                        resolve(databases.map(({name}) => name))
-                    })
-                    .catch(err => reject(err))
-            } catch (err) {
-                const errorMessage = `Failed to get available backup dbs for ${err.message}`;
-                reject(new Error(errorMessage));
-            }
-        })
+        return Promise.resolve()
+            .then(() => {
+                const adminDb = this.db.admin();
+                return adminDb.listDatabases()
+            })
+            .then(({databases}) => {
+                return databases.map(({name}) => name)
+            })
+            .catch(err => {
+                log.error(`Failed to get available backup dbs for ${ err.message }`);
+                throw err;
+            });
     }
 
     getAvailableDBs() {
-        return new Promise((resolve, reject) => {
-            let promise = null;
-            if (!this.userName) {
-                promise = this.getAvailableDBsWithAdminDb()
-            } else if (this.authDB == 'admin') {
-                promise = this.getUserRole()
-                    .then(user => {
-                        const filterRoles = user.roles.filter(
-                            ({role, db}) => (databaseConfig.all_database_backup_roles.includes(role)));
-                        if (filterRoles.length > 0) {
-                            return this.getAvailableDBsWithAdminDb();
-                        } else {
-                            return [];
-                        }
-                    })
-            } else {
-                promise = this.getAvailableDBsWithRoles(databaseConfig.database_backup_roles)
-            }
+        return Promise.resolve()
+            .then(() => {
+                let promise = null;
+                if (!this.userName) {
+                    promise = this.getAvailableDBsWithAdminDb()
+                } else if (this.authDB == 'admin') {
+                    promise = this.getUserRole()
+                        .then(user => {
+                            const filterRoles = user.roles.filter(
+                                ({role, db}) => (databaseConfig.all_database_backup_roles.includes(role)));
+                            if (filterRoles.length > 0) {
+                                return this.getAvailableDBsWithAdminDb();
+                            } else {
+                                return [];
+                            }
+                        })
+                } else {
+                    promise = this.getAvailableDBsWithRoles(databaseConfig.database_backup_roles)
+                }
 
-            promise
-                .then(dbs => resolve(dbs))
-                .catch(err => reject(err))
-        });
+                return promise
+            });
     }
 
     getCollectionNamesWithDB(dbName) {
-        return new Promise((resolve, reject) => {
-            this.getDBByName(dbName).listCollections().toArray()
-                .then(collections => resolve(
-                    collections.filter(({ name }) => !name.match(/system\.[\w+]+/))
-                        .map(({ name }) => name)
-                ))
-                .catch(err => {
-                    const errorMessage = `Failed to get all available backup information for ${ err.message }`;
-                    log.error(errorMessage);
-                    reject(new Error(errorMessage));
-                })
-        })
+        return Promise.resolve()
+            .then(() => this.getDBByName(dbName).listCollections().toArray())
+            .then(collections => {
+                return  collections.filter(({ name }) => !name.match(/system\.[\w+]+/))
+                    .map(({ name }) => name)
+            })
+            .catch(err => {
+                log.error(`Failed to get all available backup information for ${ err.message }`)
+                throw err;
+            });
     }
 
     getAvailableBackupCollections() {
-        return new Promise((resolve, reject) => {
-            this.getAvailableDBs()
-                .then(dbNames => {
-                    return Promise.all(dbNames.map(
-                        dbName => {
-                            return new Promise((resolve, reject) => {
-                                this.getCollectionNamesWithDB(dbName)
-                                    .then(collections => resolve({db: dbName, collections}))
-                                    .catch(err => reject(err))
-                            });
-                        }
-                    ));
-                })
-                .then(dbCollections => {
-                    return resolve(dbCollections)
-                })
-                .catch(err => {
-                    return reject(err);
-                });
-        })
+        return Promise.resolve()
+            .then(() => {
+                return this.getAvailableDBs()
+            })
+            .then(dbNames => {
+                return Promise.all(dbNames.map(
+                    dbName => {
+                        return new Promise((resolve, reject) => {
+                            this.getCollectionNamesWithDB(dbName)
+                                .then(collections => resolve({db: dbName, collections}))
+                                .catch(err => reject(err))
+                        });
+                    }
+                ));
+            });
     }
 
     updateDocInCollection(dbName, collectionName, doc) {
@@ -180,10 +166,8 @@ class MongoDB {
             this.getDBByName(dbName).collection(collectionName, {strict: false},
                 (err, collection) => {
                     if(err) {
-                        const errorMessage = `Failed to update ${ doc.id } in ${ collectionName }`;
-                        log.error(errorMessage);
-                        reject(new errorMessage);
-                        return;
+                        log.error(`Failed to update ${ doc.id } in ${ collectionName }`);
+                        return reject(err);
                     }
 
                     collection.updateOne({ id: doc.id }, doc, { upsert: true, w: 1 })
@@ -192,9 +176,8 @@ class MongoDB {
                             resolve();
                         })
                         .catch(err => {
-                            const errorMessage = `Failed to update ${ doc.id } of ${ collectionName } for ${ err.message }`;
-                            log.error(errorMessage);
-                            reject(new Error(errorMessage));
+                            log.error(`Failed to update ${ doc.id } of ${ collectionName } for ${ err.message }`);
+                            reject(err);
                         })
             } )
         })
@@ -218,58 +201,54 @@ class MongoDB {
     }
 
     readFromCollections(db, collections) {
-        return new Promise((resolve, reject) => {
-            Promise.all(collections.map(collection => {
-                return new Promise((resolve, reject) => {
-                    this.readFromCollection(db, collection, {})
-                        .then(docs => {
-                            log.info(`Read from ${collection} of ${ db }`);
-                            resolve({ collection, docs });
-                        })
-                        .catch(err => {
-                            log.error(`Failed to read from ${collection} of ${ db } for ${ err.message }`);
-                            reject(err);
-                        })
-                })
-            }).map(p => p.catch(e => e))
-            ).then(collectionsDocs => {
-                const errors = collectionsDocs.filter(collectionDocs => !collectionDocs.collection);
-                if(errors.length > 0) {
-                    log.error(`Failed to read all the data from ${ collections } of ${ db } for ${errors[0].message}`)
-                    return reject(errors[0])
-                }
-                log.info(`Finished read data from the ${ collections } of ${ db }`);
-                resolve(collectionsDocs);
-            }).catch(err => {
-                log.error(err);
-                reject(err);
+        return Promise.resolve()
+            .then(() => {
+                return Promise.all(collections.map(collection => {
+                        return Promise.resolve()
+                            .then(() => this.readFromCollection(db, collection, {}) )
+                            .then(docs => {
+                                log.info(`Read from ${collection} of ${ db }`);
+                                return { collection, docs };
+                            })
+                            .catch(err => {
+                                log.error(`Failed to read from ${collection} of ${ db } for ${ err.message }`);
+                                throw err
+                            });
+                    }).map(p => p.catch(e => e)))
             })
-        })
+            .then(collectionsDocs => {
+                const errors = collectionsDocs.filter(collectionDocs => !collectionDocs.collection);
+
+                if(errors.length > 0) {
+                    log.error(`Failed to read all the data from ${ collections } of ${ db } for ${errors[0].message}`);
+                    throw errors[0];
+                }
+
+                log.info(`Finished read data from the ${ collections } of ${ db }`);
+                return collectionsDocs;
+            });
     }
 
     writeToCollections(db, collectionsDocs) {
-        return new Promise((resolve, reject) => {
-            Promise.all(collectionsDocs.map(collectionDocs => {
-                return new Promise((resolve, reject) => {
-                    const { collection, docs } = collectionDocs;
-                    this.writeToCollection(db, collection, docs)
-                        .then(() => resolve())
-                        .catch(err => reject(err));
-                })}).map(p => p.catch(e => e))
-            ).then((results) => {
+        return Promise.resolve()
+            .then(() => {
+                return Promise.all(
+                    collectionsDocs.map(collectionDocs => {
+                            return Promise.resolve()
+                                .then(() => {
+                                    const {collection, docs} = collectionDocs;
+                                    return this.writeToCollection(db, collection, docs)
+                                })
+                        }).map(p => p.catch(e => e)))
+            })
+            .then(results => {
                 const errors = results.filter(result => result);
                 if(errors.length > 0) {
                     log.error(`Failed to backup all the data to ${ db } for ${errors[0].message}`);
-                    return reject(errors[0])
+                    throw errors[0];
                 }
                 log.info(`wrote all the data to ${ db }`);
-                resolve();
             })
-                .catch(err => {
-                    log.error(`Failed to backup all the data to ${ db } for ${err.message}`);
-                    reject(err)
-                })
-        })
     }
 
     writeToCollection(dbName, collectionName, docs) {
@@ -278,9 +257,8 @@ class MongoDB {
                 (err, collection) => {
 
                     if(err) {
-                        const errorMessage = `Failed to write to ${ collectionName } for ${ err.message }`;
-                        log.error(errorMessage);
-                        return reject(new Error(errorMessage));
+                        log.err(`Failed to write for ${ collectionName } of ${ dbName } for ${ err.message }`);
+                        return reject(err);
                     }
 
                     if(docs.length == 0) {
@@ -291,9 +269,8 @@ class MongoDB {
                                 resolve();
                             })
                             .catch(err => {
-                                const errorMessage = `Failed to create empty ${ collectionName } in ${ dbName } for ${ err.message }`;
-                                log.error(errorMessage);
-                                reject(new Error(errorMessage));
+                                log.error(`Failed to create empty ${ collectionName } in ${ dbName } for ${ err.message }`);
+                                reject(err);
                             });
                     }
 
@@ -304,9 +281,8 @@ class MongoDB {
                                 resolve();
                             })
                             .catch(err => {
-                                const errorMessage = `Failed to write to ${ collectionName } of ${ dbName } for ${ err.message }`;
-                                log.error(errorMessage);
-                                reject(new Error(errorMessage));
+                                log.error(`Failed to write to ${ collectionName } of ${ dbName } for ${ err.message }`);
+                                reject(err);
                             })
                     }
             })
@@ -318,9 +294,8 @@ class MongoDB {
             this.getDBByName(dbName).collection(collectionName, {strict: false},
                 (err, collection) => {
                     if(err) {
-                        const errorMessage = `Failed to delete docs for ${ err.message }`;
-                        log.error(errorMessage);
-                        return reject(new Error(errorMessage));
+                        log.error(`Failed to delete docs for ${ err.message }`);
+                        return reject(err);
                     }
 
                     collection.deleteMany(filter)
@@ -329,26 +304,18 @@ class MongoDB {
                             resolve()
                         })
                         .catch(err => {
-                            const errorMessage = `Failed to delete docs with ${ filter } for ${ err.message }`;
-                            log.error(errorMessage);
-                            return reject(new Error(errorMessage));
+                            log.error(`Failed to delete docs with ${ filter } for ${ err.message }`);
+                            return reject(err);
                         })
             })
         })
     }
 
     deleteDatabase(dbName) {
-        return new Promise((resolve, reject) => {
-            this.getDBByName(dbName).dropDatabase()
-                .then(result => {
-                    resolve()
-                })
-                .catch(err => {
-                    const errorMessage = `Failed to delete ${ dbName } for ${ err.message }`;
-                    log.error(errorMessage);
-                    reject(new Error(errorMessage));
-                })
-        })
+        return Promise.resolve()
+            .then(() => {
+                return this.getDBByName(dbName).dropDatabase()
+            });
     }
 
     getDBByName(dbName) {
@@ -361,13 +328,13 @@ class MongoDB {
 
     closeDBByName(dbName) {
         return Promise.resolve()
-                      .then(()=> {
-                          if(!this.dbHash.has(dbName)) {
-                              throw Error(`Can't close the non-connected ${ dbName }`);
-                          }
+            .then(()=> {
+                if(!this.dbHash.has(dbName)) {
+                    throw Error(`Can't close the non-connected ${ dbName }`);
+                }
 
-                          return this.dbHash.get(dbName).close();
-                      })
+                return this.dbHash.get(dbName).close();
+            })
     }
 }
 

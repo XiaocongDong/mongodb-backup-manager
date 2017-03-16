@@ -51,6 +51,9 @@ class BackupManager {
                         return this.backupDB.readFromCollections(this.backupConfig.db, backupCollections)
                     })
                     .then(collectionsDocs => {
+                        this.backupDB.close()
+                            .then(() => log.info(`Closed ${ this.backupDB.url }`))
+                            .catch(err => log.error(`Failed to close ${ this.backupDB.url } for ${ err.message }`));
                         return this.localDB.writeToCollections(backupTargetDBName, collectionsDocs)
                     })
                     .then(() => {
@@ -60,14 +63,6 @@ class BackupManager {
                         this.backupOnFailure(err, backupTargetDBName);
                         throw err;
                     })
-                    .finally(() => {
-                        this.backupDB.close()
-                            .then(() => log.info(`Closed ${ this.backupDB.url }`))
-                            .catch(err => log.error(`Failed to close ${ this.backupDB.url } for ${ err.message }`));
-                        // this.localDB.closeDBByName(backupTargetDBName)
-                        //     .then(() => log.info(`Closed ${ backupTargetDBName }`))
-                        //     .catch(err => log.error(`Failed to close ${ backupTargetDBName } for ${ err.message }`));
-                    });
     }
 
     stopAllActivities() {

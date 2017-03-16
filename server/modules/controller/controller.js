@@ -28,7 +28,7 @@ class Controller {
             }
 
             const { server, port, username, password, authDB, db, collections } = backupConfig;
-            const backupDB = new MongoDB(server, port, username, password,authDB);
+            const backupDB = object.selfish(new MongoDB(server, port, username, password,authDB));
 
             backupDB.connect()
                 .then(() => {
@@ -77,9 +77,9 @@ class Controller {
                     resolve(result);
                 })
                 .catch(err => {
-                    log.error(err.message);
+                    log.error(err);
                     reject(err)
-                });
+                })
         });
     }
 
