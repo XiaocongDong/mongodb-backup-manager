@@ -4,8 +4,10 @@ const express = require('express');
 const router = require('modules/router');
 const config = require('modules/config');
 const object = require('modules/utility/object');
-const MongoDB = require('modules/controller/mongoDB');
+const LocalDB = require('modules/controller/localDB');
 const controller = require('modules/controller/controller');
+const log = require('modules/utility/logger');
+
 
 object.deployPromiseFinally();
 
@@ -17,16 +19,17 @@ app.use('/', router);
 
 const {server, port, username, password, auth_db} = config.database;
 
-const localDB = object.selfish(new MongoDB(server, port, username, password, auth_db));
+const localDB = object.selfish(new LocalDB(server, port, username, password, auth_db));
 
 localDB.connect()
-       .then(
-           localDB.createBackupConfigCollection
-       )
        .then(() => {
-           controller.setBackUpDB(localDB);
-           app.listen(config.server.port, () => {
-               console.log(`listening at ${config.server.port}`);
+           controller.setLocalDB(localDB);
+           app.listen(config.server.port, (err, result) => {
+               if(err) {
+                   log.error(`Failed to start the server for ${ err.message }`)
+               }else {
+                   log.info(`Listening at ${config.server.port}`);
+               }
            });
        })
        .catch(err => {

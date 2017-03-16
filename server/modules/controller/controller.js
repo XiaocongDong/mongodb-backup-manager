@@ -15,45 +15,72 @@ class Controller {
         this.backUpsHash = new Map();
     }
 
-    setBackUpDB(localDB) {
+    setLocalDB(localDB) {
         this.localDB = localDB;
     }
 
-    NewBackup(newBackupConfig) {
+    NewBackup(backupConfig) {
         return new Promise((resolve, reject) => {
-            const backupConfig = backupConfigUtil.initializeBackupConfig(newBackupConfig);
+            backupConfig.id = backupConfigUtil.getBackUpID(backupConfig);
 
             if (this.backUpsHash.has(backupConfig.id)) {
-                return reject(response.error('created backup failed: back up has existed'))
+                return reject(response.error(`Created backup failed: ${ backupConfig.id } has existed`))
             }
 
-            const {server, port, username, password, auth_db} = backupConfig.database;
-            const backupDB = new MongoDB(server, port, username, password, auth_db);
+            const { server, port, username, password, authDB, db, collections } = backupConfig;
+            const backupDB = new MongoDB(server, port, username, password,authDB);
 
             backupDB.connect()
                 .then(() => {
-                    this.localDB.updateBackUpConfig(backupConfig)
-                        .then(() => {
-                            const backUpManager = object.selfish(
-                                new BackupManager(backupConfig.id, backupDB, this.localDB, backupConfig.backup_config));
-                            this.backUpsHash.set(backupConfig.id, backUpManager);
-                            backUpManager.start();
+                    return backupDB.getAvailableBackupCollections()
+                })
+                .then(dbsCollections => {
+                    const dbCollections = dbsCollections.filter(dbCollection => {
+                        return dbCollection.db == db;
+                    });
 
-                            let result = {
-                                backup_id: backupConfig.id
-                            };
+                    if (dbCollections.length === 0) {
+                        throw new Error(`${ db } doesn't exist in ${ server }`);
+                    }
 
-                            resolve(response.success(result));
-                        })
-                        .catch(err => {
-                            log.info(err.message);
-                            reject(response.error(err.message))
+                    if(collections) {
+                        const invalidCollections = collections.filter(collection => {
+                            return !dbCollections.collections.includes(collection);
                         });
+
+                        if (invalidCollections.length > 0) {
+                            throw new Error(`backup collections ${ invalidCollections } don't exist`);
+                        }
+                    }
+
+                    return this.localDB.updateBackUpConfig(backupConfig)
+                })
+                .then(() => {
+                    log.info(`Updated backup config for ${ backupConfig.id }`);
+                    const backupManager = object.selfish(new BackupManager(backupDB, this.localDB, backupConfig));
+
+                    backupManager.start();
+
+                    const result = {};
+                    const status = backupManager.status;
+                    const nextBackupTime = backupManager.nextBackUpTime;
+
+                    result.backupID = backupConfig.id;
+                    result.status = status;
+
+                    if(status == constants.backup.status.WAITING && nextBackupTime) {
+                        result.nextBackUpTime = nextBackupTime;
+                    }
+
+                    this.backUpsHash.set(backupConfig.id, backupManager);
+
+                    resolve(result);
                 })
                 .catch(err => {
-                    reject(reject(response.error(err.message)));
+                    log.error(err.message);
+                    reject(err)
                 });
-        })
+        });
     }
 
     getBackupStatus(backupID) {

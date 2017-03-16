@@ -1,21 +1,14 @@
 const backupCons = require('modules/constants/backup');
-const backupConfigUtil = require('modules/utility/backupConfig');
 const log = require('modules/utility/logger');
 
 class BackupManager {
 
-    constructor(id, targetDB, localDB, backupConfig) {
+    constructor(targetDB, localDB, backupConfig) {
         this.backupDB = targetDB;
         this.localDB = localDB;
         this.backupConfig = backupConfig;
-        this.backupDBName = backupConfig.db;
-        this.backupCollections = backupConfig.collections;
-        this.startTime = backupConfig.time.start_time;
-        this.nextBackUpTime = this.startTime;
-        this.interval = backupConfig.time.interval;
-        this.maxNumber = backupConfig.constraints.maximum_number;
-        this.duration = backupConfig.constraints.duration;
-        this.id = id;
+        this.currentBackupCollections = null;
+        this.nextBackUpTime = backupConfig.startTime;
         this.activites = new Set();
         this.backupStatus = backupCons.status.WAITING;
     }
@@ -25,195 +18,172 @@ class BackupManager {
 
         const now = new Date();
 
-        let firstTimeout = this.startTime? (Date.parse(this.startTime) - now.valueOf()): 0;
+        let firstTimeout = this.startTime? (Date.parse(this.backupConfig.startTime) - now.valueOf()): 0;
 
-        let firstBackup = setTimeout(() => {
-            // start first backup
+        let firstBackup = () => {
             this.backUp();
-
-            // create a routine backup
-            let backUpRoutine = setInterval(
-                () => {
-                    this.nextBackUpTime = new Date(now.valueOf() + this.interval);
+            let backUpRoutine = () => {
+                    this.nextBackUpTime = new Date(now.valueOf() + this.backupConfig.interval);
                     this.backUp.call(this);
-                }, this.interval);
+                };
 
-            this.nextBackUpTime = new Date(now.valueOf() + this.interval);
-            this.activites.add(backUpRoutine);
-        }, firstTimeout);
+            this.activites.add(setInterval(backUpRoutine, this.backupConfig.interval));
+            this.nextBackUpTime = new Date(now.valueOf() + this.backupConfig.interval);
+        };
 
-        this.activites.add(firstBackup);
+        this.activites.add(setTimeout(firstBackup, firstTimeout));
     }
 
     backUp() {
         const now = new Date();
         const backupTargetDBName = this.getTargetBackUpDBName(now);
-        log.info('target Db Name is ' + backupTargetDBName);
-
-        const backupPromise = new Promise((resolve, reject) => {
-             this.backupDB.connect()
-                 .then(() => {
-                     this.backupStatus = backupCons.status.RUNNING;
-                     this.getBackupCollections()
-                         .then((backupCollections) => {
-                             log.info(`Successfully get backup collections ${ backupCollections }`);
-                             this.backupDB
-                                 .readFromCollections(this.backupDBName, backupCollections)
-                                 .then(collectionsDocs => {
-                                     this.localDB.writeToCollections(backupTargetDBName, collectionsDocs)
-                                         .then(() => {
-                                             this.backupOnWriteSuccess(backupTargetDBName)
-                                                 .then(() => resolve())
-                                                 .catch(err => reject(err))
-                                         })
-                                         .catch(err => {
-                                             reject(err);
-                                         });
-                                 }, err => reject(err))
-                         }, err => reject(err))
-                 }, err => reject(err))
-                 .finally(this.backupDB.close)
-        });
-
-        backupPromise.catch((err) => {
-            this.backupOnFailure(backupTargetDBName);
-            return Promise.resolve(err);
-        });
-
-        return backupPromise;
+        log.info('Backup copy DB Name is ' + backupTargetDBName);
+        
+        return this.backupDB
+                    .connect()
+                    .then(() => {
+                        this.backupStatus = backupCons.status.RUNNING;
+                        return this.getBackupCollections();
+                    })
+                    .then(backupCollections => {
+                        log.info(`Successfully get backup collections ${ backupCollections }`);
+                        this.currentBackupCollections = backupCollections;
+                        return this.backupDB.readFromCollections(this.backupConfig.db, backupCollections)
+                    })
+                    .then(collectionsDocs => {
+                        return this.localDB.writeToCollections(backupTargetDBName, collectionsDocs)
+                    })
+                    .then(() => {
+                        return this.backupOnWriteSuccess(backupTargetDBName)
+                    })
+                    .catch(err => {
+                        this.backupOnFailure(err, backupTargetDBName);
+                        throw err;
+                    })
+                    .finally(() => {
+                        this.backupDB.close()
+                            .then(() => log.info(`Closed ${ this.backupDB.url }`))
+                            .catch(err => log.error(`Failed to close ${ this.backupDB.url } for ${ err.message }`));
+                        // this.localDB.closeDBByName(backupTargetDBName)
+                        //     .then(() => log.info(`Closed ${ backupTargetDBName }`))
+                        //     .catch(err => log.error(`Failed to close ${ backupTargetDBName } for ${ err.message }`));
+                    });
     }
 
     stopAllActivities() {
         this.activites.forEach(activity => clearTimeout(activity))
     }
 
-    backupOnWriteSuccess(backupTargetDBName) {
+    backupOnWriteSuccess(backupCopyDBName) {
         return new Promise((resolve, reject) => {
-            /**
-             * update backup config with successful info
-             */
+            this.backupStatus = backupCons.status.WAITING;
             const now = new Date();
-            const dbDuration = this.duration;
+            const dbDuration = this.backupConfig.backupDuration;
             const deleteTime = dbDuration ? new Date(now.valueOf() + dbDuration) : '';
+            const newCopyDB = {
+                "id": this.backupConfig.id,
+                "originalDatabase": {
+                    "server": this.backupConfig.server,
+                    "database": this.backupConfig.db
+                },
+                "name": backupCopyDBName,
+                "collections": this.currentBackupCollections,
+                "createdTime": now.toISOString(),
+                "deletedTime": deleteTime.toISOString()
+            };
+            const newLog = {
+                time: now.valueOf(),
+                content: `Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`
+            };
+            const lastBackupTime = now.toISOString();
 
-            this.localDB.getBackUpConfig(this.id)
-                .then(backupConfig => {
-                    this.backupStatus = backupCons.status.WAITING;
-                    backupConfigUtil.addBackupDB(backupConfig, backupTargetDBName, now, deleteTime);
-                    backupConfigUtil.addBackupLog(backupConfig, now, `backup ${ this.backupConfig.backupDB } successfully`);
+            this.addLog(newLog);
+            this.updateBackupConfig({ lastBackupTime });
 
-                    this.localDB.updateBackUpConfig(backupConfig)
-                        .then(() => {
-                            log.info(`backup ${ this.backupDBName } successfully`);
+            this.localDB.addCopyDB(newCopyDB)
+                .then(() => {
+                    if( this.backupConfig.backupDuration ) {
+                        const deleteDBTask = () => {
+                            this.deleteDB(backupCopyDBName);
+                        };
+                        this.activites.add(setTimeout(deleteDBTask, this.backupConfig.backupDuration));
+                    }
 
-                            // set timer to delete the database when it expired
-                            setTimeout(() => {
-                                this.deleteDB(backupTargetDBName);
-                            }, dbDuration);
-
-                            log.info(`${ backupTargetDBName } will be deleted at ${ deleteTime }`);
-
-                            resolve()
-                        })
-                        .catch((updateErr) => {
-                            /**
-                             * when the status can't be updated, the backup failed, delete copy database
-                             */
-                            this.localDB.deleteDatabase(backupTargetDBName)
-                                .then(() => {
-                                    log.info(`Update Backup config failed for ${ err.message }, clean copy successfully`);
-                                    reject(updateErr);
-                                })
-                                .catch(err => {
-                                    log.error(`Update Backup config failed for ${ err.message }, clean copy failed`);
-                                    reject(updateErr);
-                                })
-                        })
+                    log.info(`${ backupCopyDBName } will be deleted at ${ deleteTime }`);
+                    resolve()
                 })
                 .catch(err => {
-                    log.error(`Failed to get backup config for ${ this.id } from ${ this.localDB.server }`)
-                    console.log(err);
-                    reject(err);
+                    this.localDB.deleteDatabase(backupCopyDBName)
+                        .then(() => {
+                            const errorMessage = `Backup failed for ${ err.message }, clean copy successfully`;
+                            log.info(errorMessage);
+                            reject(new Error(errorMessage));
+                        })
+                        .catch(err => {
+                            const errorMessage = `Backup failed for ${ err.message }, failed to lean copy`;
+                            log.info(errorMessage);
+                            reject(new Error(errorMessage));
+                        })
                 });
-        });
+        })
     }
 
-    backupOnFailure(backupTargetDBName) {
-        return new Promise((resolve, reject) => {
-            const now = new Date();
+    backupOnFailure(err, backupCopyDBName) {
+        const now = new Date();
+        const newLog = {
+            time: now.valueOf(),
+            content: `Failed to Backup ${ this.backupConfig.database } to ${ backupCopyDBName } for ${ err.message }`
+        };
+        const lastBackupTime = now.toISOString();
 
-            this.localDB.getBackUpConfig(this.id)
-                .then(backupConfig => {
-                    this.backupStatus = backupCons.status.WAITING;
-                    backupConfigUtil.addBackupLog(backupConfig, now, `backup ${ this.backupDBName } failed`);
-                    this.localDB.updateBackUpConfig(backupConfig)
-                        .then(() => {
-                            log.info(`backup ${ this.backupDBName } failed, successfully update backupConfig`);
-                            resolve();
-                        })
-                        .catch((err) => {
-                            log.error(`backup ${ this.backupDBName } failed, failed to update backup Config for ${ err.message }`);
-                            reject(err);
-                        })
-                        .finally(() => {
-                            if(backupTargetDBName) {
-                                this.localDB.deleteDatabase(backupTargetDBName)
-                                    .then(() => {
-                                        log.info(`Successfully delete ${ backupTargetDBName }`);
-                                    })
-                                    .catch(() => {
-                                        log.error(`Failed to delete ${ backupTargetDBName }`);
-                                    })
-                            }
-                        });
-                })
-        })
+        this.addLog(newLog);
+        this.updateBackupConfig({ lastBackupTime });
+
+        this.localDB.deleteDatabase(backupCopyDBName)
+            .then(() => {
+                log.info(`Successfully delete ${ backupCopyDBName }`);
+            })
+            .catch(() => {
+                log.error(`Failed to delete ${ backupCopyDBName }`);
+            });
     }
 
     deleteDB(dbName) {
         return new Promise((resolve, reject) => {
-            log.info(`Started to deleted ${ dbName }`);
+            log.info(`Started to delete ${ dbName }`);
             const now = new Date();
+
             this.localDB.deleteDatabase(dbName)
                 .then(() => {
-                    this.localDB.getBackUpConfig(this.id)
-                        .then(backupConfig => {
-                            backupConfigUtil.removeBackupDB(backupConfig, dbName);
-                            backupConfigUtil.addBackupLog(backupConfig, now, `Successfully deleted ${dbName}`);
-                            this.localDB.updateBackUpConfig(backupConfig)
-                                .then(() => {
-                                    log.info(`Successfully deleted ${dbName}`);
-                                    resolve();
-                                })
-                                .catch(err => {
-                                    log.error(`Successfully deleted ${dbName}, but failed to delete it in the backup config`);
-                                    reject(err);
-                                })
-                        })
-                        .catch(err => {
-                            log.error(`Successfully ${ dbName }, failed to get backup Config from local DB`);
-                            reject(err);
-                        })
+                    const newLog = {
+                        time: now.valueOf(),
+                        content: `Deleted Backup ${ dbName }`
+                    };
+                    this.addLog(newLog);
+                    return this.localDB.deleteCopyDBByIDAndName(this.backupConfig.id, dbName)
+                })
+                .then(() => {
+                    log.info(`Deleted ${ dbName }`);
+                    resolve();
                 })
                 .catch(err => {
-                    log.error(`Failed to deleted ${dbName} for ${err.message}`);
-                    reject(err);
+                    log.error(`Failed to delete ${ dbName } for ${ err.message }`);
+                    reject();
                 })
         })
-            .catch(err => console.log(err));
     }
 
     getTargetBackUpDBName(date) {
-        return `${ this.id }-${ date.valueOf() }`
+        return `${ this.backupConfig.id }-${ date.valueOf() }`
     }
 
     getBackupCollections() {
         return new Promise((resolve, reject) => {
-            if(this.backupCollections) {
-                return resolve(this.backupCollections);
+            if(this.backupConfig.collections) {
+                return resolve(this.backupConfig.collections);
             }
 
-            this.backupDB.getCollectionNamesWithDB(this.backupDBName)
+            this.backupDB.getCollectionNamesWithDB(this.backupConfig.db)
                 .then(collections => {
                     resolve(collections);
                 })
@@ -221,6 +191,28 @@ class BackupManager {
                     reject(err);
                 })
         })
+    }
+
+    addLog(log) {
+        this.localDB.addLog(log)
+            .then(() => {
+                log.info(`Added log ${ this.backupConfig.id }`);
+            })
+            .catch(err => {
+                log.error(`Failed to add log for ${ this.backupConfig.id } for ${ err.message }`);
+            });
+    }
+
+    updateBackupConfig(updates) {
+        this.localDB.getBackupConfig(this.backupConfig.id)
+            .then(backupConfig => {
+                if(backupConfig.length == 0) {
+                    throw new Error(`Backup config for ${ this.backupConfig.id } doesn't exist`);
+                }
+                backupConfig = backupConfig[0];
+                Object.assign(backupConfig, updates);
+                return this.localDB.updateBackUpConfig(backupConfig)
+            });
     }
 }
 

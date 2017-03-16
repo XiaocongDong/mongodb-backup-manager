@@ -8,10 +8,10 @@ backups.post('/create', (req, res, next) => {
     const backupConfig = req.body;
     controller.NewBackup(backupConfig)
         .then(result => {
-            response.send(res, result);
+            response.send(res, response.success(result));
         })
         .catch(err => {
-            response.send(res, err);
+            response.send(res, response.error(err.message));
         })
 });
 
