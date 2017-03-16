@@ -61,19 +61,9 @@ class Controller {
 
                     backupManager.start();
 
-                    const result = {};
-                    const status = backupManager.status;
-                    const nextBackupTime = backupManager.nextBackUpTime;
-
-                    result.backupID = backupConfig.id;
-                    result.status = status;
-
-                    if(status == constants.backup.status.WAITING && nextBackupTime) {
-                        result.nextBackUpTime = nextBackupTime;
-                    }
-
                     this.backUpsHash.set(backupConfig.id, backupManager);
 
+                    const result = this.getBackupStatus(backupConfig.id);
                     resolve(result);
                 })
                 .catch(err => {
@@ -85,19 +75,19 @@ class Controller {
 
     getBackupStatus(backupID) {
         if(!this.backUpsHash.has(backupID)) {
-            return response.error(`backup ID ${ backupID } doesn't exist`);
+            return null;
         }
 
         const backupManager = this.backUpsHash.get(backupID);
         const status = backupManager.backupStatus;
         const nextBackupTime = backupManager.nextBackUpTime;
-        const result = { status };
+        const result = { status, id: backupID };
 
         if(status == backupCons.status.WAITING && nextBackupTime) {
-            result.next_backup_time = nextBackupTime.toISOString();
+            result.nextBackUpTime = nextBackupTime.toLocaleString();
         }
 
-        return response.success(result)
+        return result;
     }
 
     deleteDB(backupID, dbName) {

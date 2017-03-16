@@ -1,5 +1,7 @@
 const backupCons = require('modules/constants/backup');
 const log = require('modules/utility/logger');
+const config = require('modules/config');
+
 
 class BackupManager {
 
@@ -16,13 +18,14 @@ class BackupManager {
     start() {
         log.info('Started the backup logic for ' + this.id);
 
-        const now = new Date();
+        let now = new Date();
 
         let firstTimeout = this.startTime? (Date.parse(this.backupConfig.startTime) - now.valueOf()): 0;
 
         let firstBackup = () => {
             this.backUp();
             let backUpRoutine = () => {
+                    let now = new Date();
                     this.nextBackUpTime = new Date(now.valueOf() + this.backupConfig.interval);
                     this.backUp.call(this);
                 };
@@ -83,14 +86,14 @@ class BackupManager {
                 },
                 "name": backupCopyDBName,
                 "collections": this.currentBackupCollections,
-                "createdTime": now.toISOString(),
-                "deletedTime": deleteTime.toISOString()
+                "createdTime": now.toLocaleString(),
+                "deletedTime": deleteTime.toLocaleString()
             };
             const newLog = {
                 time: now.valueOf(),
                 content: `Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`
             };
-            const lastBackupTime = now.toISOString();
+            const lastBackupTime = now.toLocaleString();
 
             this.addLog(newLog);
             this.updateBackupConfig({ lastBackupTime });
@@ -104,10 +107,11 @@ class BackupManager {
                         this.activites.add(setTimeout(deleteDBTask, this.backupConfig.backupDuration));
                     }
 
-                    log.info(`${ backupCopyDBName } will be deleted at ${ deleteTime }`);
+                    log.info(`${ backupCopyDBName } will be deleted at ${ deleteTime.toLocaleString() }`);
                     resolve()
                 })
                 .catch(err => {
+                    console.log(err);
                     this.localDB.deleteDatabase(backupCopyDBName)
                         .then(() => {
                             const errorMessage = `Backup failed for ${ err.message }, clean copy successfully`;
@@ -129,7 +133,7 @@ class BackupManager {
             time: now.valueOf(),
             content: `Failed to Backup ${ this.backupConfig.database } to ${ backupCopyDBName } for ${ err.message }`
         };
-        const lastBackupTime = now.toISOString();
+        const lastBackupTime = now.toLocaleString();
 
         this.addLog(newLog);
         this.updateBackupConfig({ lastBackupTime });
@@ -151,7 +155,7 @@ class BackupManager {
             this.localDB.deleteDatabase(dbName)
                 .then(() => {
                     const newLog = {
-                        time: now.valueOf(),
+                        time: now.toLocaleString(),
                         content: `Deleted Backup ${ dbName }`
                     };
                     this.addLog(newLog);

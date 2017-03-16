@@ -19,7 +19,11 @@ backups.get('/status', (req, res, next) => {
     const backupID = req.query.id;
     const status = controller.getBackupStatus(backupID);
 
-    response.send(res, status);
+    if(!status) {
+        response.send(res, response.error(`backupID ${ backupID } doesn't exist`));
+    }else {
+        response.send(res, response.success(status));
+    }
 });
 
 backups.delete('/:backupID/databases/:dbName', (req, res, next) => {
