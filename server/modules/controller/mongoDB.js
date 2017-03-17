@@ -57,6 +57,10 @@ class MongoDB {
                         log.info(`Clean DB map`);
                         this.dbHash.clear();
                     })
+                    .catch(err => {
+                        log.error(`Failed to close ${ this.url} for ${ err.message }`);
+                        throw err;
+                    })
             })
     }
 
@@ -70,7 +74,6 @@ class MongoDB {
                 throw err;
             })
             .then(({users}) => {
-                console.log("ji");
                 if (users.length == 0) {
                     throw new Error(`no user ${ this.userName } found`)
                 }

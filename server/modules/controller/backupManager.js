@@ -16,10 +16,7 @@ class BackupManager {
     }
 
     start() {
-        log.info('Started the backup logic for ' + this.id);
-
         let now = new Date();
-
         let firstTimeout = this.startTime? (Date.parse(this.backupConfig.startTime) - now.valueOf()): 0;
 
         let firstBackup = () => {
@@ -38,6 +35,8 @@ class BackupManager {
     }
 
     backUp() {
+        this.backupStatus = backupCons.status.RUNNING;
+
         const now = new Date();
         const backupTargetDBName = this.getTargetBackUpDBName(now);
         log.info('Backup copy DB Name is ' + backupTargetDBName);
@@ -90,6 +89,7 @@ class BackupManager {
                 "deletedTime": deleteTime.toLocaleString()
             };
             const newLog = {
+                id: this.backupConfig.id,
                 time: now.valueOf(),
                 content: `Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`
             };
@@ -111,7 +111,6 @@ class BackupManager {
                     resolve()
                 })
                 .catch(err => {
-                    console.log(err);
                     this.localDB.deleteDatabase(backupCopyDBName)
                         .then(() => {
                             const errorMessage = `Backup failed for ${ err.message }, clean copy successfully`;
@@ -130,6 +129,7 @@ class BackupManager {
     backupOnFailure(err, backupCopyDBName) {
         const now = new Date();
         const newLog = {
+            id: this.backupConfig.id,
             time: now.valueOf(),
             content: `Failed to Backup ${ this.backupConfig.database } to ${ backupCopyDBName } for ${ err.message }`
         };
@@ -155,6 +155,7 @@ class BackupManager {
             this.localDB.deleteDatabase(dbName)
                 .then(() => {
                     const newLog = {
+                        id: this.backupConfig.id,
                         time: now.toLocaleString(),
                         content: `Deleted Backup ${ dbName }`
                     };

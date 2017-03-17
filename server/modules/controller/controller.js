@@ -19,63 +19,63 @@ class Controller {
         this.localDB = localDB;
     }
 
-    NewBackup(backupConfig) {
-        return new Promise((resolve, reject) => {
-            backupConfig.id = backupConfigUtil.getBackUpID(backupConfig);
+    NewBackup(backupConfig, next) {
+        backupConfig.id = backupConfigUtil.getBackUpID(backupConfig);
 
-            if (this.backUpsHash.has(backupConfig.id)) {
-                return reject(response.error(`Created backup failed: ${ backupConfig.id } has existed`))
-            }
+        if (this.backUpsHash.has(backupConfig.id)) {
+            return next(response.error(`Created backup failed: ${ backupConfig.id } has existed`, 409))
+        }
 
-            const { server, port, username, password, authDB, db, collections } = backupConfig;
-            const backupDB = object.selfish(new MongoDB(server, port, username, password,authDB));
+        const { server, port, username, password, authDB, db, collections } = backupConfig;
+        const backupDB = object.selfish(new MongoDB(server, port, username, password,authDB));
 
-            backupDB.connect()
-                .then(() => {
-                    return backupDB.getAvailableBackupCollections()
-                })
-                .then(dbsCollections => {
-                    const dbCollections = dbsCollections.filter(dbCollection => {
-                        return dbCollection.db == db;
+        backupDB.connect()
+            .catch(err => {
+                next(response.error(`Failed to connected to ${ backupConfig.server }`));
+                throw err
+            })
+            .then(() => {
+                return backupDB.getAvailableBackupCollections()
+            })
+            .then(dbsCollections => {
+                const dbCollections = dbsCollections.filter(dbCollection => {
+                    return dbCollection.db == db;
+                });
+
+                if (dbCollections.length === 0) {
+                    throw new Error(`${ db } doesn't exist in ${ server } or ${ username }@${ authDB } can't backup it`);
+                }
+
+                if(collections) {
+                    const invalidCollections = collections.filter(collection => {
+                        return !dbCollections.collections.includes(collection);
                     });
 
-                    if (dbCollections.length === 0) {
-                        throw new Error(`${ db } doesn't exist in ${ server }`);
+                    if (invalidCollections.length > 0) {
+                        throw new Error(`backup collections ${ invalidCollections } don't exist`);
                     }
+                }
 
-                    if(collections) {
-                        const invalidCollections = collections.filter(collection => {
-                            return !dbCollections.collections.includes(collection);
-                        });
+                return this.localDB.updateBackUpConfig(backupConfig)
+            })
+            .then(() => {
+                log.info(`Updated backup config for ${ backupConfig.id }`);
+                const backupManager = object.selfish(new BackupManager(backupDB, this.localDB, backupConfig));
 
-                        if (invalidCollections.length > 0) {
-                            throw new Error(`backup collections ${ invalidCollections } don't exist`);
-                        }
-                    }
+                backupManager.start();
 
-                    return this.localDB.updateBackUpConfig(backupConfig)
-                })
-                .then(() => {
-                    log.info(`Updated backup config for ${ backupConfig.id }`);
-                    const backupManager = object.selfish(new BackupManager(backupDB, this.localDB, backupConfig));
+                this.backUpsHash.set(backupConfig.id, backupManager);
 
-                    backupManager.start();
-
-                    this.backUpsHash.set(backupConfig.id, backupManager);
-
-                    const result = this.getBackupStatus(backupConfig.id);
-                    resolve(result);
-                })
-                .catch(err => {
-                    log.error(err);
-                    reject(err)
-                })
-        });
+                this.getBackupStatus(backupConfig.id, next);
+            })
+            .catch(err => {
+                next(response.error(err.message));
+            });
     }
 
-    getBackupStatus(backupID) {
+    getBackupStatus(backupID, next) {
         if(!this.backUpsHash.has(backupID)) {
-            return null;
+            return next(response.error(`${ backupID } doesn't exist`, 404));
         }
 
         const backupManager = this.backUpsHash.get(backupID);
@@ -87,20 +87,55 @@ class Controller {
             result.nextBackUpTime = nextBackupTime.toLocaleString();
         }
 
-        return result;
+        return next(response.success(result));
     }
 
-    deleteDB(backupID, dbName) {
-        return new Promise((resolve, reject) => {
-            if(!this.backUpsHash.has(backupID)) {
-                return reject(new Error(`backupID ${ backupID } doesn't exist`));
-            }
+    deleteDB(backupID, dbName, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`backupID ${ backupID } doesn't exist`));
+        }
 
-            this.backUpsHash.get(backupID)
-                .deleteDB(dbName)
-                .then(() => resolve())
-                .catch(err => reject(err));
-        })
+        this.backUpsHash.get(backupID)
+            .deleteDB(dbName)
+            .then(() => next(response.success(`Successfully deleted ${ dbName }`)))
+            .catch(err => next(response.error(error.message)));
+    }
+
+    getAvailableDBsCollections(mongoParams, next) {
+        const { server, port, username, password, authDB } = mongoParams;
+        const mongoDB = object.selfish(new MongoDB(server, port, username, password, authDB));
+
+        mongoDB.connect()
+            .catch(err => {
+                next(response.error(err.message, 401));
+                throw err;
+            })
+            .then(mongoDB.getAvailableBackupCollections)
+            .then(dbCollections => {
+                mongoDB.close();
+                next(response.success(dbCollections))
+            })
+            .catch(err => {
+                mongoDB.close();
+                next(response.error(err.message, 400));
+                throw err;
+            })
+    }
+
+    getAllBackupCopyDBs(backupID, next) {
+        this.localDB.getBackupCopyDatabases(backupID)
+            .then(backupCopyDBs => {
+                next(response.success(backupCopyDBs));
+            })
+            .catch(err => {
+                next(response.error(err.message));
+            })
+    }
+
+    getAllBackupLogs(backupID, next) {
+        this.localDB.getBackupLogs(backupID)
+            .then(logs => next(response.success(logs)))
+            .catch(err => next(response.error(err.message)))
     }
 }
 
