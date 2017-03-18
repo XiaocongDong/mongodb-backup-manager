@@ -45,11 +45,12 @@
  */
 const constants = require('modules/constants');
 
-const backupConfigUtil = {
+const backupUtil = {
 
-    getBackUpID: (backupConfig) => {
+    getBackupID: (backupConfig) => {
         return `${ backupConfig.db }@${ backupConfig.server }`;
     }
+
 };
 
-module.exports = backupConfigUtil;
+module.exports = backupUtil;

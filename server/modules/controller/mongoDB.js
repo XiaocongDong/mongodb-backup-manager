@@ -54,7 +54,6 @@ class MongoDB {
                 return this.db.close()
                     .then(result => {
                         this.db = null;
-                        log.info(`Clean DB map`);
                         this.dbHash.clear();
                     })
                     .catch(err => {
@@ -175,7 +174,7 @@ class MongoDB {
 
                     collection.updateOne({ id: doc.id }, doc, { upsert: true, w: 1 })
                         .then(result => {
-                            log.info(`Updated ${doc.id} in ${ collectionName }`);
+                            log.debug(`Updated ${doc.id} in ${ collectionName }`);
                             resolve();
                         })
                         .catch(err => {
@@ -210,7 +209,7 @@ class MongoDB {
                         return Promise.resolve()
                             .then(() => this.readFromCollection(db, collection, {}) )
                             .then(docs => {
-                                log.info(`Read from ${collection} of ${ db }`);
+                                log.debug(`Read from ${collection} of ${ db }`);
                                 return { collection, docs };
                             })
                             .catch(err => {
@@ -280,7 +279,7 @@ class MongoDB {
                     else {
                         collection.insertMany(docs)
                             .then(result => {
-                                log.info(`Wrote to ${ collectionName } of ${ dbName }`);
+                                log.debug(`Wrote to ${ collectionName } of ${ dbName }`);
                                 resolve();
                             })
                             .catch(err => {
@@ -303,7 +302,6 @@ class MongoDB {
 
                     collection.deleteMany(filter)
                         .then(() => {
-                            log.info(`Deleted docs with ${ filter } in ${ collectionName } for ${ dbName }`);
                             resolve()
                         })
                         .catch(err => {

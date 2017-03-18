@@ -2,7 +2,7 @@ const BackupManager = require('modules/controller/backupManager');
 const object = require('modules/utility/object');
 const constants = require('modules/constants');
 const response = require('modules/helper/response');
-const backupConfigUtil = require('modules/utility/backupConfig');
+const backupUtil = require('modules/utility/backup');
 const MongoDB = require('modules/controller/mongoDB');
 const log = require('modules/utility/logger');
 const backupCons = require('modules/constants/backup');
@@ -19,8 +19,8 @@ class Controller {
         this.localDB = localDB;
     }
 
-    NewBackup(backupConfig, next) {
-        backupConfig.id = backupConfigUtil.getBackUpID(backupConfig);
+    newBackup(backupConfig, next) {
+        backupConfig.id = backupUtil.getBackupID(backupConfig);
 
         if (this.backUpsHash.has(backupConfig.id)) {
             return next(response.error(`Created backup failed: ${ backupConfig.id } has existed`, 409))
@@ -61,16 +61,62 @@ class Controller {
             .then(() => {
                 log.info(`Updated backup config for ${ backupConfig.id }`);
                 const backupManager = object.selfish(new BackupManager(backupDB, this.localDB, backupConfig));
-
-                backupManager.start();
-
                 this.backUpsHash.set(backupConfig.id, backupManager);
-
                 this.getBackupStatus(backupConfig.id, next);
             })
             .catch(err => {
                 next(response.error(err.message));
+            })
+            .finally(() => {
+                backupDB.close();
             });
+    }
+
+    runBackup(backupID, config, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`Can't not start a nonexistent backup`))
+        }
+
+        const backupManager = this.backUpsHash.get(backupID);
+        const backupStatus = backupManager.backupStatus;
+        //Only the Pending and Waiting Backup can be started
+        if(backupStatus != backupCons.status.PENDING &&
+           backupStatus != backupCons.status.WAITING) {
+            return next(response.error(`Backup Failed to start for ${ backupID } is ${ backupManager.backupStatus }`));
+        }
+
+        if(config) {
+            backupManager.updateBackupConfig(config);
+        }else {
+            config = {};
+        }
+
+        const { startTime, interval } = config;
+        const backup = backupManager.start(startTime, interval);
+
+        if(!backup) {
+            return next(response.success(this.getBackupStatus(backupID)))
+        }
+
+        backup
+            .then(() => {
+                console.log('2');
+                const nextBackupTime = backupManager.nextBackUpTime;
+                const result = {
+                    status: backupCons.result.SUCCEED,
+                };
+                (nextBackupTime) && (result.nextBackUpTime = nextBackupTime);
+                next(response.success(result))
+            })
+            .catch(err => {
+                const nextBackupTime = backupManager.nextBackUpTime;
+                const result = {
+                    status: backupCons.result.FAILED,
+                    reason: err.message
+                };
+                (nextBackupTime) && (result.nextBackUpTime = nextBackupTime);
+                next(response.error(result))
+            })
     }
 
     getBackupStatus(backupID, next) {

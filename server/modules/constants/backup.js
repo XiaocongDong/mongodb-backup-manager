@@ -1,8 +1,11 @@
 const backup = {
 
     status: {
+        'PENDING': 'PENDING',
         'WAITING': 'WAITING',
-        'RUNNING': 'RUNNING'
+        'RUNNING': 'RUNNING',
+        'ABORTED': 'ABORTED',
+        'STOP': 'STOP'
     },
 
     result: {
