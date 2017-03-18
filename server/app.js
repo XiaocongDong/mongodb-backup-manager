@@ -17,9 +17,7 @@ const app = express();
 //Routers
 app.use('/', router);
 
-const {server, port, username, password, auth_db} = config.database;
-
-const localDB = object.selfish(new LocalDB(server, port, username, password, auth_db));
+const localDB = object.selfish(new LocalDB(config.database));
 
 localDB.connect()
        .then(() => {

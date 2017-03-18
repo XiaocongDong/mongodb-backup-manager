@@ -16,8 +16,22 @@ backups.get('/status', (req, res, next) => {
 
 backups.post('/run', (req, res, next) => {
     const data = req.body;
-    controller.runBackup(data.id, data.config, next);
+    controller.runBackup(data.id, next);
 });
+
+backups.patch('/:backupID/update', (req, res, next) => {
+    const backupID = req.params.backupID;
+    const updates = req.body;
+
+    controller.updateBackupConfig(backupID, updates, next);
+});
+
+backups.post('/:backupID/stop', (req, res, next) => {
+    const backupID = req.params.backupID;
+
+    controller.stop(backupID, next)
+});
+
 
 backups.delete('/:backupID/databases/:dbName', (req, res, next) => {
     const backupID = req.params.backupID;
@@ -25,5 +39,6 @@ backups.delete('/:backupID/databases/:dbName', (req, res, next) => {
 
     controller.deleteDB(backupID, dbName, next)
 });
+
 
 module.exports = backups;

@@ -7,21 +7,26 @@ const log = require('modules/utility/logger');
 
 class MongoDB {
 
-    constructor(server, port, username, password, auth_db='admin') {
+    constructor({server, port, username, password, authDB='admin'}) {
+        this.db = null;
+        this.dbHash = new Map();
+        this.setConnectionParams({server, port, username, password, authDB});
+    }
+
+    setConnectionParams({server, port, username, password, authDB='admin'}) {
         this.server = server;
         this.port = port;
         this.userName = username;
         this.password = password;
-        this.authDB = auth_db;
+        this.authDB = authDB;
         this.url = databaseUtil.getMongoUri(
             username,
             password,
             server,
             port,
-            auth_db
+            authDB
         );
-        this.db = null;
-        this.dbHash = new Map();
+        return this;
     }
 
     connect() {

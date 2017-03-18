@@ -4,8 +4,8 @@ const databaseConfig = require('modules/config').database;
 
 class LocalDB extends MongoDB {
 
-    constructor(server, port, username, password, auth_db='admin') {
-        super(server, port, username, password, auth_db);
+    constructor({server, port, username, password, authDB='admin'}) {
+        super({ server, port, username, password, authDB });
         this.backupConfigDBName = databaseConfig.backup_config_db || 'backup_config';
         this.configCollectionName = "configurations";
         this.logsCollectionName = "logs";
@@ -24,7 +24,7 @@ class LocalDB extends MongoDB {
         return this.readFromCollection(this.backupConfigDBName, this.logsCollectionName, { id: backupID });
     }
 
-    updateBackUpConfig(backUpConfig) {
+    updateBackupConfig(backUpConfig) {
         return this.updateDocInCollection(this.backupConfigDBName, this.configCollectionName, backUpConfig)
     }
 
