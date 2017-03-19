@@ -10,6 +10,7 @@ class MongoDB {
     constructor({server, port, username, password, authDB='admin'}) {
         this.db = null;
         this.dbHash = new Map();
+        this.connections = 0;
         this.setConnectionParams({server, port, username, password, authDB});
     }
 
@@ -32,6 +33,8 @@ class MongoDB {
     connect() {
         return Promise.resolve()
             .then(() => {
+                this.connections++;
+
                 if(this.db) {
                     return;
                 }
@@ -51,6 +54,13 @@ class MongoDB {
     close() {
         return Promise.resolve()
             .then(() => {
+                this.connections--;
+
+                if(this.connections > 0) {
+                    log.debug(`Some activities are still running, can't close the mongo connection`);
+                    return;
+                }
+
                 if (this.db == null) {
                     log.info(`${ this.url } is not connected`);
                     return;
@@ -145,7 +155,7 @@ class MongoDB {
                     .map(({ name }) => name)
             })
             .catch(err => {
-                log.error(`Failed to get all available backup information for ${ err.message }`)
+                log.error(`Failed to get all ${ dbName } collections for ${ err.message }`);
                 throw err;
             });
     }
@@ -321,23 +331,18 @@ class MongoDB {
             });
     }
 
+    deleteCollections(dbName, collectionNames) {
+        return Promise.all(collectionNames.map(collectionName => {
+            return this.getDBByName(dbName).dropCollection(collectionName);
+        }))
+    }
+
     getDBByName(dbName) {
         if(!this.dbHash.has(dbName)) {
             this.dbHash.set(dbName, this.db.db(dbName));
         }
 
         return this.dbHash.get(dbName);
-    }
-
-    closeDBByName(dbName) {
-        return Promise.resolve()
-            .then(()=> {
-                if(!this.dbHash.has(dbName)) {
-                    throw Error(`Can't close the non-connected ${ dbName }`);
-                }
-
-                return this.dbHash.get(dbName).close();
-            })
     }
 }
 

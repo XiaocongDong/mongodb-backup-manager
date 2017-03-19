@@ -103,7 +103,7 @@ class Controller {
 
     updateBackupConfig(backupID, updates, next) {
         if(!this.backUpsHash.has(backupID)) {
-            return next(response.error(`Can't not update a nonexistent backup`))
+            return next(response.error(`Can't not update a nonexistent backup`, 404))
         }
 
         const backupManager = this.backUpsHash.get(backupID);
@@ -174,14 +174,41 @@ class Controller {
         }
 
         this.backUpsHash.get(backupID)
-            .deleteDB(dbName)
+            .deleteCopyDB(dbName)
             .then(() => next(response.success(`Successfully deleted ${ dbName }`)))
             .catch(err => next(response.error(error.message)));
     }
 
+    deleteCollectionsInBackupDB(backupID, collections, next) {
+
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`backupID ${ backupID } doesn't exist`));
+        }
+
+        this.backUpsHash.get(backupID)
+            .deleteCollections(collections)
+            .then(() => {
+                next(response.success(`Deleted ${ collections } in ${ backupID }`))
+            })
+            .catch(err => {
+                next(response.error(`Failed to deleted ${ collections } in ${ backupID } for ${ err.message }`));
+            })
+    }
+
+    deleteCollectionsInLocalDB(dbName, collection, next) {
+        return this.localDB.deleteCollections(dbName, collection)
+            .then(() => {
+                next(response.success(`Deleted ${ collection } of ${ dbName } in ${ this.localDB.server }`))
+            })
+            .catch(err => {
+                next(response.error(`Failed to delete ${ collection } of ${ dbName } in ${ this.localDB.server } for ${ err.message }`));
+            })
+    }
+
     getAvailableDBsCollections(mongoParams, next) {
         const { server, port, username, password, authDB } = mongoParams;
-        const mongoDB = object.selfish(new MongoDB(server, port, username, password, authDB));
+        console.log(server, port);
+        const mongoDB = object.selfish(new MongoDB({server, port, username, password, authDB}));
 
         mongoDB.connect()
             .catch(err => {
@@ -197,6 +224,57 @@ class Controller {
                 mongoDB.close();
                 next(response.error(err.message, 400));
                 throw err;
+            })
+    }
+
+    getCollectionsInBackupDB(backupID, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`backupID ${ backupID } doesn't exist`));
+        }
+
+        this.backUpsHash.get(backupID)
+            .getCollectionsInBackupDB()
+            .then(collections => {
+                next(response.success(collections));
+            })
+            .catch(err => {
+                next(response.error(`${ err.message }`));
+            })
+    }
+
+    getCollectionDataFromLocalDB(dbName, collectionName, next) {
+        console.log(`read from local with ${ dbName } and ${ collectionName }`);
+        this.localDB.readFromCollection(dbName, collectionName, {})
+            .then(docs => {
+                next(response.success(docs))
+            })
+            .catch(err => {
+                next(response.error(`Failed to get docs from ${ collectionName } of ${ dbName } for ${ err.message }`));
+            })
+    }
+
+    getCollectionDataFromBackupDB(backupID, collectionName, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`backupID ${ backupID } doesn't exist`));
+        }
+
+        this.backUpsHash.get(backupID)
+            .getDocsFromCollection(collectionName)
+            .then(docs => {
+                next(response.success(docs))
+            })
+            .catch(err => {
+                next(response.error(`Failed to read for ${ err.message }`));
+            })
+    }
+
+    getAllBackupConfigs(next) {
+        this.localDB.getBackupConfigs()
+            .then(backupConfigs => {
+                next(response.success(backupConfigs))
+            })
+            .catch(err => {
+                next(response.error(`Failed to get all the backup configs for ${ err.message }`))
             })
     }
 
@@ -228,6 +306,7 @@ class Controller {
                 backupConfigs.map(backupConfig => {
                     log.info(`Restarted ${ backupConfig.id } from ${ this.localDB.server } ${ this.localDB.configCollectionName }`);
                     const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig));
+                    log.debug(`Added ${ backupConfig.id } to the backup controller`);
                     this.backUpsHash.set(backupConfig.id, backupManager);
                     backupManager.deleteExtraCopyDBs();
                     backupManager.deleteOverdueCopyDBs();

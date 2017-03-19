@@ -14,36 +14,41 @@ backups.get('/status', (req, res, next) => {
     controller.getBackupStatus(backupID, next);
 });
 
+backups.get('/configs', (req, res, next) => {
+    controller.getAllBackupConfigs(next);
+});
+
 backups.post('/run', (req, res, next) => {
     const data = req.body;
     controller.runBackup(data.id, next);
 });
 
-backups.patch('/:backupID/update', (req, res, next) => {
-    const backupID = req.params.backupID;
-    const updates = req.body;
+backups.patch('/update', (req, res, next) => {
+    const backupID = req.body.id;
+    const updates = req.body.updates;
 
     controller.updateBackupConfig(backupID, updates, next);
 });
 
-backups.post('/:backupID/stop', (req, res, next) => {
-    const backupID = req.params.backupID;
+backups.post('/stop', (req, res, next) => {
+    const backupID = req.body.id;
+    console.log(req.body);
 
     controller.stop(backupID, next)
 });
 
-backups.post('/:backupID/resume', (req, res, next) => {
-    const backupID = req.params.backupID;
+backups.post('/resume', (req, res, next) => {
+    const backupID = req.body.id;
 
     controller.resume(backupID, next);
 });
+
 
 backups.delete('/:backupID/databases/:dbName', (req, res, next) => {
     const backupID = req.params.backupID;
     const dbName = req.params.dbName;
 
-    controller.deleteDB(backupID, dbName, next)
+    controller.deleteCopyDB(backupID, dbName, next)
 });
-
 
 module.exports = backups;

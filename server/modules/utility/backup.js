@@ -51,23 +51,27 @@ const backupUtil = {
         return `${ backupConfig.db }@${ backupConfig.server }`;
     },
 
-    getFirstTimeout: (startTime) => {
+    getStartTime: (backupConfig) => {
+        let { startTime } = backupConfig;
+
+        if(!startTime) {
+            return null;
+        }
+
         const now = new Date();
-        startTime = Date.parse(startTime);
-        let firstTimeout = 0;
+        startTime = new Date(Date.parse(startTime));
         if(startTime) {
             // if the original startTime has past, change it to today
             if(startTime < now) {
-                startTime = new Date(now.getFullYear(), now.getMonth(), now.getDay(),
-                    startTime.getHours(), startTime.getMinutes(), startTime.getSeconds, startTime.getMilliseconds());
+                startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+                    startTime.getHours(), startTime.getMinutes(), startTime.getSeconds(), startTime.getMilliseconds());
                 if(startTime < now ) {
                     // next Day
                     startTime = new Date(startTime.valueOf() + 24*60*60*1000);
                 }
             }
-            firstTimeout = startTime - now
         }
-        return firstTimeout;
+        return startTime;
     }
 };
 
