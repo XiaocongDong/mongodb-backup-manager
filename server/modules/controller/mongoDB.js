@@ -52,8 +52,8 @@ class MongoDB {
         return Promise.resolve()
             .then(() => {
                 if (this.db == null) {
-                    log.error('close failed: database is not connected');
-                    throw new Error(`Close failed: ${ this.url } is not connected`);
+                    log.info(`${ this.url } is not connected`);
+                    return;
                 }
 
                 return this.db.close()
@@ -173,17 +173,14 @@ class MongoDB {
             this.getDBByName(dbName).collection(collectionName, {strict: false},
                 (err, collection) => {
                     if(err) {
-                        log.error(`Failed to update ${ doc.id } in ${ collectionName }`);
                         return reject(err);
                     }
 
                     collection.updateOne({ id: doc.id }, doc, { upsert: true, w: 1 })
                         .then(result => {
-                            log.debug(`Updated ${doc.id} in ${ collectionName }`);
                             resolve();
                         })
                         .catch(err => {
-                            log.error(`Failed to update ${ doc.id } of ${ collectionName } for ${ err.message }`);
                             reject(err);
                         })
             } )

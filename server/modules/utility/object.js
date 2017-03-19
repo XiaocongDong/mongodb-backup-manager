@@ -29,4 +29,31 @@ object.deployPromiseFinally = () => {
     };
 };
 
+object.sortByTime = (objects, key, reverse=false) => {
+    return objects.sort(( a, b) => {
+        let dateA = new Date(a[key]);
+        let dateB = new Date(b[key]);
+        let compare = (dateA > dateB)? 1 : ((dateA < dateB)?-1: 0);
+        return reverse? (compare * -1): compare;
+    })
+};
+
 module.exports = object;
+
+// let a = [
+//     {
+//         "createdTime" : "3/18/2017, 1:50:26 PM",
+//         "deletedTime" : ""
+//     },
+//     {
+//         "createdTime" : "3/18/2017, 1:50:24 PM",
+//         "deletedTime" : ""
+//     },
+//     {
+//         "createdTime" : "3/18/2017, 1:50:27 PM",
+//         "deletedTime" : ""
+//     },
+// ];
+//
+// let b = object.sortByTime(a, "createdTime", true);
+// console.log(b);

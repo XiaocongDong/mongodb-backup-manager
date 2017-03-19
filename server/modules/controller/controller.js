@@ -27,7 +27,6 @@ class Controller {
         }
 
         const backupDB = object.selfish(new MongoDB(backupConfig));
-
         const { server, username, authDB, db, collections } = backupConfig;
 
         backupDB.connect()
@@ -60,12 +59,14 @@ class Controller {
                 return this.localDB.updateBackupConfig(backupConfig)
             })
             .then(() => {
-                log.info(`Updated backup config for ${ backupConfig.id }`);
+                log.info(`Created backup config for ${ backupConfig.id }`);
+                backupConfig.status = backupCons.status.PENDING;
                 const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig));
                 this.backUpsHash.set(backupConfig.id, backupManager);
                 this.getBackupStatus(backupConfig.id, next);
             })
             .catch(err => {
+                console.log(err);
                 next(response.error(err.message));
             })
             .finally(() => {
@@ -122,8 +123,32 @@ class Controller {
         }
 
         const backupManager = this.backUpsHash.get(backupID);
-        backupManager.stop();
-        next(response.success(`Stopped ${ backupID }`));
+        backupManager.stop()
+            .then(() => {
+                next(response.success(`Stopped ${ backupID }`));
+            })
+            .catch(err => {
+                next(response.error(`Failed to stop ${ backupID } for ${ err.message }`));
+            })
+    }
+
+    resume(backupID, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`${ backupID } doesn't exist`, 404));
+        }
+
+        const backupManager = this.backUpsHash.get(backupID);
+        if(backupManager.backupStatus != backupCons.status.STOP) {
+            return next(response.error(`Failed to resume backup for ${ backupID } for current status is ${ backupManager.backupStatus}`))
+        }
+        backupManager.updateBackupStatus(backupCons.status.PENDING)
+            .then(() => {
+                backupManager.start();
+                next(response.success(`Resumed backup for ${ backupID } successfully`));
+            })
+            .catch(err => {
+                next(response.error(`Failed to resume backup for ${ err.message }`));
+            })
     }
 
     getBackupStatus(backupID, next) {
@@ -189,6 +214,25 @@ class Controller {
         this.localDB.getBackupLogs(backupID)
             .then(logs => next(response.success(logs)))
             .catch(err => next(response.error(err.message)))
+    }
+
+    // when the whole backup system restart, need to read all the
+    // backup config from the local mongoDB and restart the previous
+    // backups
+    restart() {
+        this.localDB.getBackupConfigs()
+            .then(backupConfigs => {
+                if(backupConfigs.length == 0){
+                    return;
+                }
+                backupConfigs.map(backupConfig => {
+                    log.info(`Restarted ${ backupConfig.id } from ${ this.localDB.server } ${ this.localDB.configCollectionName }`);
+                    const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig));
+                    this.backUpsHash.set(backupConfig.id, backupManager);
+                    backupManager.deleteExtraCopyDBs();
+                    backupManager.deleteOverdueCopyDBs();
+                })
+            })
     }
 }
 

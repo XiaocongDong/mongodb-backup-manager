@@ -32,6 +32,11 @@ backups.post('/:backupID/stop', (req, res, next) => {
     controller.stop(backupID, next)
 });
 
+backups.post('/:backupID/resume', (req, res, next) => {
+    const backupID = req.params.backupID;
+
+    controller.resume(backupID, next);
+});
 
 backups.delete('/:backupID/databases/:dbName', (req, res, next) => {
     const backupID = req.params.backupID;

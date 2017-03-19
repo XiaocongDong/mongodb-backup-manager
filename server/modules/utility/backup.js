@@ -49,8 +49,26 @@ const backupUtil = {
 
     getBackupID: (backupConfig) => {
         return `${ backupConfig.db }@${ backupConfig.server }`;
-    }
+    },
 
+    getFirstTimeout: (startTime) => {
+        const now = new Date();
+        startTime = Date.parse(startTime);
+        let firstTimeout = 0;
+        if(startTime) {
+            // if the original startTime has past, change it to today
+            if(startTime < now) {
+                startTime = new Date(now.getFullYear(), now.getMonth(), now.getDay(),
+                    startTime.getHours(), startTime.getMinutes(), startTime.getSeconds, startTime.getMilliseconds());
+                if(startTime < now ) {
+                    // next Day
+                    startTime = new Date(startTime.valueOf() + 24*60*60*1000);
+                }
+            }
+            firstTimeout = startTime - now
+        }
+        return firstTimeout;
+    }
 };
 
 module.exports = backupUtil;

@@ -27,6 +27,7 @@ localDB.connect()
                    log.error(`Failed to start the server for ${ err.message }`)
                }else {
                    log.info(`Listening at ${config.server.port}`);
+                   controller.restart();
                }
            });
        })
