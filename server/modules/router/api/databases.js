@@ -1,8 +1,6 @@
 const express = require('express');
-
 const response = require('modules/helper/response');
 const controller = require('modules/controller/controller');
-
 const databases = express.Router();
 
 

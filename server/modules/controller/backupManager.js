@@ -198,23 +198,34 @@ class BackupManager {
         })
     }
 
-    getCollectionsInBackupDB() {
+    getCollections(dbName) {
+        if(dbName != this.backupConfig.db) {
+            return this.localDB.getCollectionNamesWithDB(dbName)
+                .then(collections => {
+                    return {db: dbName, collections};
+                })
+        }
+
         return this.backupDB.connect()
             .then(() => {
                 return this.backupDB.getCollectionNamesWithDB(this.backupConfig.db);
             })
             .then(collections => {
-                return {db: this.backupConfig.db, collections};
+                return {db: dbName, collections};
             })
             .finally(() => {
                 this.backupDB.close();
             })
     }
 
-    getDocsFromCollection(collectionName) {
+    getDataFromCollection(dbName, collectionName, filter) {
+        if(dbName != this.backupConfig.db) {
+            return this.localDB.readFromCollection(dbName, collectionName, filter)
+        }
+
         return this.backupDB.connect()
             .then(() => {
-                return this.backupDB.readFromCollection(this.backupConfig.db, collectionName, {});
+                return this.backupDB.readFromCollection(dbName, collectionName, filter);
             })
             .finally(() => {
                 this.backupDB.close();
@@ -302,19 +313,22 @@ class BackupManager {
             });
     }
 
-    deleteCollections(collection) {
-        log.info(`Started to deleted ${ collection } of ${ this.backupConfig.db }`);
+    deleteCollections(dbName, collections) {
+        if(dbName != this.backupConfig.db) {
+            return this.localDB.deleteCollections(dbName, collections)
+                .then(() => {
+                    this.addLog(`Deleted ${ collections } of ${ dbName }`);
+                })
+                .catch(err => {
+                    this.addLog(`Failed to delete ${ collections } of ${ dbName } for ${ err.message } `, 'error');
+                    throw err;
+                })
+        }
+
         return this.backupDB.connect()
             .then(() => {
                 return this.backupDB
-                    .deleteCollections(this.backupConfig.db, collection)
-            })
-            .then(() => {
-                this.addLog(`Deleted ${ collection } of ${ this.backupConfig.db }`);
-            })
-            .catch(err => {
-                this.addLog(`Failed to delete ${ collection } of ${ this.backupConfig.db } for ${ err.message } `, 'error');
-                throw err;
+                    .deleteCollections(this.backupConfig.db, collections)
             })
             .finally(() => {
                 this.backupDB.close();

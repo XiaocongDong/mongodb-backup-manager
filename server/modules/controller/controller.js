@@ -179,29 +179,19 @@ class Controller {
             .catch(err => next(response.error(error.message)));
     }
 
-    deleteCollectionsInBackupDB(backupID, collections, next) {
+    deleteCollections(backupID, dbName, collections, next) {
 
         if(!this.backUpsHash.has(backupID)) {
             return next(response.error(`backupID ${ backupID } doesn't exist`));
         }
 
         this.backUpsHash.get(backupID)
-            .deleteCollections(collections)
+            .deleteCollections(dbName, collections)
             .then(() => {
-                next(response.success(`Deleted ${ collections } in ${ backupID }`))
+                next(response.success(`Deleted ${ collections } of ${ dbName } in ${ backupID }`))
             })
             .catch(err => {
-                next(response.error(`Failed to deleted ${ collections } in ${ backupID } for ${ err.message }`));
-            })
-    }
-
-    deleteCollectionsInLocalDB(dbName, collection, next) {
-        return this.localDB.deleteCollections(dbName, collection)
-            .then(() => {
-                next(response.success(`Deleted ${ collection } of ${ dbName } in ${ this.localDB.server }`))
-            })
-            .catch(err => {
-                next(response.error(`Failed to delete ${ collection } of ${ dbName } in ${ this.localDB.server } for ${ err.message }`));
+                next(response.error(`Failed to deleted ${ collections } in ${ dbName } for ${ err.message }`));
             })
     }
 
@@ -227,13 +217,13 @@ class Controller {
             })
     }
 
-    getCollectionsInBackupDB(backupID, next) {
+    getCollections(backupID, dbName, next) {
         if(!this.backUpsHash.has(backupID)) {
-            return next(response.error(`backupID ${ backupID } doesn't exist`));
+            return next(response.error(`backupID ${ backupID } doesn't exist`, 404));
         }
 
         this.backUpsHash.get(backupID)
-            .getCollectionsInBackupDB()
+            .getCollections(dbName)
             .then(collections => {
                 next(response.success(collections));
             })
@@ -242,29 +232,18 @@ class Controller {
             })
     }
 
-    getCollectionDataFromLocalDB(dbName, collectionName, next) {
-        console.log(`read from local with ${ dbName } and ${ collectionName }`);
-        this.localDB.readFromCollection(dbName, collectionName, {})
-            .then(docs => {
-                next(response.success(docs))
-            })
-            .catch(err => {
-                next(response.error(`Failed to get docs from ${ collectionName } of ${ dbName } for ${ err.message }`));
-            })
-    }
-
-    getCollectionDataFromBackupDB(backupID, collectionName, next) {
+    getDataFromCollection(backupID, dbName, collectionName, next) {
         if(!this.backUpsHash.has(backupID)) {
-            return next(response.error(`backupID ${ backupID } doesn't exist`));
+            return next(response.error(`backupID ${ backupID } doesn't exist`, 404));
         }
 
         this.backUpsHash.get(backupID)
-            .getDocsFromCollection(collectionName)
+            .getDataFromCollection(dbName, collectionName, {})
             .then(docs => {
                 next(response.success(docs))
             })
             .catch(err => {
-                next(response.error(`Failed to read for ${ err.message }`));
+                next(response.error(`Failed to read data from ${ collectionName } of ${ dbName } for ${ err.message }`));
             })
     }
 
