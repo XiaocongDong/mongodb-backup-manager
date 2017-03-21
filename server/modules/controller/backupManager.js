@@ -32,7 +32,6 @@ class BackupManager {
             }
 
             this.addLog(`Started ${ this.backupConfig.id }`);
-
             const startTime = backupUtil.getStartTime(this.backupConfig);
             const nextBackUpTime = this.backupConfig.startTime;
 
@@ -358,11 +357,10 @@ class BackupManager {
                     }))
                 })
                 .then(() => {
-                    log.info(`Deleted all the extra backup Copy`);
                     resolve();
                 })
                 .catch(err => {
-                    log.error(`Failed to deleted backup copies for ${ err.message }`);
+                    this.addLog(`Failed to deleted extra backup copies for ${ err.message }`, 'error');
                     reject(err);
                 })
         })
@@ -381,7 +379,7 @@ class BackupManager {
                         const deletedDate = new Date(deletedTime);
                         const now = new Date();
                         if(deletedDate <= now) {
-                            log.info(`${ dbName } is overdue`);
+                            this.addLog(`${ dbName } is overdue`);
                             return this.deleteCopyDB(dbName);
                         }else {
                             const deleteDBTask = () => {
