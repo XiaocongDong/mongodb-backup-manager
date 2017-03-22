@@ -1,5 +1,6 @@
 require('app-module-path').addPath(__dirname);
 
+const path = require('path');
 const express = require('express');
 const router = require('modules/router');
 const config = require('modules/config');
@@ -7,7 +8,6 @@ const object = require('modules/utility/object');
 const LocalDB = require('modules/controller/localDB');
 const controller = require('modules/controller/controller');
 const log = require('modules/utility/logger');
-
 
 object.deployPromiseFinally();
 
