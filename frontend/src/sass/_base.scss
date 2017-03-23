@@ -1,0 +1,31 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  font-family: 'Sans-serif';
+  font-weight: 300;
+  color: #ECE9E9;
+}
+
+$black: #191f28;
+$white: #ECE9E9;
+
+$header-height: 60px;
+$sidebar-width: 240px;
+
+
+@mixin user-select($value) {
+  -webkit-user-select: $value;
+  -moz-user-select: $value;
+  -ms-user-select: $value;
+  user-select: $value;
+}
+
+.link {
+  text-decoration: none;
+  color: $white;
+
+  &:hover{
+    color: darken($white, 20%);
+  }
+}

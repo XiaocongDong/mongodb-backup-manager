@@ -2,6 +2,8 @@ require('app-module-path').addPath(__dirname);
 
 const path = require('path');
 const express = require('express');
+
+
 const router = require('modules/router');
 const config = require('modules/config');
 const object = require('modules/utility/object');
@@ -12,7 +14,6 @@ const log = require('modules/utility/logger');
 object.deployPromiseFinally();
 
 const app = express();
-
 
 //Routers
 app.use('/', router);
