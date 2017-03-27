@@ -12,8 +12,8 @@ export default class Header extends Component {
                     <div className="text">MongoBackup Manager</div>
                 </div>
                 <div className="navigation">
-                    <div><Link to="/dashboard" className="link">Dashboard</Link></div>
-                    <div><Link to="/newConfig" className="link">New Backup</Link></div>
+                    <Link to="/" className="link"><div className="item">Dashboard</div></Link>
+                    <Link to="/newConfig" className="link"><div className="item">New Backup</div></Link>
                 </div>
             </div>
         )

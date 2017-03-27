@@ -1,0 +1,68 @@
+.mongo-backup-manager {
+
+    .new-configuration-form {
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+
+         border: 1px solid #eee;
+         border-radius: 10px;
+         background: #fff;
+
+         width: 70%;
+         height: 80%;
+         color: $black;
+
+         padding: 0 50px;
+
+         .progress {
+              padding: 20px;
+              .step {
+                 text-align: center;
+                 padding-bottom: 20px;
+              }
+
+              .bar-wrapper {
+                    background-color: darken($white, 20%);
+                    border-radius: 4px;
+                    width: 70%;
+                    height: 3px;
+                    margin: auto;
+
+                   .bar {
+                      height: 3px;
+                      background-color: $blue;
+                      transition: all .5s ease-in;
+                   }
+              }
+         }
+
+         .form-title {
+             text-align: center;
+             font-weight: 600;
+             font-size: 1.8rem;
+             color: #777777;
+         }
+
+          .form-content {
+                margin: auto;
+
+                > * {
+                  display: block;
+                }
+
+                label {
+                   padding: 15px 0 10px 0;
+                   font-size: 1.3rem;
+                   font-weight: 600;
+                }
+
+                input {
+                   width: 100%;
+                   padding: 8px;
+                   font-size: 1.2rem;
+                }
+          }
+    }
+}

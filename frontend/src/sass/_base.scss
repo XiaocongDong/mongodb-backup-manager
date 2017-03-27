@@ -7,7 +7,12 @@ html, body {
   color: #ECE9E9;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 $black: #191f28;
+$blue: rgba(24, 109, 218, 0.8);
 $white: #ECE9E9;
 
 $header-height: 60px;
@@ -21,11 +26,52 @@ $sidebar-width: 240px;
   user-select: $value;
 }
 
+
+
 .link {
   text-decoration: none;
   color: $white;
+}
 
-  &:hover{
-    color: darken($white, 20%);
+.button {
+  display: inline-block;
+  text-align: center;
+  border-radius: 3px;
+  transition: all .4s ease;
+  @include user-select(none);
+
+  &.yes {
+      background: $blue;
+      color: white;
+
+      &:hover {
+        background: darken($blue,5%);
+      }
+  }
+
+  &.no {
+      background: #eee;
+      color: #888;
+
+      &:hover {
+        background: #ddd;
+      }
+  }
+
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.big {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+  }
+
+  &.primary {
+     border: 1px solid #ddd;
+     background: $white;
+     font-size: 1rem;
+     padding: 4px 10px;
   }
 }
