@@ -8,6 +8,7 @@ import Dashboard from './ui/dashboard/dashboard';
 import NewConfigurationForm from './ui/backup/config/new-configuration';
 
 import '../sass/style.scss';
+import 'react-select/dist/react-select.css';
 
 const PlaceHolder = ({ children, location }) => {
      return (

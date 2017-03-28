@@ -1,0 +1,12 @@
+.configuration-form {
+    width: 600px;
+
+    .content {
+        .select-all, .info {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 1rem;
+            color: #04b1f2;
+        }
+    }
+}

@@ -1,27 +1,19 @@
 .mongo-backup-manager {
 
-    .new-configuration-form {
-         position: absolute;
-         top: 50%;
-         left: 50%;
-         transform: translate(-50%, -50%);
-
-         border: 1px solid #eee;
-         border-radius: 10px;
-         background: #fff;
-
-         width: 70%;
-         height: 80%;
+    .container {
+         //position: absolute;
+         //top: 50%;
+         //left: 50%;
+         //transform: translate(-50%, -50%);
          color: $black;
 
-         padding: 0 50px;
+         > * {
+            margin: auto;
+         }
 
          .progress {
-              padding: 20px;
-              .step {
-                 text-align: center;
-                 padding-bottom: 20px;
-              }
+              padding: 40px;
+              width: 600px;
 
               .bar-wrapper {
                     background-color: darken($white, 20%);
@@ -38,31 +30,66 @@
               }
          }
 
-         .form-title {
-             text-align: center;
-             font-weight: 600;
-             font-size: 1.8rem;
-             color: #777777;
+         .form {
+             border: 1px solid #eee;
+             border-radius: 10px;
+             background: #fff;
+             padding: 20px 50px 0 50px;
+             box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+
+             .title {
+                 text-align: center;
+                 font-weight: 600;
+                 font-size: 1.8rem;
+                 color: #777777;
+             }
+
+                 .content {
+                     margin: auto;
+
+                     > * {
+                        display: block;
+                     }
+
+                     label {
+                         padding: 15px 0 10px 0;
+                         font-size: 1.3rem;
+                         font-weight: 600;
+                     }
+
+                     .input-field {
+                         width: 100%;
+                         padding: 8px 20px;
+                         font-size: 1.2rem;
+                         border: 1px solid #eee;
+                         //background: rgba(238, 238, 238, 0.9);
+                         //border-radius: 20px;
+                         transition: all .4s ease;
+
+                         &:focus {
+                            outline: none;
+                            //box-shadow: 0 0 15px 1px;
+                            box-shadow: 0 0 2px 1px $blue;
+                         }
+                     }
+                 }
+             .footer {
+                 .button-left, .button-right, .button-middle {
+                     width: 135px;
+                     margin-top: 30px;
+                     margin-bottom: 30px;
+                 }
+
+                 .button-right {
+                     float: right;
+                 }
+
+                 .button-middle {
+                     display: block;
+                     margin-left: auto;
+                     margin-right: auto;
+                 }
+             }
          }
-
-          .form-content {
-                margin: auto;
-
-                > * {
-                  display: block;
-                }
-
-                label {
-                   padding: 15px 0 10px 0;
-                   font-size: 1.3rem;
-                   font-weight: 600;
-                }
-
-                input {
-                   width: 100%;
-                   padding: 8px;
-                   font-size: 1.2rem;
-                }
-          }
     }
 }
