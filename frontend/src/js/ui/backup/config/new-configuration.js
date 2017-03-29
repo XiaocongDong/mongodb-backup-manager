@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
 import CredentialForm from './credential-form';
 import BackupConfiguration from './configuration-form';
@@ -93,33 +94,48 @@ export default class NewConfiguration extends Component {
 
     render() {
         const step = this.state.step;
-        console.log(step);
+        const totalStep = this.totalStep;
+
+        const stagesDOM = [];
+        for(let i = 0; i < totalStep; i++) {
+            stagesDOM.push(<div className={ "step" + (i == step?" current": (i > step?" pending": " past")) } key={ i }>{ i < step? '': i + 1 }</div>)
+        }
 
         const formsDOM = [];
-        formsDOM.push(<CredentialForm authenticate = { this.authenticate }
+        const credentialForm = <CredentialForm authenticate = { this.authenticate }
                                       backupConfig = { this.backupConfiguration }
                                       saveData = { this.saveData }
-        />);
+            />;
+        formsDOM.push(credentialForm);
 
-        formsDOM.push(<BackupConfiguration onClickBack = { this.handleGoBack }
-                                           onClickNext = { this.handleNext }
-                                           availableDBsCollections = { this.availableDBsCollections}
-                                           backupConfig = { this.backupConfiguration }
-                                           userSelections = { this.userSelections }
-                                           saveData = { this.saveData }
-        />);
-        formsDOM.push(<Review onClickBack = { this.handleGoBack }
-                              onClickSubmit = { this.handleSubmit } />);
+        const backupConfigForm = <BackupConfiguration onClickBack = { this.handleGoBack }
+                                                      onClickNext = { this.handleNext }
+                                                      availableDBsCollections = { this.availableDBsCollections}
+                                                      backupConfig = { this.backupConfiguration }
+                                                      userSelections = { this.userSelections }
+                                                      saveData = { this.saveData }
+        />;
+        formsDOM.push(backupConfigForm);
+
+        const reviewForm = <Review onClickBack = { this.handleGoBack }
+                                   onClickSubmit = { this.handleSubmit } />;
+        formsDOM.push(reviewForm);
 
         return (
             <div className="container">
+                <div className="header">
+                    <div className="title">Create a New Backup</div>
+                </div>
                 <div className="progress">
+                    <div className="stages">
+                        { stagesDOM }
+                    </div>
                     <div className="bar-wrapper">
-                        <div className="bar" style={ { width: ((step +1)/this.totalStep) * 100 + '%' } }></div>
+                        <div className="bar" style={ {width: (step)/(totalStep - 1) * 100 + "%" } }></div>
                     </div>
                 </div>
                 { formsDOM[step] }
-            </div>
+\            </div>
         )
     }
 }

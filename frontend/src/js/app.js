@@ -1,5 +1,5 @@
 import React, { Componet } from 'react';
-import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import ReactDOM from 'react-dom';
 
 import Header from './ui/header';
@@ -23,7 +23,7 @@ const PlaceHolder = ({ children, location }) => {
 
 const App = () => {
     return (
-        <Router history={ browserHistory }>
+        <Router history={ hashHistory }>
             <Route path='/' component={ PlaceHolder }>
                 <IndexRoute component={ Dashboard }/>
                 <Route path='/newConfig' component={ NewConfigurationForm }/>
