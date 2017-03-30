@@ -19,6 +19,7 @@ export default class NewConfiguration extends Component {
         };
         this.userSelections = {
             collectionsDisabled: false,
+            dateTimeDisabled: false,
             backupNow: false
         };
         this.availableDBsCollections = [
@@ -135,7 +136,7 @@ export default class NewConfiguration extends Component {
                     </div>
                 </div>
                 { formsDOM[step] }
-\            </div>
+            </div>
         )
     }
 }

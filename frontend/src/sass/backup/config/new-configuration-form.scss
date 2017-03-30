@@ -2,23 +2,30 @@
 
     .container {
          position: absolute;
-         top: 50%;
+         top: 6%;
          left: 50%;
-         transform: translate(-50%, -50%);
+         transform: translateX(-50%);
          width: 60%;
-         height: 90%;
+         //height: 90%;
          color: $black;
 
          box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
          border: 1px solid #eee;
          background: #fff;
          padding: 10px 20px;
+         margin: 0px auto;
+
+         display: flex;
+         flex-direction: column;
+         justify-content: space-between;
 
          > * {
               margin: auto;
          }
 
          .header {
+            //height: 15%;
+            //background: #BC7A00;
             text-align: center;
 
             .title {
@@ -29,6 +36,8 @@
          }
 
          .progress {
+               //height: 15%;
+               //background: #00A000;
                width: 50%;
 
                .stages {
@@ -71,6 +80,9 @@
          }
 
          .form {
+             width: 100%;
+             //height: 80%;
+             //background: #7D9029;
              padding: 20px 50px 0 50px;
 
              .title {
@@ -78,52 +90,53 @@
                  font-weight: 600;
                  font-size: 1.8rem;
                  color: #777777;
+                 //height: 10%;
              }
 
-                 .content {
-                     margin: auto;
+             .content {
+                 //height: 70%;
+                 //overflow: auto;
+                 margin: auto;
 
-                     > * {
-                        display: block;
-                     }
-
-                     label {
-                         padding: 15px 0 10px 0;
-                         font-size: 1.3rem;
-                         font-weight: 600;
-                     }
-
-                     .input-field {
-                         width: 100%;
-                         padding: 8px 20px;
-                         font-size: 1.2rem;
-                         border: 1px solid #eee;
-                         //background: rgba(238, 238, 238, 0.9);
-                         //border-radius: 20px;
-                         transition: all .4s ease;
-
-                         &:focus {
-                            outline: none;
-                            //box-shadow: 0 0 15px 1px;
-                            box-shadow: 0 0 2px 1px $blue;
-                         }
-                     }
+                 > * {
+                   display: block;
                  }
+
+                 label {
+                   margin: 10px 0 10px 0;
+                   font-size: 1.3rem;
+                   font-weight: 600;
+                 }
+
+                 .input-field {
+                   width: 100%;
+                   padding: 8px 20px;
+                   font-size: 1.2rem;
+                 }
+             }
+
              .footer {
+                 width: 100%;
+                 //height: 10%;
+
                  .button-left, .button-right, .button-middle {
                      width: 135px;
                      margin-top: 30px;
                      margin-bottom: 30px;
                  }
 
+                 .button-left {
+                    float: left;
+                 }
+
                  .button-right {
-                     float: right;
+                    float: right;
                  }
 
                  .button-middle {
-                     display: block;
-                     margin-left: auto;
-                     margin-right: auto;
+                   display: block;
+                   margin-left: auto;
+                   margin-right: auto;
                  }
              }
          }

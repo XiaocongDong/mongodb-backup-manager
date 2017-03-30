@@ -25,6 +25,7 @@
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-addons-update": "^15.4.2",
+    "react-datetime": "^2.8.8",
     "react-dom": "^15.4.2",
     "react-router": "^4.0.0",
     "react-select": "^1.0.0-rc.3",

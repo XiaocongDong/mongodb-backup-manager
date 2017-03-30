@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import update from 'react-addons-update';
-import moment from 'moment';
-import InputMoment from 'input-moment';
+import DateTime from 'react-datetime';
 
 
 export default class ConfigurationForm extends Component {
@@ -13,10 +12,14 @@ export default class ConfigurationForm extends Component {
             config: {
                 db: props.backupConfig.db,
                 collections: props.backupConfig.collections,
+                startTime: props.backupConfig.startTime,
+                interval: props.backupConfig.interval,
+                maxBackupNumber: props.backupConfig.maxBackupNumber,
+                duration: props.backupConfig.duration
             },
             userSelections: {
                 collectionsDisabled: props.userSelections.collectionsDisabled,
-                dateTimePickerOpen: false
+                dateTimeDisabled: props.userSelections.dateTimeDisabled
             }
         };
         this.getAvailableCollectionsWithDB = this.getAvailableCollectionsWithDB.bind(this);
@@ -41,7 +44,6 @@ export default class ConfigurationForm extends Component {
         const newState = update(this.state, {
             config: { $set: { db: db.value, collections: null }},
         });
-        console.log(newState);
         this.setState(newState);
     }
 
@@ -69,7 +71,7 @@ export default class ConfigurationForm extends Component {
         this.setState(newState);
     }
 
-    handleBackupAllTheCollectionsAnyTime(event) {
+    handleCollectionsChecked(event) {
         const target = event.target;
         const checked = target.checked;
 
@@ -80,16 +82,23 @@ export default class ConfigurationForm extends Component {
         this.setState(newState);
     }
 
-    handleDateTimeClickOpen() {
+    handleNowChecked(event) {
+        const target = event.target;
+        const checked = target.checked;
+
         const newState = update(this.state, {
-            userSelections: { dateTimePickerOpen: {$set: true}}
+            userSelections: { dateTimeDisabled: {$set: checked} },
+            config: { startTime: { $set: null}}
         });
-        this.setState(newState);
+        this.setState(newState)
     }
 
-    handleDateTimePickerClose() {
+    handleDateTimeSave(time) {
+        if(!time) {
+            return
+        }
         const newState = update(this.state, {
-            userSelections: { dateTimePickerOpen: {$set: false}}
+            config: { startTime: {$set: time.toISOString()}}
         });
         this.setState(newState);
     }
@@ -112,8 +121,8 @@ export default class ConfigurationForm extends Component {
 
     render() {
 
-        const { db, collections } = this.state.config;
-        const { collectionsDisabled, dateTimePickerOpen } = this.state.userSelections;
+        const { db, collections, startTime } = this.state.config;
+        const { collectionsDisabled, dateTimeDisabled } = this.state.userSelections;
 
         const availableDBsCollections = this.props.availableDBsCollections;
 
@@ -146,7 +155,6 @@ export default class ConfigurationForm extends Component {
                                        placeholder= "Select the backup collections"
                                        options = { availableCollectionsOptions }
                                        onChange = { this.handleCollectionsChange.bind(this) }
-                                       disabled = { collectionsDisabled  }
                                />;
 
         return (
@@ -155,25 +163,18 @@ export default class ConfigurationForm extends Component {
                 <div className="content">
                     <label>Backup DataBase</label>
                     { dbsDOM }
-                    <label>Backup Collections<span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[Select all]</span></label>
-                    { collectionsDOM }
-                    <label><input type="checkbox" checked = { collectionsDisabled } onChange = { this.handleBackupAllTheCollectionsAnyTime.bind(this) }/><span className="info">Backup all the collections all the time</span></label>
+                    <label>Backup Collections{( !collectionsDisabled ) && (<span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[Select all]</span>)}</label>
+                    { (!collectionsDisabled) && collectionsDOM }
+                    <label><input type="checkbox" checked = { collectionsDisabled } onChange = { this.handleCollectionsChecked.bind(this) }/><span className="info">Backup all the collections all the time</span></label>
                     <label>Backup StartTime</label>
-                    <input className="input-field"
-                           type="text"
-                           onClick={ this.handleDateTimeClickOpen.bind(this) }
-                           placeholder="Click and select backup start time"/>
-                    { (dateTimePickerOpen) && (
-                        <div className="datetime-wrapper" onClick={ this.handleDateTimePickerClose.bind(this)}>
-                            <InputMoment
-                                moment={ moment() }
-                                onChange={this.handleChange}
-                                onSave={this.handleSave}
-                                prevMonthIcon="ion-ios-arrow-left" // default
-                                nextMonthIcon="ion-ios-arrow-right" // default
-                            />
-                        </div>
-                    )}
+                    <div className="datetime-wrapper">
+                        {(!dateTimeDisabled) && (<DateTime className={ dateTimeDisabled ? "disabled" : "" }
+                                                           defaultValue={ startTime ? new Date(startTime) : "" }
+                                                           open={ false }
+                                                           onBlur={ this.handleDateTimeSave.bind(this) }/>)
+                        }
+                    </div>
+                    <label><input type="checkbox" checked = { dateTimeDisabled } onChange = { this.handleNowChecked.bind(this) }/><span className="info">Backup now</span></label>
                 </div>
                 <div className="footer">
                     <div className="button big no button-left" onClick = { this.handleGoBack.bind(this) }>Go Back</div>
