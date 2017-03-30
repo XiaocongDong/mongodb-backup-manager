@@ -9,22 +9,14 @@ export default class ConfigurationForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            config: {
-                db: props.backupConfig.db,
-                collections: props.backupConfig.collections,
-                startTime: props.backupConfig.startTime,
-                interval: props.backupConfig.interval,
-                maxBackupNumber: props.backupConfig.maxBackupNumber,
-                duration: props.backupConfig.duration
-            },
-            userSelections: {
-                collectionsDisabled: props.userSelections.collectionsDisabled,
-                dateTimeDisabled: props.userSelections.dateTimeDisabled
-            }
+            db: props.backupConfig.db,
+            collections: props.backupConfig.collections,
+            startTime: props.backupConfig.startTime,
+            interval: props.backupConfig.interval,
+            maxBackupNumber: props.backupConfig.maxBackupNumber,
+            duration: props.backupConfig.duration
         };
         this.getAvailableCollectionsWithDB = this.getAvailableCollectionsWithDB.bind(this);
-        this.handleGoBack = this.handleGoBack.bind(this);
-        this.handleNext = this.handleNext.bind(this);
         this.saveData = this.saveData.bind(this);
     }
 
@@ -41,91 +33,73 @@ export default class ConfigurationForm extends Component {
     }
 
     handleDBChange(db) {
-        const newState = update(this.state, {
-            config: { $set: { db: db.value, collections: null }},
+        this.setState({
+            db: db.value,
+            collections: undefined
         });
-        this.setState(newState);
     }
 
     handleCollectionsChange(collections) {
-        const newState = update(this.state, {
-            config: { collections: { $set: collections }}
-        });
-        this.setState(newState)
+        this.setState({
+            collections: collections
+        })
     }
 
     handleSelectAll() {
-        const { db } = this.state.config;
-        const { collectionsDisabled } = this.state.userSelections;
-
-        if(collectionsDisabled) {
-            return;
-        }
-
+        const { db } = this.state;
         const availableCollections = this.getAvailableCollectionsWithDB(db);
 
-        const newState = update(this.state, {
-            config: { collections: { $set: availableCollections }}
+        this.setState({
+            collections: availableCollections
         });
-
-        this.setState(newState);
     }
 
     handleCollectionsChecked(event) {
         const target = event.target;
         const checked = target.checked;
 
-        const newState = update(this.state, {
-            userSelections: { collectionsDisabled: {$set: checked } },
-            config: { collections: {$set: null} }
+        this.setState({
+            collections: (checked)?null: undefined
         });
-        this.setState(newState);
     }
 
     handleNowChecked(event) {
         const target = event.target;
         const checked = target.checked;
 
-        const newState = update(this.state, {
-            userSelections: { dateTimeDisabled: {$set: checked} },
-            config: { startTime: { $set: null}}
-        });
-        this.setState(newState)
+        this.setState({
+            startTime: (checked? null: undefined)
+        })
     }
 
     handleDateTimeSave(time) {
         if(!time) {
             return
         }
-        const newState = update(this.state, {
-            config: { startTime: {$set: time.toISOString()}}
+
+        this.setState({
+            startTime: time.toISOString()
         });
-        this.setState(newState);
     }
 
-    handleGoBack() {
-        // Save the data first
+    onClickBack() {
         this.saveData();
-        this.props.onClickBack();
+        this.props.onClickBack()
     }
 
-    handleNext() {
-        // Save the date, validate the data
+    onClickNext() {
         this.saveData();
-        this.props.onClickNext();
+        this.props.onClickNext()
     }
 
     saveData() {
-        this.props.saveData(this.state.config, this.state.userSelections)
+        this.props.saveData(this.state)
     }
 
     render() {
 
-        const { db, collections, startTime } = this.state.config;
-        const { collectionsDisabled, dateTimeDisabled } = this.state.userSelections;
-
+        const { db, collections, startTime } = this.state;
         const availableDBsCollections = this.props.availableDBsCollections;
-
         const dbOptions = availableDBsCollections.map(dbCollections => {
             const { db } = dbCollections;
             return {
@@ -163,22 +137,21 @@ export default class ConfigurationForm extends Component {
                 <div className="content">
                     <label>Backup DataBase</label>
                     { dbsDOM }
-                    <label>Backup Collections{( !collectionsDisabled ) && (<span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[Select all]</span>)}</label>
-                    { (!collectionsDisabled) && collectionsDOM }
-                    <label><input type="checkbox" checked = { collectionsDisabled } onChange = { this.handleCollectionsChecked.bind(this) }/><span className="info">Backup all the collections all the time</span></label>
+                    <label>Backup Collections{( collections !== null ) && (<span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[Select all]</span>)}</label>
+                    { (collections !== null ) && collectionsDOM }
+                    <label><input type="checkbox" checked = { collections === null } onChange = { this.handleCollectionsChecked.bind(this) }/><span className="info">Backup all the collections all the time</span></label>
                     <label>Backup StartTime</label>
                     <div className="datetime-wrapper">
-                        {(!dateTimeDisabled) && (<DateTime className={ dateTimeDisabled ? "disabled" : "" }
-                                                           defaultValue={ startTime ? new Date(startTime) : "" }
+                        {(startTime !== null) && (<DateTime defaultValue={ startTime ? new Date(startTime) : "" }
                                                            open={ false }
                                                            onBlur={ this.handleDateTimeSave.bind(this) }/>)
                         }
                     </div>
-                    <label><input type="checkbox" checked = { dateTimeDisabled } onChange = { this.handleNowChecked.bind(this) }/><span className="info">Backup now</span></label>
+                    <label><input type="checkbox" checked = { startTime === null } onChange = { this.handleNowChecked.bind(this) }/><span className="info">Backup now</span></label>
                 </div>
                 <div className="footer">
-                    <div className="button big no button-left" onClick = { this.handleGoBack.bind(this) }>Go Back</div>
-                    <div className="button big yes button-right" onClick = { this.handleNext.bind(this) }>Next</div>
+                    <div className="button big no button-left" onClick = { this.onClickBack.bind(this) }>Go Back</div>
+                    <div className="button big yes button-right" onClick = { this.onClickNext.bind(this) }>Next</div>
                 </div>
             </div>
         )

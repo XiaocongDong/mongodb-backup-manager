@@ -1,27 +1,27 @@
 import React, { Component } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+// import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
 import CredentialForm from './credential-form';
 import BackupConfiguration from './configuration-form';
 import Review from './review';
 
 
-export default class NewConfiguration extends Component {
+export default class BackConfigurations extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { step: 0 };
-        this.totalStep = 3;
-        this.backupConfiguration = {
-            server: 'localhost',
-            port: 27017,
-            authDB: 'admin'
+        this.totalSteps = 3;
+        this.state = {
+            update: (props.backupConfiguration? true: false),
+            review: (props.review == true),
+            step: (props.review? 3: 0)
         };
-        this.userSelections = {
-            collectionsDisabled: false,
-            dateTimeDisabled: false,
-            backupNow: false
-        };
+        this.backupConfiguration = (props.backupConfiguration) || ({
+                server: 'localhost',
+                port: 27017,
+                authDB: 'admin'
+        });
+        // testing data
         this.availableDBsCollections = [
             {
                 "db": "osdna",
@@ -52,32 +52,24 @@ export default class NewConfiguration extends Component {
                 ]
             }
         ];
-        this.authenticate = this.authenticate.bind(this);
-        this.handleClose = this.handleClose.bind(this);
-        this.handleGoBack = this.handleGoBack.bind(this);
-        this.handleNext = this.handleNext.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.saveData = this.saveData.bind(this);
     }
 
-    authenticate(credential) {
-        console.log('Authenticating the server');
+    authenticate() {
+        // TODO check if the data is correct
+        console.log("authenticating backup db");
+        console.log(this.backupConfiguration);
         this.handleNext();
     }
 
-    handleClose() {
-        // close the new configuration section
-
-    }
-
     handleGoBack() {
-        // from the backup configuration form back to the authentication form
         this.setState({
             step: this.state.step - 1
         })
     }
 
     handleNext() {
+        // TODO check if the data is correct
         // next form
         this.setState({
             step: this.state.step + 1
@@ -88,14 +80,13 @@ export default class NewConfiguration extends Component {
         // submit the backup config
     }
 
-    saveData(config, userSelections) {
-        (config) && (Object.assign(this.backupConfiguration, config));
-        (userSelections) && (Object.assign(this.userSelections, userSelections));
+    saveData(config) {
+        (Object.assign(this.backupConfiguration, config));
     }
 
     render() {
         const step = this.state.step;
-        const totalStep = this.totalStep;
+        const totalStep = this.totalSteps;
 
         const stagesDOM = [];
         for(let i = 0; i < totalStep; i++) {
@@ -103,38 +94,44 @@ export default class NewConfiguration extends Component {
         }
 
         const formsDOM = [];
-        const credentialForm = <CredentialForm authenticate = { this.authenticate }
-                                      backupConfig = { this.backupConfiguration }
-                                      saveData = { this.saveData }
-            />;
+
+        const credentialForm = <CredentialForm  backupConfig = { this.backupConfiguration }
+                                                onAuthenticate = { this.authenticate.bind(this) }
+                                                saveData = { this.saveData }/>;
         formsDOM.push(credentialForm);
 
-        const backupConfigForm = <BackupConfiguration onClickBack = { this.handleGoBack }
-                                                      onClickNext = { this.handleNext }
-                                                      availableDBsCollections = { this.availableDBsCollections}
+        const backupConfigForm = <BackupConfiguration availableDBsCollections = { this.availableDBsCollections }
+                                                      onClickNext = { this.handleNext.bind(this) }
+                                                      onClickBack = { this.handleGoBack.bind(this) }
                                                       backupConfig = { this.backupConfiguration }
-                                                      userSelections = { this.userSelections }
                                                       saveData = { this.saveData }
-        />;
+                                                      review = { this.review }/>;
         formsDOM.push(backupConfigForm);
 
-        const reviewForm = <Review onClickBack = { this.handleGoBack }
-                                   onClickSubmit = { this.handleSubmit } />;
+        const reviewForm = <Review backupConfig = { this.backupConfiguration }
+                                   onClickBack = { this.handleGoBack.bind(this) }
+                                   onClickSubmit = { this.handleSubmit.bind(this)}/>;
         formsDOM.push(reviewForm);
 
         return (
             <div className="container">
                 <div className="header">
-                    <div className="title">Create a New Backup</div>
+                    <div className="title">
+                        {
+                            (this.review)?(`Backup Config for ${ this.backupConfiguration.db } @ ${ this.backupConfiguration.server }`):
+                                ((this.update)?(`Update BackupConfig for ${ this.backupConfiguration.db } @ ${ this.backupConfiguration.server }`):
+                                "New Backup Config")
+                        }
+                    </div>
                 </div>
-                <div className="progress">
+                {(!this.review) && (<div className="progress">
                     <div className="stages">
                         { stagesDOM }
                     </div>
                     <div className="bar-wrapper">
                         <div className="bar" style={ {width: (step)/(totalStep - 1) * 100 + "%" } }></div>
                     </div>
-                </div>
+                </div>)}
                 { formsDOM[step] }
             </div>
         )

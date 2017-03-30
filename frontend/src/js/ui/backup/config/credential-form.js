@@ -5,10 +5,9 @@ export default class CredentialForm extends Component {
 
     constructor(props) {
         super(props);
-        this.handleConnect = this.handleConnect.bind(this);
     }
 
-    handleConnect(e) {
+    handleAuthenticate(e) {
         e.preventDefault();
 
         const credential = {
@@ -20,7 +19,7 @@ export default class CredentialForm extends Component {
         };
 
         this.props.saveData(credential);
-        this.props.authenticate(credential);
+        this.props.onAuthenticate();
     }
 
     render() {
@@ -66,7 +65,7 @@ export default class CredentialForm extends Component {
                     </input>
                 </div>
                 <div className="footer">
-                    <div className="button big yes button-middle" onClick={ this.handleConnect }>Connect to DB</div>
+                    <div className="button big yes button-middle" onClick={ this.handleAuthenticate.bind(this) }>Connect to DB</div>
                 </div>
             </div>
         )

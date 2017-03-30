@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import Header from './ui/header';
 import Content from './ui/content';
 import Dashboard from './ui/dashboard/dashboard';
-import NewConfigurationForm from './ui/backup/config/new-configuration';
+import BackupConfigurations from './ui/backup/config/backup-configurations';
 
 import '../sass/style.scss';
 import 'react-select/dist/react-select.css';
@@ -26,7 +26,7 @@ const App = () => {
         <Router history={ hashHistory }>
             <Route path='/' component={ PlaceHolder }>
                 <IndexRoute component={ Dashboard }/>
-                <Route path='/newConfig' component={ NewConfigurationForm }/>
+                <Route path='/newConfig' component={ BackupConfigurations }/>
             </Route>
         </Router>
     )
