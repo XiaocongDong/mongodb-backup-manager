@@ -1,0 +1,27 @@
+.time-input-wrapper {
+  //display: flex;
+  //flex-direction: row;
+  //justify-content: space-between;
+
+  * {
+     display: inline-block;
+  }
+
+  .time-item {
+     width: 25%;
+
+     > * {
+        width: 100%;
+     }
+
+     input[type=number]::-webkit-inner-spin-button,
+     input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+     }
+
+     .name {
+        text-align: center;
+     }
+  }
+}

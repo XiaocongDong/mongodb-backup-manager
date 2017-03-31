@@ -6,7 +6,6 @@
          left: 50%;
          transform: translateX(-50%);
          width: 60%;
-         //height: 90%;
          color: $black;
 
          box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
@@ -24,8 +23,6 @@
          }
 
          .header {
-            //height: 15%;
-            //background: #BC7A00;
             text-align: center;
 
             .title {
@@ -36,8 +33,6 @@
          }
 
          .progress {
-               //height: 15%;
-               //background: #00A000;
                width: 50%;
 
                .stages {
@@ -52,7 +47,6 @@
                          font-size: 1.2rem;
                          border-radius: 50%;
                          border: 8px solid #ddd;
-                         //position: relative;
                          background: #fff;
                          z-index: 1;
                      }
@@ -81,8 +75,6 @@
 
          .form {
              width: 100%;
-             //height: 80%;
-             //background: #7D9029;
              padding: 20px 50px 0 50px;
 
              .title {
@@ -90,34 +82,39 @@
                  font-weight: 600;
                  font-size: 1.8rem;
                  color: #777777;
-                 //height: 10%;
              }
 
              .content {
-                 //height: 70%;
-                 //overflow: auto;
                  margin: auto;
 
-                 > * {
-                   display: block;
-                 }
+                 .item {
+                     label {
+                       display: inline-block;
+                       margin: 10px 0 10px 0;
+                       font-size: 1.3rem;
+                       font-weight: 600;
+                     }
 
-                 label {
-                   margin: 10px 0 10px 0;
-                   font-size: 1.3rem;
-                   font-weight: 600;
-                 }
+                     .input-field {
+                       width: 100%;
+                       padding: 8px 20px;
+                       font-size: 1.2rem;
+                       border: 1px solid rgba(0, 0, 0, 0.26);
+                     }
 
-                 .input-field {
-                   width: 100%;
-                   padding: 8px 20px;
-                   font-size: 1.2rem;
+                     .error-input {
+                        border-color: red;
+                        outline: none;
+                     }
+
+                     .error-message {
+                        color: red;
+                     }
                  }
              }
 
              .footer {
                  width: 100%;
-                 //height: 10%;
 
                  .button-left, .button-right, .button-middle {
                      width: 135px;

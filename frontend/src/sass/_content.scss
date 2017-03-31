@@ -1,11 +1,12 @@
 .mongo-backup-manager {
 
    > .content {
-      position: absolute;
+      position: fixed;
       top: $header-height;
       height: calc(100% - #{$header-height});
       width: 100%;
       background: $green;
+      overflow: auto;
    }
 
 }

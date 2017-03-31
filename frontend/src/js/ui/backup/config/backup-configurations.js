@@ -55,13 +55,6 @@ export default class BackConfigurations extends Component {
         this.saveData = this.saveData.bind(this);
     }
 
-    authenticate() {
-        // TODO check if the data is correct
-        console.log("authenticating backup db");
-        console.log(this.backupConfiguration);
-        this.handleNext();
-    }
-
     handleGoBack() {
         this.setState({
             step: this.state.step - 1
@@ -96,8 +89,8 @@ export default class BackConfigurations extends Component {
         const formsDOM = [];
 
         const credentialForm = <CredentialForm  backupConfig = { this.backupConfiguration }
-                                                onAuthenticate = { this.authenticate.bind(this) }
-                                                saveData = { this.saveData }/>;
+                                                saveData = { this.saveData }
+                                                onClickNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
         const backupConfigForm = <BackupConfiguration availableDBsCollections = { this.availableDBsCollections }
