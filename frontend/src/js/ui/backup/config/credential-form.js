@@ -21,63 +21,41 @@ export default class CredentialForm extends Component {
             password: null,
             authDB: null
         };
+        this.requireKeys = ["server", "port", "authDB"];
         this.validate = this.validate.bind(this);
-        this.getError = this.getError.bind(this);
-        this.setError = this.setError.bind(this);
-        this.getCredential = this.getCredential.bind(this);
     }
 
     handleAuthenticate() {
-        const credential = this.getCredential();
+        const credential = this.state;
         for(let key in credential) {
             const errorMessage = this.validate(key, credential[key]);
             if(errorMessage) {
-                this.setError(key, errorMessage);
+                this.errorMessages[key] = errorMessage;
                 return;
             }
         }
         // TODO authenticate the database
-        this.props.saveData(credential);
         this.props.onClickNext();
     }
 
     onChange(key, event) {
         event.preventDefault();
         const value = event.target.value;
-
-        const errorMessage = this.validate(key, value);
-        console.log(errorMessage);
-        errorMessage? this.setError(key, errorMessage): this.setError(key, null);
-
+        this.errorMessages[key] = this.validate(key, value);
         this.setState({
             [key]: value
         });
-    }
-
-    getError(key) {
-        return this.errorMessages[key];
-    }
-
-    setError(key, errorMessage) {
-        this.errorMessages[key] = errorMessage;
-    }
-
-    getCredential() {
-        const {server, port, username, password, authDB} = this.state;
-        return {server, port, username, password, authDB};
+        (this.props.handleChange) && (this.props.handleChange(key, value));
     }
 
     validate(key, value) {
+        if(inputValidator.isEmpty(value) && this.requireKeys.includes(key)) {
+            return `${ key } must be specified`;
+        }
         switch (key) {
             case "server":
-                if(inputValidator.isEmpty(value)) {
-                    return 'server must be specified';
-                }
                 break;
             case "port":
-                if(inputValidator.isEmpty(value)) {
-                    return 'port must be specified';
-                }
                 if(!inputValidator.isInteger(value)) {
                     return 'port must be a number';
                 }
@@ -87,17 +65,16 @@ export default class CredentialForm extends Component {
             case "password":
                 break;
             case "authDB":
-                if(inputValidator.isEmpty(value)) {
-                    return 'authentication database must be specified';
-                }
                 break;
             default:
                 break
         }
+        return null;
     }
 
     render() {
         const data = this.state;
+        const errorMessages = this.errorMessages;
 
         return (
             <div className="form credential-form">
@@ -106,10 +83,13 @@ export default class CredentialForm extends Component {
                     {
                         Object.keys(data).filter(key => !key.includes("Error"))
                             .map((key, i) => {
-                                const errorMessage = this.getError(key);
+                                const errorMessage = errorMessages[key];
                                 return (
                                     <div className="item" key={ i }>
-                                        <label>{ key }</label>
+                                        <label>
+                                            { key }
+                                            { this.requireKeys.includes(key) && <div className="required">*</div> }
+                                        </label>
                                         {
                                             (errorMessage) && (
                                                 <div className="error-message">
@@ -120,7 +100,8 @@ export default class CredentialForm extends Component {
                                         <input className={"input-field" + ((errorMessage)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}
                                                defaultValue={ data[key] }
-                                               onChange={ this.onChange.bind(this, key)}/>
+                                               onChange={ this.onChange.bind(this, key)}
+                                        />
                                     </div>)
                             })
                     }

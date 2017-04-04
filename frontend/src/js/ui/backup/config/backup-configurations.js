@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import CredentialForm from './credential-form';
 import BackupConfiguration from './configuration-form';
 import Review from './review';
+import object from '../../../utility/object';
 
 
 export default class BackConfigurations extends Component {
@@ -52,7 +53,6 @@ export default class BackConfigurations extends Component {
                 ]
             }
         ];
-        this.saveData = this.saveData.bind(this);
     }
 
     handleGoBack() {
@@ -73,8 +73,8 @@ export default class BackConfigurations extends Component {
         // submit the backup config
     }
 
-    saveData(config) {
-        (Object.assign(this.backupConfiguration, config));
+    handleChange(keys, value) {
+        object.assign(keys, value, this.backupConfiguration);
     }
 
     render() {
@@ -89,7 +89,7 @@ export default class BackConfigurations extends Component {
         const formsDOM = [];
 
         const credentialForm = <CredentialForm  backupConfig = { this.backupConfiguration }
-                                                saveData = { this.saveData }
+                                                handleChange = { this.handleChange.bind(this) }
                                                 onClickNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
@@ -97,7 +97,7 @@ export default class BackConfigurations extends Component {
                                                       onClickNext = { this.handleNext.bind(this) }
                                                       onClickBack = { this.handleGoBack.bind(this) }
                                                       backupConfig = { this.backupConfiguration }
-                                                      saveData = { this.saveData }
+                                                      handleChange = { this.handleChange.bind(this) }
                                                       review = { this.review }/>;
         formsDOM.push(backupConfigForm);
 
@@ -117,14 +117,17 @@ export default class BackConfigurations extends Component {
                         }
                     </div>
                 </div>
-                {(!this.review) && (<div className="progress">
-                    <div className="stages">
-                        { stagesDOM }
-                    </div>
-                    <div className="bar-wrapper">
-                        <div className="bar" style={ {width: (step)/(totalStep - 1) * 100 + "%" } }></div>
-                    </div>
-                </div>)}
+                {
+                    (!this.review) && (
+                    <div className="progress">
+                        <div className="stages">
+                            { stagesDOM }
+                        </div>
+                        <div className="bar-wrapper">
+                            <div className="bar" style={ {width: (step)/(totalStep - 1) * 100 + "%" } }></div>
+                        </div>
+                    </div>)
+                }
                 { formsDOM[step] }
             </div>
         )

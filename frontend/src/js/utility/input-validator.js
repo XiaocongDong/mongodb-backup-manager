@@ -3,7 +3,15 @@ const inputValidator = {
 
     isInteger: (data) => inputValidator.integerRegEx.exec(data) !== null,
 
-    isEmpty: input => input.length == 0,
+    isEmpty: input => {
+        if(input === undefined || input === null) {
+            return true;
+        }
+
+        if(typeof input == "string") {
+            return input.length == 0;
+        }
+    },
 
     checkScope: (value, min, max) => {
 

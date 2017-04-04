@@ -3,6 +3,7 @@ import Select from 'react-select';
 import update from 'react-addons-update';
 import DateTime from 'react-datetime';
 import TimeInput from '../../time-input';
+import object from '../../../utility/object';
 
 
 export default class ConfigurationForm extends Component {
@@ -13,10 +14,9 @@ export default class ConfigurationForm extends Component {
             db: props.backupConfig.db,
             collections: props.backupConfig.collections,
             startTime: props.backupConfig.startTime,
-            interval: props.backupConfig.interval || { days: 0, hours: 0, minutes: 0, seconds: 0 },
+            interval: this.getInitialTime(props.backupConfig.interval),
             maxBackupNumber: props.backupConfig.maxBackupNumber,
-            duration: props.backupConfig.duration
-
+            duration: this.getInitialTime(props.backupConfig.interval)
         };
 
         this.errorMessages = {
@@ -27,60 +27,68 @@ export default class ConfigurationForm extends Component {
             maxBackupNumber: null,
             duration: {}
         };
-        this.getAvailableCollectionsWithDB = this.getAvailableCollectionsWithDB.bind(this);
-        this.saveData = this.saveData.bind(this);
+
+        this.getAvailableCollections = this.getAvailableCollections.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    getAvailableCollectionsWithDB(db) {
-        const availableDBCollections = this.props.availableDBsCollections;
-
-        const dbCollections = availableDBCollections.filter(dbCollections => dbCollections.db == db);
-
-        if(dbCollections.length > 0) {
-            return dbCollections[0].collections;
+    getAvailableCollections(db) {
+        if(db == null) {
+            return [];
         }
 
-        return [];
+        const availableDBsCollections = this.props.availableDBsCollections;
+        const filteredDBsCollections = object.filterArrWithKeyValue("db", db, availableDBsCollections);
+
+        if(filteredDBsCollections.length == 0) {
+            return [];
+        }
+
+        return filteredDBsCollections[0].collections;
+    }
+
+    getInitialTime(time) {
+        if(time === undefined) {
+            return {days: 0, hours: 0, minutes: 0, seconds: 0}
+        }
+
+        return time;
     }
 
     handleDBChange(db) {
-        this.setState({
+        const changes = {
             db: db.value,
             collections: undefined
-        });
+        };
+        this.handleChange(changes)
     }
 
     handleCollectionsChange(collections) {
-        this.setState({
-            collections: collections
-        })
+        this.handleChange({ collections })
     }
 
     handleSelectAll() {
         const { db } = this.state;
-        const availableCollections = this.getAvailableCollectionsWithDB(db);
-
-        this.setState({
-            collections: availableCollections
-        });
+        const collections = this.getAvailableCollections(db);
+        this.handleChange({ collections });
     }
 
     handleCollectionsChecked(event) {
         const target = event.target;
         const checked = target.checked;
-
-        this.setState({
-            collections: (checked)?null: undefined
-        });
+        this.handleChange({ collections: (checked)?null: undefined})
     }
 
     handleNowChecked(event) {
         const target = event.target;
         const checked = target.checked;
+        this.handleChange({startTime: (checked? null: undefined)})
+    }
 
-        this.setState({
-            startTime: (checked? null: undefined)
-        })
+    handleBackupOnceChecked(event) {
+        const target = event.target;
+        const checked = target.checked;
+        this.handleChange({interval: (checked? null: this.getInitialTime(undefined))})
     }
 
     handleDateTimeSave(time) {
@@ -88,26 +96,18 @@ export default class ConfigurationForm extends Component {
             return
         }
 
-        this.setState({
-            startTime: time.toISOString()
-        });
+        this.handleChange({ startTime: time.toISOString() })
     }
 
     handleTimeInput(configKey, timeKey, value) {
         const newState = update(this.state, {
             [configKey]: { [timeKey]: { $set: value } }
         });
-
-        this.setState(newState);
-    }
-
-    onClickBack() {
-        this.saveData();
-        this.props.onClickBack()
+        this.handleChange(newState);
     }
 
     onClickNext() {
-        this.saveData();
+        // TODO validate the data
         this.props.onClickNext()
     }
 
@@ -116,8 +116,14 @@ export default class ConfigurationForm extends Component {
         this.errorMessages[configType][timeType] = errorMessage;
     }
 
-    saveData() {
-        this.props.saveData(this.state)
+    handleChange(changes) {
+        this.setState(changes);
+        if(!this.props.handleChange) {
+            return;
+        }
+        for(let key in changes) {
+            this.props.handleChange(key, changes[key]);
+        }
     }
 
     render() {
@@ -135,11 +141,11 @@ export default class ConfigurationForm extends Component {
         const dbsDOM = <Select name = "db-select"
                                value = { db }
                                options = { dbOptions }
-                               placeholder = "Select backup database"
                                onChange = { this.handleDBChange.bind(this) }
                        />;
 
-        const availableCollections = this.getAvailableCollectionsWithDB(db);
+
+        const availableCollections = db? object.filterArrWithKeyValue("db", db, availableDBsCollections)[0].collections: [];
         const availableCollectionsOptions = availableCollections.map(collection => {
             return {
                 value: collection,
@@ -164,36 +170,72 @@ export default class ConfigurationForm extends Component {
                         { dbsDOM }
                     </div>
                     <div className="item">
-                        <label>Collections{( collections !== null ) && (<span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[select all]</span>)}</label>
-                        { (collections !== null ) && collectionsDOM }
-                        <label><input type="checkbox" checked = { collections === null } onChange = { this.handleCollectionsChecked.bind(this) }/><span className="info">backup all the collections all the time</span></label>
+                        <label>collections
+                            {
+                                ( collections !== null ) && (<span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[select all]</span>)
+                            }
+                        </label>
+                        {
+                            ( collections !== null ) && collectionsDOM
+                        }
+                        <label>
+                            <input type="checkbox"
+                                   checked = { collections === null }
+                                   onChange = { this.handleCollectionsChecked.bind(this) }
+                            />
+                            <span className="info">backup all the collections all the time</span>
+                        </label>
                     </div>
                     <div className="item">
                         <label>startTime</label>
-                        <div className="datetime-wrapper">
-                            {
-                                (startTime !== null) && (<DateTime defaultValue={ startTime ? new Date(startTime) : "" }
-                                                                open={ false }
-                                                                onBlur={ this.handleDateTimeSave.bind(this) }/>)
-                            }
-                        </div>
-                        <label><input type="checkbox" checked = { startTime === null } onChange = { this.handleNowChecked.bind(this) }/><span className="info">backup now</span></label>
+                        {
+                            (startTime !== null ) && (
+                                <div className="datetime-wrapper">
+                                    <DateTime value={ startTime ? new Date(startTime) : "" }
+                                              open={ false }
+                                              onBlur={ this.handleDateTimeSave.bind(this) }
+                                    />
+                                </div>
+                            )
+                        }
+                        <label>
+                            <input type="checkbox"
+                                   checked = { startTime === null }
+                                   onChange = { this.handleNowChecked.bind(this) }
+                            />
+                            <span className="info">backup now</span>
+                        </label>
                     </div>
                     <div className="item">
                         <label>Interval</label>
-                        <TimeInput onChange={ this.handleTimeInput.bind(this, "interval") }
-                                   onErrorChange={ this.timeInputOnError.bind(this, "interval") }
-                                   { ...interval }/>
+                        {
+                            (interval !== null ) && (<TimeInput onChange={ this.handleTimeInput.bind(this, "interval") }
+                                    onErrorChange={ this.timeInputOnError.bind(this, "interval") }
+                                    { ...interval }
+                            />)
+                        }
+                        <label>
+                            <input type="checkbox"
+                                   checked = { interval === null }
+                                   onChange = { this.handleBackupOnceChecked.bind(this) }
+                            />
+                            <span className="info">Backup once</span>
+                        </label>
+                    </div>
+                    <div className="item">
+                        <label>max copy dbs number</label>
+                        <input type="number" className="input-field"/>
                     </div>
                     <div className="item">
                         <label>duration</label>
                         <TimeInput onChange={ this.handleTimeInput.bind(this, "duration") }
                                    onErrorChange={ this.timeInputOnError.bind(this, "duration") }
-                                   { ...duration }/>
+                                   { ...duration }
+                        />
                     </div>
                 </div>
                 <div className="footer">
-                    <div className="button big no button-left" onClick = { this.onClickBack.bind(this) }>Go Back</div>
+                    <div className="button big no button-left" onClick = { this.props.onClickBack }>Go Back</div>
                     <div className="button big yes button-right" onClick = { this.onClickNext.bind(this) }>Next</div>
                 </div>
             </div>
