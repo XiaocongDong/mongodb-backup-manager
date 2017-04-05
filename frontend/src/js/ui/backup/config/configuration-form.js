@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import DateTime from 'react-datetime';
-import TimeInput from '../../time-input';
+import TimeInput from '../../templates/time-input';
 import object from '../../../utility/object';
-import inputValidator from "../../../utility/input-validator";
-import NumberInput from "../../number-input";
+import input from "../../../utility/input";
+import NumberInput from "../../templates/number-input";
 
 
 export default class ConfigurationForm extends Component {
@@ -36,7 +36,7 @@ export default class ConfigurationForm extends Component {
             duration: {days: 0, hours: 0, minutes: 0, seconds:0 },
             maxBackupNumber: 0
         };
-        this.configs = ["db", "collections", "startTime", "interval", "maxBackupNumber", "duration"];
+        this.formFields = ["db", "collections", "startTime", "interval", "maxBackupNumber", "duration"];
         this.getCollOpts = this.getCollOpts.bind(this);
         this.getError = this.getError.bind(this);
     }
@@ -72,8 +72,8 @@ export default class ConfigurationForm extends Component {
     handleNext() {
         let validated = true;
         const backupConfig = this.props.backupConfig;
-        this.configs.map(key => {
-            const error = inputValidator.validate(key, backupConfig[key]);
+        this.formFields.map(key => {
+            const error = input.validateKey(key, backupConfig[key]);
             this.errors[key] = error;
             if(!object.isValuesEmpty(error)) {
                 validated = false;
@@ -87,14 +87,14 @@ export default class ConfigurationForm extends Component {
     }
 
     handleConfigChange(key, change) {
-        this.errors[key] = inputValidator.validate(key, change);
+        this.errors[key] = input.validateKey(key, change);
         switch (key) {
             case "db":
                 this.props.handleConfigChange({"db": change.value, "collections": undefined});
                 break;
             case "collections":
                 let collections = change;
-                if(!inputValidator.isEmpty(change)) {
+                if(!input.isEmpty(change)) {
                     collections = change.map(coll => {
                         if (typeof coll == "object") {
                             return coll.value;
@@ -105,7 +105,7 @@ export default class ConfigurationForm extends Component {
                 this.props.handleConfigChange({ collections });
                 break;
             case "startTime":
-                if(!inputValidator.isEmpty(change) && typeof change === "object") {
+                if(!input.isEmpty(change) && typeof change === "object") {
                     change = change.toISOString();
                 }
                 this.props.handleConfigChange({ "startTime": change });

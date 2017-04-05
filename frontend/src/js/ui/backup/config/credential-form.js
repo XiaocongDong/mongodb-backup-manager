@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import inputValidator from '../../../utility/input-validator';
+import input from '../../../utility/input';
 
 
 export default class CredentialForm extends Component {
@@ -13,16 +13,24 @@ export default class CredentialForm extends Component {
             password: null,
             authDB: null
         };
-        this.credentials = {
-            server: true,
-            port: true,
-            username: false,
-            password: false,
-            authDB: true
-        };
+        this.formFields = ["server", "port", "username", "password", "authDB"];
+        this.requiredFields = ["server", "port", "authDB"]
     }
 
     handleAuthenticate() {
+        let validated = true;
+        const backupConfig = this.props.backupConfig;
+        this.formFields.map(key => {
+            const error = input.validateKey(key, backupConfig[key]);
+            this.errors[key] = error;
+            if(!input.isEmpty(error)) {
+                validated = false;
+            }
+        });
+        if(!validated) {
+            this.forceUpdate();
+            return;
+        }
         // TODO authenticate the database
         this.props.handleNext();
     }
@@ -30,40 +38,33 @@ export default class CredentialForm extends Component {
     onChange(key, event) {
         event.preventDefault();
         const value = event.target.value;
-        this.errors[key] = inputValidator.validate(key, value);
+        this.errors[key] = input.validateKey(key, value);
         this.props.handleConfigChange({[key]: value});
     }
 
     render() {
         const backupConfig = this.props.backupConfig;
         const errors = this.errors;
-        const credentialKeys = Object.keys(this.credentials);
 
         return (
             <div className="form credential-form">
                 <div className="title">Backup Database Credential</div>
                 <div className="content">
                     {
-                        credentialKeys.map((key, i) => {
+                        this.formFields.map((key, i) => {
                                 const error = errors[key];
                                 return (
                                     <div className="item" key={ i }>
                                         <label>
                                             { key }
-                                            { this.credentials[key] && <div className="required">*</div> }
+                                            { this.requiredFields.includes(key) && <div className="required">*</div> }
                                         </label>
-                                        {
-                                            (error) && (
-                                                <div className="error-message">
-                                                    { error }
-                                                </div>
-                                            )
-                                        }
                                         <input className={"input-field" + ((error)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}
                                                defaultValue={ backupConfig[key] }
                                                onChange={ this.onChange.bind(this, key)}
                                         />
+                                        <div className="error-message">{ error }</div>
                                     </div>)
                             })
                     }
