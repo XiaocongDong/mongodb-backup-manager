@@ -1,7 +1,7 @@
-const inputValidator = {
+const input = {
     integerRegEx: new RegExp(/^[0-9]*$/),
 
-    isInteger: (data) => inputValidator.integerRegEx.exec(data) !== null,
+    isInteger: (data) => input.integerRegEx.exec(data) !== null,
 
     timeScope: {
         days: {
@@ -49,29 +49,41 @@ const inputValidator = {
     },
 
     checkTime: (key, value) => {
-        if(!inputValidator.isEmpty(value)) {
-            if (!inputValidator.isInteger(value)) {
+        if(!input.isEmpty(value)) {
+            if (!input.isInteger(value)) {
                 return `${ key } must be integer`;
             } else {
-                const { min, max } = inputValidator.timeScope[key];
-                return inputValidator.checkScope(key, value, min, max);
+                const { min, max } = input.timeScope[key];
+                return input.checkScope(key, value, min, max);
             }
         }
     },
 
-    validate: (key, value) => {
+    validateKeys: (keys, errors, data) => {
+        let validated = true;
+        keys.map(key => {
+            const error = input.validateKey(key, data[key]);
+            errors[key] = error;
+            if(!input.isEmpty(error)) {
+                validated = false;
+            }
+        });
+        return validated;
+    },
+
+    validateKey: (key, value) => {
         let error = null;
         switch (key) {
             case "server":
-                if(inputValidator.isEmpty(value)) {
+                if(input.isEmpty(value)) {
                     error = "server name must be specified";
                 }
                 break;
             case "port":
-                if(inputValidator.isEmpty(value)) {
+                if(input.isEmpty(value)) {
                     error = "port must be specified";
                 }
-                if(!inputValidator.isInteger(value)) {
+                if(!input.isInteger(value)) {
                     error = 'port must be a number';
                 }
                 break;
@@ -80,26 +92,26 @@ const inputValidator = {
             case "password":
                 break;
             case "authDB":
-                if(inputValidator.isEmpty(value)) {
+                if(input.isEmpty(value)) {
                     error = "server name must be specified";
                 }
                 break;
             case "db":
-                if(inputValidator.isEmpty(value)) {
+                if(input.isEmpty(value)) {
                     error = "backup db must be specified";
                 }
                 break;
             case "collections":
-                if(inputValidator.isEmpty(value) && !inputValidator.isDisabled(value)) {
+                if(input.isEmpty(value) && !input.isDisabled(value)) {
                     error = "please specify backup collections or select backup all the db";
                 }
                 break;
             case "startTime":
-                if(inputValidator.isEmpty(value) && !inputValidator.isDisabled(value)) {
+                if(input.isEmpty(value) && !input.isDisabled(value)) {
                     error = "please specify backup startTime or select backup now";
                 }
 
-                if(!inputValidator.isEmpty(value)) {
+                if(!input.isEmpty(value)) {
                     const date = Date.parse(value);
                     const now = new Date().valueOf();
                     if(isNaN(date)) {
@@ -113,7 +125,7 @@ const inputValidator = {
 
                 break;
             case "interval":
-                if(inputValidator.isDisabled(value)){
+                if(input.isDisabled(value)){
                     error = {
                         days: null,
                         hours: null,
@@ -123,19 +135,19 @@ const inputValidator = {
                     break;
                 }
 
-                if(inputValidator.isEmpty(value)) {
+                if(input.isEmpty(value)) {
                     error ={
                         error: "please specify backup interval time or select backup once"
                     };
                 }else{
                     error = {};
                     for(let k in value) {
-                        error[k] = inputValidator.checkTime(k, value[k]);
+                        error[k] = input.checkTime(k, value[k]);
                     }
                 }
                 break;
             case "duration":
-                if(inputValidator.isDisabled(value)) {
+                if(input.isDisabled(value)) {
                     error = {
                         days: null,
                         hours: null,
@@ -144,20 +156,20 @@ const inputValidator = {
                     };
                     break;
                 }
-                if(inputValidator.isEmpty(value)) {
+                if(input.isEmpty(value)) {
                     error = {
                         error: "please specify the duration time of backup copy db or disable this option"
                     };
                 }else{
                     error = {};
                     for(let k in value) {
-                        error[k] = inputValidator.checkTime(k, value[k]);
+                        error[k] = input.checkTime(k, value[k]);
                     }
                 }
                 break;
             case "maxBackupNumber":
                 console.log(value);
-                if(inputValidator.isEmpty(value) && !inputValidator.isDisabled(value)) {
+                if(input.isEmpty(value) && !input.isDisabled(value)) {
                     error = "please specify the maximum number of the backup copy dbs or disable this option";
                     console.log("err");
                 }
@@ -169,4 +181,4 @@ const inputValidator = {
     }
 };
 
-export default inputValidator;
+export default input;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Form from '../../templates/form';
 import input from '../../../utility/input';
 
 
@@ -18,16 +19,7 @@ export default class CredentialForm extends Component {
     }
 
     handleAuthenticate() {
-        let validated = true;
-        const backupConfig = this.props.backupConfig;
-        this.formFields.map(key => {
-            const error = input.validateKey(key, backupConfig[key]);
-            this.errors[key] = error;
-            if(!input.isEmpty(error)) {
-                validated = false;
-            }
-        });
-        if(!validated) {
+        if(!input.validateKeys(this.formFields, this.errors, this.props.backupConfig)) {
             this.forceUpdate();
             return;
         }
@@ -35,7 +27,7 @@ export default class CredentialForm extends Component {
         this.props.handleNext();
     }
 
-    onChange(key, event) {
+    handleConfigChange(key, event) {
         event.preventDefault();
         const value = event.target.value;
         this.errors[key] = input.validateKey(key, value);
@@ -45,16 +37,11 @@ export default class CredentialForm extends Component {
     render() {
         const backupConfig = this.props.backupConfig;
         const errors = this.errors;
-
-        return (
-            <div className="form credential-form">
-                <div className="title">Backup Database Credential</div>
-                <div className="content">
-                    {
-                        this.formFields.map((key, i) => {
+        const title = "Backup Database Credential";
+        const items = this.formFields.map((key) => {
                                 const error = errors[key];
                                 return (
-                                    <div className="item" key={ i }>
+                                    <div>
                                         <label>
                                             { key }
                                             { this.requiredFields.includes(key) && <div className="required">*</div> }
@@ -62,17 +49,21 @@ export default class CredentialForm extends Component {
                                         <input className={"input-field" + ((error)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}
                                                defaultValue={ backupConfig[key] }
-                                               onChange={ this.onChange.bind(this, key)}
+                                               onChange={ this.handleConfigChange.bind(this, key)}
                                         />
                                         <div className="error-message">{ error }</div>
                                     </div>)
-                            })
-                    }
-                </div>
-                <div className="footer">
-                    <div className="button big yes button-middle" onClick={ this.handleAuthenticate.bind(this) }>Connect to DB</div>
-                </div>
-            </div>
-        );
+                            });
+        const buttons = [(<div className="button big yes button-middle" onClick={ this.handleAuthenticate.bind(this)} key={0}>Connect to DB</div>)];
+
+        return (
+            <Form
+                className="credential-form"
+                title={ title }
+                items={ items }
+                buttons={buttons }
+            >
+            </Form>
+        )
     }
 }

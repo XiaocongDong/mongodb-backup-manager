@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 // import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 
-import CredentialForm from './credential-form';
-import BackupConfiguration from './configuration-form';
+import CredentialForm from './credential.form';
+import BackupConfiguration from './configuration.form';
 import Review from './review';
 import object from '../../../utility/object';
 

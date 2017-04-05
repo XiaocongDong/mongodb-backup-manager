@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import NumberInput from "./number-input";
+import NumberInput from "./number.input";
 
 
 export default class TimeInput extends Component {
@@ -30,8 +30,8 @@ export default class TimeInput extends Component {
                                  onBlur={ this.handleOnBlur.bind(this, key)}
                                  onChange={ this.handleChange.bind(this, key)}
                     />
-                    <div className="name">{ key }</div>
                     <div className="error-message">{errors[key]}</div>
+                    <div className="name">{ key }</div>
                 </div>
             )
         });

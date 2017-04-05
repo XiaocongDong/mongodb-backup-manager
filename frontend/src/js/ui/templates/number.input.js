@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import inputValidator from "../utility/input-validator";
+import input from "../../utility/input";
 
 
 export default class NumberInput extends Component {
@@ -16,7 +16,7 @@ export default class NumberInput extends Component {
         const { onBlur } = this.props;
         event.preventDefault();
         let value = event.target.value;
-        (inputValidator.isEmpty(value)) && (value = 0);
+        (input.isEmpty(value)) && (value = 0);
         (onBlur) && (onBlur(value));
     }
 
