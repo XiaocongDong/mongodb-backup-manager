@@ -13,17 +13,23 @@ export default class BackConfigurations extends Component {
         super(props);
         this.totalSteps = 3;
         this.state = {
-            update: (props.backupConfiguration? true: false),
+            update: (props.backupConfig? true: false),
             review: (props.review == true),
-            step: (props.review? 3: 0)
-        };
-        this.backupConfiguration = (props.backupConfiguration) || ({
+            step: (props.review? 3: 0),
+            backupConfig: (props.backupConfig) || ({
                 server: 'localhost',
                 port: 27017,
-                authDB: 'admin'
-        });
+                authDB: 'admin',
+                db: undefined,
+                collections: undefined,
+                startTime: undefined,
+                interval: {days: 0, hours: 0, minutes: 0, seconds:0 },
+                maxBackupNumber: 0,
+                duration: {days: 0, hours: 0, minutes: 0, seconds:0 }
+            })
+        };
         // testing data
-        this.availableDBsCollections = [
+        this.dbsColls = [
             {
                 "db": "osdna",
                 "collections": [
@@ -55,7 +61,7 @@ export default class BackConfigurations extends Component {
         ];
     }
 
-    handleGoBack() {
+    handleBack() {
         this.setState({
             step: this.state.step - 1
         })
@@ -73,12 +79,16 @@ export default class BackConfigurations extends Component {
         // submit the backup config
     }
 
-    handleChange(keys, value) {
-        object.assign(keys, value, this.backupConfiguration);
+    handleConfigChange(changes) {
+        const backupConfig = object.clone(this.state.backupConfig);
+        for(let key in changes) {
+            backupConfig[key] = changes[key];
+        }
+        this.setState({ backupConfig });
     }
 
     render() {
-        const step = this.state.step;
+        const { step, backupConfig, update, review } = this.state;
         const totalStep = this.totalSteps;
 
         const stagesDOM = [];
@@ -88,21 +98,21 @@ export default class BackConfigurations extends Component {
 
         const formsDOM = [];
 
-        const credentialForm = <CredentialForm  backupConfig = { this.backupConfiguration }
-                                                handleChange = { this.handleChange.bind(this) }
-                                                onClickNext = { this.handleNext.bind(this) }/>;
+        const credentialForm = <CredentialForm  backupConfig = { backupConfig }
+                                                handleConfigChange = { this.handleConfigChange.bind(this) }
+                                                handleNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
-        const backupConfigForm = <BackupConfiguration availableDBsCollections = { this.availableDBsCollections }
-                                                      onClickNext = { this.handleNext.bind(this) }
-                                                      onClickBack = { this.handleGoBack.bind(this) }
-                                                      backupConfig = { this.backupConfiguration }
-                                                      handleChange = { this.handleChange.bind(this) }
-                                                      review = { this.review }/>;
+        const backupConfigForm = <BackupConfiguration dbsColls = { this.dbsColls }
+                                                      handleNext = { this.handleNext.bind(this) }
+                                                      handleBack = { this.handleBack.bind(this) }
+                                                      backupConfig = { backupConfig }
+                                                      handleConfigChange = { this.handleConfigChange.bind(this) }
+                                                      review = { review }/>;
         formsDOM.push(backupConfigForm);
 
-        const reviewForm = <Review backupConfig = { this.backupConfiguration }
-                                   onClickBack = { this.handleGoBack.bind(this) }
+        const reviewForm = <Review backupConfig = { backupConfig }
+                                   onClickBack = { this.handleBack.bind(this) }
                                    onClickSubmit = { this.handleSubmit.bind(this)}/>;
         formsDOM.push(reviewForm);
 
@@ -111,9 +121,9 @@ export default class BackConfigurations extends Component {
                 <div className="header">
                     <div className="title">
                         {
-                            (this.review)?(`Backup Config for ${ this.backupConfiguration.db } @ ${ this.backupConfiguration.server }`):
-                                ((this.update)?(`Update BackupConfig for ${ this.backupConfiguration.db } @ ${ this.backupConfiguration.server }`):
-                                "New Backup Config")
+                            review?(`Backup Config for ${ backupConfig.db } @ ${ backupConfig.server }`):
+                                update?(`Update BackupConfig for ${ backupConfig.db } @ ${ backupConfig.server }`):
+                                "New Backup Config"
                         }
                     </div>
                 </div>

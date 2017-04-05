@@ -17,22 +17,42 @@ const object = {
                 })
     },
 
+    clone: (obj) => {
+       return JSON.parse(JSON.stringify(obj))
+    },
+
     assign: (key, value, obj) => {
         if(!Array.isArray(key)) {
             obj[key] = value;
             return;
         }
 
-        object.nestedAssign(key, value);
+        object.nestedAssign(key, value, obj);
     },
     
     nestedAssign: (keys, value, obj, i=0) => {
         if(i == keys.length - 1) {
             obj[keys[i]] = value;
+            return;
         }
 
-        object.nestedAssign(keys, value, obj, i + 1);
+        object.nestedAssign(keys, value, obj[keys[i]], i + 1);
+    },
+
+    isValuesEmpty: (obj) => {
+
+        if(typeof obj !== "object") {
+            return obj == null;
+        }
+
+        for(const k in obj) {
+            if(obj[k] != null) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
 export default object;
+

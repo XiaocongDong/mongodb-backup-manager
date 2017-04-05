@@ -6,100 +6,62 @@ export default class CredentialForm extends Component {
 
     constructor(props) {
         super(props);
-        const backupConfig = props.backupConfig;
-        this.state = {
-            server: backupConfig.server || "server",
-            port: backupConfig.port || 27017,
-            username: backupConfig.username,
-            password: backupConfig.password,
-            authDB: backupConfig.authDB || "admin"
-        };
-        this.errorMessages = {
+        this.errors = {
             server: null,
             port: null,
             username: null,
             password: null,
             authDB: null
         };
-        this.requireKeys = ["server", "port", "authDB"];
-        this.validate = this.validate.bind(this);
+        this.credentials = {
+            server: true,
+            port: true,
+            username: false,
+            password: false,
+            authDB: true
+        };
     }
 
     handleAuthenticate() {
-        const credential = this.state;
-        for(let key in credential) {
-            const errorMessage = this.validate(key, credential[key]);
-            if(errorMessage) {
-                this.errorMessages[key] = errorMessage;
-                return;
-            }
-        }
         // TODO authenticate the database
-        this.props.onClickNext();
+        this.props.handleNext();
     }
 
     onChange(key, event) {
         event.preventDefault();
         const value = event.target.value;
-        this.errorMessages[key] = this.validate(key, value);
-        this.setState({
-            [key]: value
-        });
-        (this.props.handleChange) && (this.props.handleChange(key, value));
-    }
-
-    validate(key, value) {
-        if(inputValidator.isEmpty(value) && this.requireKeys.includes(key)) {
-            return `${ key } must be specified`;
-        }
-        switch (key) {
-            case "server":
-                break;
-            case "port":
-                if(!inputValidator.isInteger(value)) {
-                    return 'port must be a number';
-                }
-                break;
-            case "username":
-                break;
-            case "password":
-                break;
-            case "authDB":
-                break;
-            default:
-                break
-        }
-        return null;
+        this.errors[key] = inputValidator.validate(key, value);
+        this.props.handleConfigChange({[key]: value});
     }
 
     render() {
-        const data = this.state;
-        const errorMessages = this.errorMessages;
+        const backupConfig = this.props.backupConfig;
+        const errors = this.errors;
+        const credentialKeys = Object.keys(this.credentials);
 
         return (
             <div className="form credential-form">
                 <div className="title">Backup Database Credential</div>
                 <div className="content">
                     {
-                        Object.keys(data).filter(key => !key.includes("Error"))
-                            .map((key, i) => {
-                                const errorMessage = errorMessages[key];
+                        credentialKeys.map((key, i) => {
+                                const error = errors[key];
                                 return (
                                     <div className="item" key={ i }>
                                         <label>
                                             { key }
-                                            { this.requireKeys.includes(key) && <div className="required">*</div> }
+                                            { this.credentials[key] && <div className="required">*</div> }
                                         </label>
                                         {
-                                            (errorMessage) && (
+                                            (error) && (
                                                 <div className="error-message">
-                                                    { errorMessage }
+                                                    { error }
                                                 </div>
                                             )
                                         }
-                                        <input className={"input-field" + ((errorMessage)? " error-input": "")}
+                                        <input className={"input-field" + ((error)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}
-                                               defaultValue={ data[key] }
+                                               defaultValue={ backupConfig[key] }
                                                onChange={ this.onChange.bind(this, key)}
                                         />
                                     </div>)
