@@ -64,8 +64,16 @@ const input = {
         keys.map(key => {
             const error = input.validateKey(key, data[key]);
             errors[key] = error;
-            if(!input.isEmpty(error)) {
+            if(!input.isEmpty(error) && typeof input !== "object") {
                 validated = false;
+            }
+
+            if(typeof input === "object") {
+                for(const k in error) {
+                    if(!input.isEmpty(error[k])) {
+                        validated = false;
+                    }
+                }
             }
         });
         return validated;

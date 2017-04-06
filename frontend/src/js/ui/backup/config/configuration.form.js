@@ -67,7 +67,8 @@ export default class ConfigurationForm extends Component {
         const target = event.target;
         const checked = target.checked;
         const initValues = this.initValues;
-        this.handleConfigChange(key, checked? null: initValues[key]);
+        console.log(checked);
+        this.handleConfigChange(key, (checked? null: initValues[key]));
     }
 
     handleNext() {
@@ -79,36 +80,42 @@ export default class ConfigurationForm extends Component {
     }
 
     handleConfigChange(key, change) {
-        this.errors[key] = input.validateKey(key, change);
+        let changes = {};
         switch (key) {
             case "db":
-                this.props.handleConfigChange({"db": change.value, "collections": undefined});
+                if(!input.isEmpty(change)) {
+                    change = change.value;
+                }
+                changes = {"db": change, "collections": undefined};
                 break;
             case "collections":
-                let collections = change;
                 if(!input.isEmpty(change)) {
-                    collections = change.map(coll => {
+                    change = change.map(coll => {
                         if (typeof coll == "object") {
                             return coll.value;
                         }
                         return coll;
                     });
                 }
-                this.props.handleConfigChange({ collections });
+                changes = { collections: change };
                 break;
             case "startTime":
+                let time = change;
                 if(!input.isEmpty(change) && typeof change === "object") {
-                    change = change.toISOString();
+                    time = change.toISOString();
+                    change = time;
                 }
-                this.props.handleConfigChange({ "startTime": change });
+                changes = { "startTime": time };
                 break;
             case "maxBackupNumber":
-                this.props.handleConfigChange({"maxBackupNumber": change});
+                changes = {"maxBackupNumber": change};
                 break;
             default:
-                this.props.handleConfigChange({ [key]: change });
+                changes = {[key]: change};
                 break;
         }
+        this.errors[key] = input.validateKey(key, change);
+        this.props.handleConfigChange(changes);
     }
 
     getError(key) {
@@ -138,6 +145,13 @@ export default class ConfigurationForm extends Component {
                 label: collection
             };
         });
+
+        const startTimeProps = {};
+        if(startTime) {
+            startTimeProps.defaultValue = new Date(startTime)
+        }else {
+            startTimeProps.value = "";
+        }
 
         const title = "Backup Configuration";
         const items = [
@@ -173,8 +187,9 @@ export default class ConfigurationForm extends Component {
             (<div>
                 <label>startTime</label>
                 <div className="datetime-wrapper">
-                    <DateTime value={ startTime ? new Date(startTime) : "" }
+                    <DateTime {...startTimeProps}
                               open={ false }
+                              className={ this.getError("startTime")? "error": "" }
                               inputProps={ {disabled: startTime === null } }
                               onBlur={ this.handleConfigChange.bind(this, "startTime") }
                     />
