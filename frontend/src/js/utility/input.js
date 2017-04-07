@@ -168,8 +168,8 @@ const input = {
                 }
 
                 const result = input.checkScope(key, value);
-                (result > 1) && (error = `${ key } must be smaller than ${ input.dataScope[key].max }`);
-                (result < 1) && (error = `${ key } must be larger than ${ input.dataScope[key].min }`);
+                (result > 0) && (error = `${ key } must be smaller than ${ input.dataScope[key].max }`);
+                (result < 0) && (error = `${ key } must be larger than ${ input.dataScope[key].min }`);
                 break;
             default:
                 break
