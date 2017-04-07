@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Form from '../../templates/form';
 import input from '../../../utility/input';
 import object from '../../../utility/object';
+import time from '../../../utility/time';
 
 
 export default class Review extends Component {
@@ -20,24 +21,40 @@ export default class Review extends Component {
     getValue(key) {
         const { backupConfig } = this.props;
         let value = backupConfig[key];
-        if(!input.isEmpty(value) && typeof value === "object") {
+
+        if(!input.isEmpty(value) && (key == "duration" || key == "interval")) {
             let displayValue = "";
             for(const k in value) {
                 displayValue += `${ value[k] } ${ k } `;
             }
             value = displayValue;
         }
+
+        if(key == "collections" && !input.isEmpty(value)) {
+            let displayValue = "";
+            for(const i in value) {
+                displayValue += value[i] + (i !== value.length - 1? "   ": "");
+            }
+            value = displayValue;
+        }
+
         return value;
     }
 
     handleSubmit() {
         const backupConfig = object.clone(this.props.backupConfig);
         for(const key in backupConfig) {
+            console.log(key);
             if(input.isEmpty(backupConfig[key])) {
-                delete input[key];
+                delete backupConfig[key];
+                continue;
+            }
+            if(key == "duration" || key == "interval") {
+                backupConfig[key] = time.convertToMilliseconds(backupConfig[key]);
             }
         }
-        console.log('submitting ', backupConfig);
+
+        // console.log('submitting ', backupConfig);
     }
 
     render() {

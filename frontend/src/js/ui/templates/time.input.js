@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import NumberInput from "./number.input";
+import timeUtil from "../../utility/time";
 
 
 export default class TimeInput extends Component {
@@ -20,11 +21,12 @@ export default class TimeInput extends Component {
 
     render() {
         let { errors, values} = this.props;
-        this.values = values || {"days": null, "hours": null, "minutes": null, "seconds": null};
+        this.values = values || timeUtil.getTime(null);
+        const width = 100 / Object.keys(this.values).length;
 
         const timeDOM = Object.keys(this.values).map((key, i) => {
             return (
-                <div className="time-item" key={ i }>
+                <div className="time-item" key={ i } style={ { width: width + "%" } }>
                     <NumberInput className={ "input-field" + (errors[key] ? " error-input": "") }
                                  value={ this.values[key] }
                                  onBlur={ this.handleOnBlur.bind(this, key)}

@@ -6,6 +6,7 @@ import Form from '../../templates/form';
 import object from '../../../utility/object';
 import input from "../../../utility/input";
 import NumberInput from "../../templates/number.input";
+import timeUtil from "../../../utility/time";
 
 
 export default class ConfigurationForm extends Component {
@@ -25,8 +26,8 @@ export default class ConfigurationForm extends Component {
         this.initValues = {
             collections: undefined,
             startTime: undefined,
-            interval: {days: 0, hours: 0, minutes: 0, seconds:0 },
-            duration: {days: 0, hours: 0, minutes: 0, seconds:0 },
+            interval: timeUtil.getTime(0),
+            duration: timeUtil.getTime(0),
             maxBackupNumber: 1
         };
         this.formFields = ["db", "collections", "startTime", "interval", "maxBackupNumber", "duration"];
@@ -51,6 +52,9 @@ export default class ConfigurationForm extends Component {
 
     handleSelectAll() {
         const { db } = this.props.backupConfig;
+        if(db == null) {
+            return;
+        }
         const collections = this.getCollOpts(db);
         this.handleConfigChange("collections", collections);
     }
