@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Form from '../../templates/form';
+
 import input from '../../../utility/input';
 import object from '../../../utility/object';
 import time from '../../../utility/time';
+import backupConfigUtil from '../../../utility/backupConfig';
 
 
 export default class Review extends Component {
@@ -53,12 +55,14 @@ export default class Review extends Component {
                 backupConfig[key] = time.convertToMilliseconds(backupConfig[key]);
             }
         }
-
-        // console.log('submitting ', backupConfig);
+        console.log(this.props.backupConfig);
+        console.log(backupConfig);
+        console.log(backupConfigUtil.getBackupConfigFromInput(backupConfig));
     }
 
     render() {
         const { backupConfig } = this.props;
+        const uiKeys = backupConfigUtil.uiKeys;
         const title = "Review";
         const items = Object.keys(backupConfig).map((key) => {
             const value = this.getValue(key);
@@ -66,7 +70,7 @@ export default class Review extends Component {
             return (
                 <div className="row">
                     <div className="name-row">
-                        <div className="cell name">{ key }</div>
+                        <div className="cell name">{ uiKeys[key] }</div>
                         <div className={ "cell value" + (value? "": " disabled")}>{ value || this.disabledMessages[key] }</div>
                     </div>
                 </div>

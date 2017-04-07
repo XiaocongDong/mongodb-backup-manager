@@ -1,3 +1,6 @@
+import timeUtil from "./time";
+import backupConfigUtil from './backupConfig';
+
 const input = {
     integerRegEx: new RegExp(/^[0-9]*$/),
 
@@ -20,6 +23,12 @@ const input = {
             max: 60
         },
         maxBackupNumber: {
+            min: 1
+        },
+        interval: {
+            min: 1
+        },
+        duration: {
             min: 1
         }
     },
@@ -46,22 +55,29 @@ const input = {
         const { min, max } = input.dataScope[key];
 
         if(min != undefined && value < min) {
-            return `${ key } must >= ${ min }`;
+            return -1;
         }
 
         if(max != undefined && value > max) {
-            return `${ key } must <= ${ max }`;
+            return 1;
         }
 
-        return null;
+        return 0;
     },
 
     checkTime: (key, value) => {
         if(!input.isEmpty(value)) {
             if (!input.isInteger(value)) {
                 return `${ key } must be integer`;
-            } else {
-                return input.checkScope(key, value);
+            }
+
+            const result = input.checkScope(key, value);
+            if(result > 0) {
+                return `${ key } must be smaller than ${ input.dataScope[key].max }`;
+            }
+
+            if(result < 0) {
+                return `${ key } must be larger than ${ input.dataScope[key].min }`;
             }
         }
     },
@@ -80,57 +96,38 @@ const input = {
         return validated;
     },
 
-    getTimeError: (time, emptyErrorMessage) => {
+    getTimeError: (key, time) => {
         const error = {};
 
         if(input.isDisabled(time)) {
             return error;
         }
 
-        if(input.isEmpty(time)) {
-            error.time = emptyErrorMessage;
-        }else{
-            for(let k in time) {
-                const err = input.checkTime(k, time[k]);
-                (err) && (error[k] = err);
-            }
+        for(let k in time) {
+            const err = input.checkTime(k, time[k]);
+            (err) && (error[k] = err);
         }
+
+        if(input.isEmpty(error)) {
+            const t = timeUtil.convertToMilliseconds(time);
+            const result = input.checkScope(key, t);
+            (result < 0) && (error.time = `time is too small`);
+        }
+
         return error;
     },
 
     validateKey: (key, value) => {
         let error = null;
+        if(backupConfigUtil.requiredKeys.includes(key) &&
+            input.isEmpty(value) &&
+            !input.isDisabled(value)) {
+            error = `${ key } must be specified`;
+        }
         switch (key) {
-            case "server":
-                if(input.isEmpty(value)) {
-                    error = "server name must be specified";
-                }
-                break;
             case "port":
-                if(input.isEmpty(value)) {
-                    error = "port must be specified";
-                }
                 if(!input.isInteger(value)) {
                     error = 'port must be a number';
-                }
-                break;
-            case "username":
-                break;
-            case "password":
-                break;
-            case "authDB":
-                if(input.isEmpty(value)) {
-                    error = "server name must be specified";
-                }
-                break;
-            case "db":
-                if(input.isEmpty(value)) {
-                    error = "backup db must be specified";
-                }
-                break;
-            case "collections":
-                if(input.isEmpty(value) && !input.isDisabled(value)) {
-                    error = "please specify backup collections or select backup all the db";
                 }
                 break;
             case "startTime":
@@ -153,7 +150,7 @@ const input = {
                 break;
             case "interval":
             case "duration":
-                error = input.getTimeError(value);
+                error = input.getTimeError(key, value);
                 break;
             case "maxBackupNumber":
                 if(input.isDisabled(value)) {
@@ -170,13 +167,15 @@ const input = {
                     break;
                 }
 
-                error = input.checkScope(key, value);
+                const result = input.checkScope(key, value);
+                (result > 1) && (error = `${ key } must be smaller than ${ input.dataScope[key].max }`);
+                (result < 1) && (error = `${ key } must be larger than ${ input.dataScope[key].min }`);
                 break;
             default:
                 break
         }
         return error;
-    }
+    },
 };
 
 export default input;

@@ -1,6 +1,12 @@
+//react
 import React, { Component } from 'react';
+
+//ui
 import Form from '../../templates/form';
+
+//utility
 import input from '../../../utility/input';
+import backupConfigUtil from '../../../utility/backupConfig';
 
 
 export default class CredentialForm extends Component {
@@ -14,12 +20,13 @@ export default class CredentialForm extends Component {
             password: null,
             authDB: null
         };
-        this.formFields = ["server", "port", "username", "password", "authDB"];
-        this.requiredFields = ["server", "port", "authDB"]
     }
 
     handleAuthenticate() {
-        if(!input.validateKeys(this.formFields, this.errors, this.props.backupConfig)) {
+        const errors = this.errors;
+        const backupConfig = this.props.backupConfig;
+        const keys = backupConfigUtil.credentialKeys;
+        if(!input.validateKeys(keys, errors, backupConfig)) {
             this.forceUpdate();
             return;
         }
@@ -35,16 +42,18 @@ export default class CredentialForm extends Component {
     }
 
     render() {
-        const backupConfig = this.props.backupConfig;
+        const { backupConfig } = this.props;
         const errors = this.errors;
+        const requiredKeys = backupConfigUtil.requiredKeys;
+        const uiKeys = backupConfigUtil.uiKeys;
         const title = "Backup Database Credential";
-        const items = this.formFields.map((key) => {
+        const items = backupConfigUtil.credentialKeys.map((key) => {
                                 const error = errors[key];
                                 return (
                                     <div>
                                         <label>
-                                            { key }
-                                            { this.requiredFields.includes(key) && <div className="required">*</div> }
+                                            { uiKeys[key] }
+                                            { requiredKeys.includes(key) && <div className="required">*</div> }
                                         </label>
                                         <input className={"input-field" + ((error)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}

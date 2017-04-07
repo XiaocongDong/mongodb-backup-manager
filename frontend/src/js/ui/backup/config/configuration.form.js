@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import DateTime from 'react-datetime';
+
 import TimeInput from '../../templates/time.input';
 import Form from '../../templates/form';
+import NumberInput from "../../templates/number.input";
+
 import object from '../../../utility/object';
 import input from "../../../utility/input";
-import NumberInput from "../../templates/number.input";
 import timeUtil from "../../../utility/time";
+import backupConfigUtil from "../../../utility/backupConfig";
 
 
 export default class ConfigurationForm extends Component {
@@ -26,11 +29,10 @@ export default class ConfigurationForm extends Component {
         this.initValues = {
             collections: undefined,
             startTime: undefined,
-            interval: timeUtil.getTime(0),
-            duration: timeUtil.getTime(0),
+            interval: timeUtil.getTime(1, 0, 0, 0),
+            duration: timeUtil.getTime(1, 0, 0, 0),
             maxBackupNumber: 1
         };
-        this.formFields = ["db", "collections", "startTime", "interval", "maxBackupNumber", "duration"];
         this.getCollOpts = this.getCollOpts.bind(this);
         this.getError = this.getError.bind(this);
     }
@@ -67,7 +69,10 @@ export default class ConfigurationForm extends Component {
     }
 
     handleNext() {
-        if(!input.validateKeys(this.formFields, this.errors, this.props.backupConfig)) {
+        const errors = this.errors;
+        const backupConfig = this.props.backupConfig;
+        const keys = backupConfigUtil.configKeys;
+        if(!input.validateKeys(keys, errors, backupConfig)) {
             this.forceUpdate();
            // return;
         }
@@ -122,11 +127,11 @@ export default class ConfigurationForm extends Component {
     }
 
     render() {
-        const { db, collections, startTime, interval, duration, maxBackupNumber } = this.props.backupConfig;
-        const dbsColls = this.props.dbsColls;
+        const { backupConfig, dbsColls } = this.props;
+        const uiKeys = backupConfigUtil.uiKeys;
+        const { db, collections, startTime, interval, duration, maxBackupNumber } = backupConfig;
         const errors = this.errors;
-        const dbOpts = dbsColls.map(dbColls => {
-            const { db } = dbColls;
+        const dbOpts = dbsColls.map(({ db }) => {
             return {
                 value: db,
                 label: db
@@ -151,7 +156,7 @@ export default class ConfigurationForm extends Component {
         const title = "Backup Configuration";
         const items = [
             (<div>
-                <label>database<div className="required">*</div></label>
+                <label>{ uiKeys["db"] }<div className="required">*</div></label>
                 <Select name = "db-select"
                         value = { db }
                         options = { dbOpts }
@@ -160,7 +165,7 @@ export default class ConfigurationForm extends Component {
                 <div className="error-message">{ this.getError("db") }</div>
             </div>),
             (<div>
-                <label>collections<div className="required">*</div>
+                <label>{ uiKeys["collections"] }<div className="required">*</div>
                     <span className="select-all clickable" onClick = { this.handleSelectAll.bind(this) }>[select all]</span>
                 </label>
                 <Select name = "collections"
@@ -180,7 +185,7 @@ export default class ConfigurationForm extends Component {
                 </label>
             </div>),
             (<div>
-                <label>startTime</label>
+                <label>{ uiKeys["startTime"] }</label>
                 <div className="datetime-wrapper">
                     <DateTime {...startTimeProps}
                               open={ false }
@@ -199,7 +204,7 @@ export default class ConfigurationForm extends Component {
                 </label>
             </div>),
             (<div>
-                <label>Interval</label>
+                <label>{ uiKeys["interval"] }</label>
                 <TimeInput onChange={ this.handleConfigChange.bind(this, "interval") }
                            disabled={ interval === null }
                            values={ interval }
@@ -215,7 +220,7 @@ export default class ConfigurationForm extends Component {
                 </label>
             </div>),
             (<div>
-                <label>max copy dbs number</label>
+                <label>{ uiKeys["maxBackupNumber"] }</label>
                 <NumberInput className="input-field"
                              onChange={ this.handleConfigChange.bind(this, "maxBackupNumber") }
                              onBlur={ this.handleConfigChange.bind(this, "maxBackupNumber") }
@@ -231,7 +236,7 @@ export default class ConfigurationForm extends Component {
                 </label>
             </div>),
             (<div>
-                <label>duration</label>
+                <label>{ uiKeys["duration"] }</label>
                 <TimeInput onChange={ this.handleConfigChange.bind(this, "duration") }
                            disabled={ duration === null }
                            values={ duration }

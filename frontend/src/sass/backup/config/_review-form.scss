@@ -9,6 +9,7 @@
        float: left;
        position: relative;
        overflow: hidden;
+       box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, .26);
 
        .cell {
           display: inline-block;
@@ -24,7 +25,7 @@
        }
 
        .value {
-          color: $green;
+          //color: $green;
           width: 70%;
           left: 70%;
           padding: 10px;
@@ -38,7 +39,7 @@
    .name-row {
        width: 100%;
        float: left;
-       background: #eeeeee;
+       background: #ddd;
        position: relative;
        right: 70%;
    }
