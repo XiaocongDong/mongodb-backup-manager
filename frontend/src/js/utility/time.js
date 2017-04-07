@@ -6,7 +6,7 @@ timesMap.set("seconds", 1000);
 
 const time = {
 
-    getTime: (days, hours=days, minutes=days, seconds=days) => {
+    getTime: (days, hours=0, minutes=0, seconds=0) => {
         return {
             days,
             hours,

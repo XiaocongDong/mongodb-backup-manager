@@ -21,7 +21,7 @@ export default class TimeInput extends Component {
 
     render() {
         let { errors, values} = this.props;
-        this.values = values || timeUtil.getTime(null);
+        this.values = values || timeUtil.getTime(null, null, null, null);
         const width = 100 / Object.keys(this.values).length;
 
         const timeDOM = Object.keys(this.values).map((key, i) => {

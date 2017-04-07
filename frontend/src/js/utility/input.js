@@ -111,7 +111,7 @@ const input = {
         if(input.isEmpty(error)) {
             const t = timeUtil.convertToMilliseconds(time);
             const result = input.checkScope(key, t);
-            (result < 0) && (error.time = `time is too small`);
+            (result < 0) && (error.time = `time must be larger than 0`);
         }
 
         return error;
