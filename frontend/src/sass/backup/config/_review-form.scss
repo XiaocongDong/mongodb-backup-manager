@@ -1,0 +1,46 @@
+.review-form {
+
+   .row {
+       width: 100%;
+       font-size: 1.4rem;
+       border: 1px solid rgba(0, 0, 0, 0.26);
+       margin: 10px;
+       border-radius: 3px;
+       float: left;
+       position: relative;
+       overflow: hidden;
+
+       .cell {
+          display: inline-block;
+          position: relative;
+          float: left;
+       }
+
+       .name {
+          padding: 10px 20px;
+          font-weight: 600;
+          left: 70%;
+          width: 30%;
+       }
+
+       .value {
+          color: $green;
+          width: 70%;
+          left: 70%;
+          padding: 10px;
+       }
+
+       .disabled {
+          color: red;
+       }
+   }
+
+   .name-row {
+       width: 100%;
+       float: left;
+       background: #eeeeee;
+       position: relative;
+       right: 70%;
+   }
+
+}

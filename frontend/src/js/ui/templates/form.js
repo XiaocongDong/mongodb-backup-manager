@@ -20,14 +20,16 @@ export default class Form extends Component {
                         })
                     }
                 </div>
-                <div className="footer">
-                    {
-                        buttons.map(button => button )
-                    }
-                </div>
+                {
+                    (buttons) &&
+                    (<div className="footer">
+                        {
+                            buttons.map((button, index) => (<div key={ index }>{ button }</div>))
+                        }
+                    </div>)
+                }
             </div>
         )
 
     }
-
 }

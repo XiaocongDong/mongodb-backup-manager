@@ -19,13 +19,18 @@
      //   -webkit-appearance: none;
      //   margin: 0;
      //}
-
      .name {
         text-align: center;
      }
 
      .error-message {
         text-align: center;
+     }
+
+     &:not(:last-of-type) {
+        input {
+           border-right: none !important;
+        }
      }
   }
 }

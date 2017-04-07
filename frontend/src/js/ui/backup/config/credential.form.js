@@ -54,7 +54,7 @@ export default class CredentialForm extends Component {
                                         <div className="error-message">{ error }</div>
                                     </div>)
                             });
-        const buttons = [(<div className="button big yes button-middle" onClick={ this.handleAuthenticate.bind(this)} key={0}>Connect to DB</div>)];
+        const buttons = [(<div className="button big yes button-middle" onClick={ this.handleAuthenticate.bind(this)}>Connect to DB</div>)];
 
         return (
             <Form

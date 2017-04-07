@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 
 import CredentialForm from './credential.form';
 import BackupConfiguration from './configuration.form';
-import Review from './review';
+import Review from './review.form';
 import object from '../../../utility/object';
 
 
@@ -22,9 +22,9 @@ export default class BackConfigurations extends Component {
                 authDB: 'admin',
                 db: undefined,
                 collections: undefined,
-                startTime: undefined,
+                startTime: null,
                 interval: {days: 0, hours: 0, minutes: 0, seconds:0 },
-                maxBackupNumber: 0,
+                maxBackupNumber: 1,
                 duration: {days: 0, hours: 0, minutes: 0, seconds:0 }
             })
         };
@@ -75,10 +75,6 @@ export default class BackConfigurations extends Component {
         })
     }
 
-    handleSubmit() {
-        // submit the backup config
-    }
-
     handleConfigChange(changes) {
         const backupConfig = object.clone(this.state.backupConfig);
         for(let key in changes) {
@@ -112,8 +108,8 @@ export default class BackConfigurations extends Component {
         formsDOM.push(backupConfigForm);
 
         const reviewForm = <Review backupConfig = { backupConfig }
-                                   onClickBack = { this.handleBack.bind(this) }
-                                   onClickSubmit = { this.handleSubmit.bind(this)}/>;
+                                   handleBack = { this.handleBack.bind(this) }
+                           />;
         formsDOM.push(reviewForm);
 
         return (

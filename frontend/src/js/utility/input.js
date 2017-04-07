@@ -3,7 +3,7 @@ const input = {
 
     isInteger: (data) => input.integerRegEx.exec(data) !== null,
 
-    timeScope: {
+    dataScope: {
         days: {
             min: 0
         },
@@ -18,6 +18,9 @@ const input = {
         seconds: {
             min: 0,
             max: 60
+        },
+        maxBackupNumber: {
+            min: 1
         }
     },
 
@@ -29,13 +32,18 @@ const input = {
         if(typeof input == "string" || Array.isArray(input)) {
             return input.length == 0;
         }
+
+        if(typeof input == "object") {
+            return Object.keys(input).length === 0;
+        }
     },
 
     isDisabled: input => {
         return input === null;
     },
 
-    checkScope: (key, value, min, max) => {
+    checkScope: (key, value) => {
+        const { min, max } = input.dataScope[key];
 
         if(min != undefined && value < min) {
             return `${ key } must >= ${ min }`;
@@ -53,8 +61,7 @@ const input = {
             if (!input.isInteger(value)) {
                 return `${ key } must be integer`;
             } else {
-                const { min, max } = input.timeScope[key];
-                return input.checkScope(key, value, min, max);
+                return input.checkScope(key, value);
             }
         }
     },
@@ -63,20 +70,32 @@ const input = {
         let validated = true;
         keys.map(key => {
             const error = input.validateKey(key, data[key]);
+
             errors[key] = error;
-            if(!input.isEmpty(error) && typeof input !== "object") {
+            if(!input.isEmpty(error)) {
                 validated = false;
             }
 
-            if(typeof input === "object") {
-                for(const k in error) {
-                    if(!input.isEmpty(error[k])) {
-                        validated = false;
-                    }
-                }
-            }
         });
         return validated;
+    },
+
+    getTimeError: (time, emptyErrorMessage) => {
+        const error = {};
+
+        if(input.isDisabled(time)) {
+            return error;
+        }
+
+        if(input.isEmpty(time)) {
+            error.time = emptyErrorMessage;
+        }else{
+            for(let k in time) {
+                const err = input.checkTime(k, time[k]);
+                (err) && (error[k] = err);
+            }
+        }
+        return error;
     },
 
     validateKey: (key, value) => {
@@ -133,54 +152,25 @@ const input = {
 
                 break;
             case "interval":
-                if(input.isDisabled(value)){
-                    error = {
-                        days: null,
-                        hours: null,
-                        minutes: null,
-                        seconds: null
-                    };
+            case "duration":
+                error = input.getTimeError(value);
+                break;
+            case "maxBackupNumber":
+                if(input.isDisabled(value)) {
                     break;
                 }
 
                 if(input.isEmpty(value)) {
-                    error ={
-                        error: "please specify backup interval time or select backup once"
-                    };
-                }else{
-                    error = {};
-                    for(let k in value) {
-                        error[k] = input.checkTime(k, value[k]);
-                    }
-                }
-                break;
-            case "duration":
-                if(input.isDisabled(value)) {
-                    error = {
-                        days: null,
-                        hours: null,
-                        minutes: null,
-                        seconds: null
-                    };
+                    error = "please specify the maximum number of the backup copy dbs or disable this option";
                     break;
                 }
-                if(input.isEmpty(value)) {
-                    error = {
-                        error: "please specify the duration time of backup copy db or disable this option"
-                    };
-                }else{
-                    error = {};
-                    for(let k in value) {
-                        error[k] = input.checkTime(k, value[k]);
-                    }
+
+                if(!input.isInteger(value)) {
+                    error = "maxBackup number must be an integer";
+                    break;
                 }
-                break;
-            case "maxBackupNumber":
-                console.log(value);
-                if(input.isEmpty(value) && !input.isDisabled(value)) {
-                    error = "please specify the maximum number of the backup copy dbs or disable this option";
-                    console.log("err");
-                }
+
+                error = input.checkScope(key, value);
                 break;
             default:
                 break

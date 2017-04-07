@@ -33,6 +33,7 @@
                 padding: 8px 20px;
                 font-size: 1.2rem;
                 border: 1px solid rgba(0, 0, 0, 0.26);
+                background-color: $light-green;
             }
 
             input:disabled {
@@ -41,8 +42,8 @@
             }
 
             .error-input {
-                border-color: red;
-                outline: none;
+                //border-color: red;
+                //outline: none;
             }
 
             .error-message {

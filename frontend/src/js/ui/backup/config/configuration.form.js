@@ -17,17 +17,9 @@ export default class ConfigurationForm extends Component {
             collections: null,
             startTime: null,
             interval: {
-                days: null,
-                hours: null,
-                minutes: null,
-                seconds: null
             },
             maxBackupNumber: null,
             duration: {
-                days: null,
-                hours: null,
-                minutes: null,
-                seconds: null
             }
         };
         this.initValues = {
@@ -35,7 +27,7 @@ export default class ConfigurationForm extends Component {
             startTime: undefined,
             interval: {days: 0, hours: 0, minutes: 0, seconds:0 },
             duration: {days: 0, hours: 0, minutes: 0, seconds:0 },
-            maxBackupNumber: 0
+            maxBackupNumber: 1
         };
         this.formFields = ["db", "collections", "startTime", "interval", "maxBackupNumber", "duration"];
         this.getCollOpts = this.getCollOpts.bind(this);
@@ -67,14 +59,13 @@ export default class ConfigurationForm extends Component {
         const target = event.target;
         const checked = target.checked;
         const initValues = this.initValues;
-        console.log(checked);
         this.handleConfigChange(key, (checked? null: initValues[key]));
     }
 
     handleNext() {
         if(!input.validateKeys(this.formFields, this.errors, this.props.backupConfig)) {
             this.forceUpdate();
-            return;
+           // return;
         }
         this.props.handleNext()
     }
@@ -120,7 +111,7 @@ export default class ConfigurationForm extends Component {
 
     getError(key) {
         if(key == "interval" || key == "duration") {
-            return this.errors[key].error;
+            return this.errors[key].time;
         }else {
             return this.errors[key];
         }
@@ -253,8 +244,8 @@ export default class ConfigurationForm extends Component {
             </div>)
         ];
 
-        const buttons= [(<div className="button big no button-left" onClick = { this.props.handleBack } key={0}>Go Back</div>),
-            (<div className="button big yes button-right" onClick = { this.handleNext.bind(this)} key={1}>Next</div>)];
+        const buttons= [(<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>),
+            (<div className="button big yes button-right" onClick = { this.handleNext.bind(this)}>Next</div>)];
         return(
             <Form
                 className="configuration-form"
