@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 
 //ui
 import Form from '../../templates/form';
+import modal from './modal';
 
 //utility
 import input from '../../../utility/input';
@@ -30,6 +31,7 @@ export default class CredentialForm extends Component {
             this.forceUpdate();
             return;
         }
+        modal.create();
         // TODO authenticate the database
         this.props.handleNext();
     }

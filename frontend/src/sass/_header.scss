@@ -6,7 +6,6 @@
         width: 100%;
         line-height: #{$header-height};
         background-color: $black;
-        z-index: 1;
         @include user-select(none);
 
         > * {
