@@ -9,11 +9,11 @@
        float: left;
        position: relative;
        overflow: hidden;
-       box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, .2);
+       box-shadow: 1px 1px 1px 1px rgba(10, 10, 10, .2);
        transition: all .2s ease-in-out;
 
        &:hover {
-          box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+          box-shadow: 1px 1px 1px 1px rgba(10, 10, 10, .4);
        }
 
        .cell {

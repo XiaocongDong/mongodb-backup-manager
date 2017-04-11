@@ -38,13 +38,16 @@ class Controller {
                 return backupDB.getAvailableBackupCollections()
             })
             .then(dbsCollections => {
-                const dbCollections = dbsCollections.filter(dbCollection => {
+                console.log(dbsCollections);
+                let dbCollections = dbsCollections.filter(dbCollection => {
                     return dbCollection.db == db;
                 });
 
                 if (dbCollections.length === 0) {
                     throw new Error(`${ db } doesn't exist in ${ server } or ${ username }@${ authDB } can't backup it`);
                 }
+
+                dbCollections = dbCollections[0];
 
                 if(collections) {
                     const invalidCollections = collections.filter(collection => {

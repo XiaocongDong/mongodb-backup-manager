@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Form from '../../templates/form';
+import { hashHistory } from 'react-router'
 
 //utility
 import input from '../../../utility/input';
@@ -74,12 +75,12 @@ export default class Review extends Component {
             .then(response => {
                 this.submitErr = response.data.message;
                 setSubmitState(SUBMITSTATES.SUBMITTED);
-                // create modal?
+                // redirect to the main page
+                hashHistory.push('/');
             })
             .catch(({ response }) => {
                 this.submitErr = response.data.message;
                 setSubmitState(SUBMITSTATES.UNSUBMITTED);
-                // create modal?
             })
     }
 
