@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import Form from '../../templates/form';
 
+//utility
 import input from '../../../utility/input';
 import object from '../../../utility/object';
 import time from '../../../utility/time';
 import backupConfigUtil from '../../../utility/backupConfig';
+import { SUBMITSTATES } from '../../../utility/constants';
+
+
+//api
+import backups from '../../../api/backups';
 
 
 export default class Review extends Component {
@@ -17,7 +23,8 @@ export default class Review extends Component {
             interval: "not applied",
             duration: "not applied",
             maxBackupNumber: "not applied"
-        }
+        };
+        this.submitErr = null;
     }
 
     getValue(key) {
@@ -44,9 +51,16 @@ export default class Review extends Component {
     }
 
     handleSubmit() {
+        const { submitState, setSubmitState } = this.props;
+
+        if(submitState == SUBMITSTATES.SUBMITTING) {
+            return;
+        }
+
+        setSubmitState(SUBMITSTATES.SUBMITTING);
+
         const backupConfig = object.clone(this.props.backupConfig);
         for(const key in backupConfig) {
-            console.log(key);
             if(input.isEmpty(backupConfig[key])) {
                 delete backupConfig[key];
                 continue;
@@ -55,14 +69,25 @@ export default class Review extends Component {
                 backupConfig[key] = time.convertToMilliseconds(backupConfig[key]);
             }
         }
-        console.log(this.props.backupConfig);
-        console.log(backupConfig);
-        console.log(backupConfigUtil.getBackupConfigFromInput(backupConfig));
+
+        backups.newBackupConfig(backupConfig)
+            .then(response => {
+                this.submitErr = response.data.message;
+                setSubmitState(SUBMITSTATES.SUBMITTED);
+                // create modal?
+            })
+            .catch(({ response }) => {
+                this.submitErr = response.data.message;
+                setSubmitState(SUBMITSTATES.UNSUBMITTED);
+                // create modal?
+            })
     }
 
     render() {
-        const { backupConfig } = this.props;
+        const { backupConfig, submitState } = this.props;
         const uiKeys = backupConfigUtil.uiKeys;
+        const submitError = this.submitErr;
+
         const title = "Review";
         const items = Object.keys(backupConfig).map((key) => {
             const value = this.getValue(key);
@@ -79,7 +104,7 @@ export default class Review extends Component {
 
         const buttons = [
             (<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>),
-            (<div className="button big yes button-right" onClick = { this.handleSubmit.bind(this) }>Submit</div>)
+            (<div className={"button big yes button-right" + (submitState == SUBMITSTATES.SUBMITTING? " button-waiting": "")} onClick = { this.handleSubmit.bind(this) }>Submit</div>)
         ];
 
         return (
@@ -87,6 +112,7 @@ export default class Review extends Component {
                   title={ title }
                   items={ items }
                   buttons={ buttons }
+                  error = { submitError }
             >
             </Form>
         )

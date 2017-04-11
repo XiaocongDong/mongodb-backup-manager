@@ -10,7 +10,7 @@ import Review from './review.form';
 //utility
 import object from '../../../utility/object';
 import backupConfigUtil from '../../../utility/backupConfig';
-
+import { AUTHSTATES, SUBMITSTATES } from '../../../utility/constants';
 
 class BackConfigurations extends Component {
 
@@ -21,6 +21,8 @@ class BackConfigurations extends Component {
             update: props.update ||  false,
             review: props.review || false,
             step: (props.review? 3: 0),
+            authState: AUTHSTATES.UNAUTHENTICATED,
+            submitState: SUBMITSTATES.UNSUBMITTED,
             backupConfig: (props.backupConfig)
         };
     }
@@ -49,12 +51,23 @@ class BackConfigurations extends Component {
 
     setDbsColls(dbsColls) {
         this.dbsColls = dbsColls;
-        console.log(this.dbsColls);
-        this.handleNext();
+        const prevState = object.clone(this.state);
+        prevState.backupConfig.db = this.dbsColls[0].db;
+        prevState.collections = undefined;
+        prevState.step += 1;
+        this.setState(prevState);
+    }
+
+    setAuthState(state) {
+        this.setState({ authState: state});
+    }
+
+    setSubmitState(state) {
+        this.setState({ submitState: state });
     }
 
     render() {
-        const { step, backupConfig, update, review } = this.state;
+        const { step, backupConfig, update, review, authState, submitState } = this.state;
         const totalStep = this.totalSteps;
         const stagesDOM = [];
         for(let i = 0; i < totalStep; i++) {
@@ -64,6 +77,8 @@ class BackConfigurations extends Component {
         const formsDOM = [];
 
         const credentialForm = <CredentialForm  backupConfig = { backupConfig }
+                                                authState = { authState }
+                                                setAuthState = { this.setAuthState.bind(this) }
                                                 handleConfigChange = { this.handleConfigChange.bind(this) }
                                                 setDbsColls = { this.setDbsColls.bind(this) }
                                                 handleNext = { this.handleNext.bind(this) }/>;
@@ -78,6 +93,8 @@ class BackConfigurations extends Component {
         formsDOM.push(backupConfigForm);
 
         const reviewForm = <Review backupConfig = { backupConfig }
+                                   submitState = { submitState }
+                                   setSubmitState = { this.setSubmitState.bind(this) }
                                    handleBack = { this.handleBack.bind(this) }/>;
         formsDOM.push(reviewForm);
 

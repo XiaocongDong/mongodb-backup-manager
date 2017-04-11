@@ -24,10 +24,9 @@ export default class Form extends Component {
                     (buttons) &&
                     (<div className="footer">
                         {
-                            buttons.map((button, index) => (<div key={ index }>{ button }</div>))
-                        }
-                        {
-                            (error) && (<div className="error-message">{ error }</div>)
+                            <div className="buttons-wrapper">
+                                { buttons.map((button, index) => (<div key={ index }>{ button }</div>)) }
+                            </div>
                         }
                     </div>)
                 }

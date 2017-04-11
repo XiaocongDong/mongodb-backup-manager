@@ -159,6 +159,7 @@ export default class ConfigurationForm extends Component {
                 <label>{ uiKeys["db"] }<div className="required">*</div></label>
                 <Select name = "db-select"
                         value = { db }
+                        placeholder={ "please select backup database" }
                         options = { dbOpts }
                         onChange = { this.handleConfigChange.bind(this, "db") }
                 />
@@ -171,7 +172,7 @@ export default class ConfigurationForm extends Component {
                 <Select name = "collections"
                         value = { collections }
                         multi={ true }
-                        placeholder= "Select the backup collections"
+                        placeholder= { (collFilterOpts.length != 0)?"Select the backup collections": "no available collections" }
                         options = { collFilterOpts }
                         onChange = { this.handleConfigChange.bind(this, "collections") }
                         disabled={ collections === null }

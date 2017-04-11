@@ -8,7 +8,6 @@ import Dashboard from './ui/dashboard/dashboard';
 import BackupConfigurations from './ui/backup/config/backup.configurations';
 
 import '../sass/style.scss';
-import 'react-select/dist/react-select.css';
 
 const PlaceHolder = ({ children, location }) => {
      return (

@@ -7,15 +7,10 @@ import Form from '../../templates/form';
 //utility
 import input from '../../../utility/input';
 import backupConfigUtil from '../../../utility/backupConfig';
+import { AUTHSTATES } from '../../../utility/constants';
 
 //api
 import databases from '../../../api/databases';
-
-const STATES = {
-    AUTHENTICATING: Symbol(),
-    UNAUTHENTICATED: Symbol(),
-    AUTHENTICATED: Symbol()
-};
 
 export default class CredentialForm extends Component {
 
@@ -29,40 +24,44 @@ export default class CredentialForm extends Component {
             authDB: null,
             authErr: null,
         };
-        this.state = { auth: STATES.UNAUTHENTICATED };
     }
 
     handleAuthenticate() {
-        if(this.state.auth == STATES.AUTHENTICATING) {
+        const { authState, setAuthState, backupConfig, setDbsColls, handleNext } = this.props;
+        const errors = this.errors;
+        const keys = backupConfigUtil.credentialKeys;
+
+        if(authState == AUTHSTATES.AUTHENTICATING) {
             return;
         }
 
-        const errors = this.errors;
-        const backupConfig = this.props.backupConfig;
-        const setDbsColls = this.props.setDbsColls;
-        const keys = backupConfigUtil.credentialKeys;
+        if(authState == AUTHSTATES.AUTHENTICATED) {
+            handleNext();
+            return;
+        }
 
         if(!input.validateKeys(keys, errors, backupConfig)) {
             this.forceUpdate();
             return;
         }
 
-        this.setState({ auth: STATES.AUTHENTICATING });
+        setAuthState(AUTHSTATES.AUTHENTICATING);
+
         databases.getAvailableDBs(backupConfig)
-            .then(({ data }) => {
+            .then( ( { data } ) => {
+
                 if( data.length == 0) {
                     errors.authErr = `no available backup database in ${ backupConfig.server } this user`;
-                    this.setState({ auth: STATES.UNAUTHENTICATED });
+                    setAuthState(AUTHSTATES.UNAUTHENTICATED);
                     return;
                 }
 
-                this.setState({ auth: STATES.AUTHENTICATED });
+                setAuthState(AUTHSTATES.AUTHENTICATED);
                 setDbsColls(data);
             })
-            .catch(({ response }) => {
+            .catch( ({ response })  => {
                 errors.authErr = response.data.message;
-                this.setState({ auth: STATES.UNAUTHENTICATED });
-               // console.log(response);
+                setAuthState(AUTHSTATES.UNAUTHENTICATED);
             });
         // TODO authenticate the database
         // this.props.handleNext();
@@ -71,14 +70,14 @@ export default class CredentialForm extends Component {
     handleConfigChange(key, event) {
         event.preventDefault();
         const value = event.target.value;
+        this.props.setAuthState(AUTHSTATES.UNAUTHENTICATED);
         this.errors[key] = input.validateKey(key, value);
         this.props.handleConfigChange({[key]: value});
     }
 
     render() {
-        const { backupConfig } = this.props;
+        const { backupConfig, authState } = this.props;
         const errors = this.errors;
-        const auth = this.state.auth;
         const requiredKeys = backupConfigUtil.requiredKeys;
         const uiKeys = backupConfigUtil.uiKeys;
         const title = "Backup Database Credential";
@@ -99,13 +98,12 @@ export default class CredentialForm extends Component {
                                         <div className="error-message">{ error }</div>
                                     </div>)
                             });
-        const buttons = [
-            (
+        const buttons = [(
                 <div
-                    className={ "button big yes button-middle" + ((auth === STATES.AUTHENTICATING)? " button-waiting": "") }
+                    className={ "button big yes button-middle" + ((authState == AUTHSTATES.AUTHENTICATING)? " button-waiting": "") }
                     onClick={ this.handleAuthenticate.bind(this)}
                 >
-                    { auth == STATES.AUTHENTICATING? "Connecting": "Connect to DB" }
+                    { authState == AUTHSTATES.AUTHENTICATING? "Connecting": "Connect to DB" }
                 </div>)
         ];
 

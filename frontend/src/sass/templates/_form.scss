@@ -9,11 +9,6 @@
         color: $green;
     }
 
-    .error-message {
-        color: red;
-        text-align: center;
-    }
-
     .content {
         margin: auto;
 
@@ -46,9 +41,20 @@
                 cursor: not-allowed;
             }
 
+            .error-message {
+                color: red;
+            }
+
             .error-input {
                 //border-color: red;
                 //outline: none;
+            }
+
+            .Select-control {
+                border: 1px solid rgba(0, 0, 0, 0.26);
+                background-color: $light-green;
+                font-size: 1.2rem;
+                border-radius: 0px;
             }
         }
     }
@@ -73,6 +79,11 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
         }
     }
 }
