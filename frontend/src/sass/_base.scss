@@ -80,3 +80,8 @@ $sidebar-width: 240px;
 .clickable {
    cursor: pointer;
 }
+
+.button-waiting {
+   background: #ccc !important;
+   cursor: wait !important;
+}

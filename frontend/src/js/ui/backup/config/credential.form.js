@@ -3,12 +3,19 @@ import React, { Component } from 'react';
 
 //ui
 import Form from '../../templates/form';
-import modal from './modal';
 
 //utility
 import input from '../../../utility/input';
 import backupConfigUtil from '../../../utility/backupConfig';
 
+//api
+import databases from '../../../api/databases';
+
+const STATES = {
+    AUTHENTICATING: Symbol(),
+    UNAUTHENTICATED: Symbol(),
+    AUTHENTICATED: Symbol()
+};
 
 export default class CredentialForm extends Component {
 
@@ -19,21 +26,46 @@ export default class CredentialForm extends Component {
             port: null,
             username: null,
             password: null,
-            authDB: null
+            authDB: null,
+            authErr: null,
         };
+        this.state = { auth: STATES.UNAUTHENTICATED };
     }
 
     handleAuthenticate() {
+        if(this.state.auth == STATES.AUTHENTICATING) {
+            return;
+        }
+
         const errors = this.errors;
         const backupConfig = this.props.backupConfig;
+        const setDbsColls = this.props.setDbsColls;
         const keys = backupConfigUtil.credentialKeys;
+
         if(!input.validateKeys(keys, errors, backupConfig)) {
             this.forceUpdate();
             return;
         }
-        modal.create();
+
+        this.setState({ auth: STATES.AUTHENTICATING });
+        databases.getAvailableDBs(backupConfig)
+            .then(({ data }) => {
+                if( data.length == 0) {
+                    errors.authErr = `no available backup database in ${ backupConfig.server } this user`;
+                    this.setState({ auth: STATES.UNAUTHENTICATED });
+                    return;
+                }
+
+                this.setState({ auth: STATES.AUTHENTICATED });
+                setDbsColls(data);
+            })
+            .catch(({ response }) => {
+                errors.authErr = response.data.message;
+                this.setState({ auth: STATES.UNAUTHENTICATED });
+               // console.log(response);
+            });
         // TODO authenticate the database
-        this.props.handleNext();
+        // this.props.handleNext();
     }
 
     handleConfigChange(key, event) {
@@ -46,9 +78,11 @@ export default class CredentialForm extends Component {
     render() {
         const { backupConfig } = this.props;
         const errors = this.errors;
+        const auth = this.state.auth;
         const requiredKeys = backupConfigUtil.requiredKeys;
         const uiKeys = backupConfigUtil.uiKeys;
         const title = "Backup Database Credential";
+
         const items = backupConfigUtil.credentialKeys.map((key) => {
                                 const error = errors[key];
                                 return (
@@ -65,14 +99,23 @@ export default class CredentialForm extends Component {
                                         <div className="error-message">{ error }</div>
                                     </div>)
                             });
-        const buttons = [(<div className="button big yes button-middle" onClick={ this.handleAuthenticate.bind(this)}>Connect to DB</div>)];
+        const buttons = [
+            (
+                <div
+                    className={ "button big yes button-middle" + ((auth === STATES.AUTHENTICATING)? " button-waiting": "") }
+                    onClick={ this.handleAuthenticate.bind(this)}
+                >
+                    { auth == STATES.AUTHENTICATING? "Connecting": "Connect to DB" }
+                </div>)
+        ];
 
         return (
             <Form
                 className="credential-form"
                 title={ title }
                 items={ items }
-                buttons={buttons }
+                buttons={ buttons }
+                error={ errors.authErr }
             >
             </Form>
         )

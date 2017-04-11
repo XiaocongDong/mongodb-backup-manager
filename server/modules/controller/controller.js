@@ -197,7 +197,6 @@ class Controller {
 
     getAvailableDBsCollections(mongoParams, next) {
         const { server, port, username, password, authDB } = mongoParams;
-        console.log(server, port);
         const mongoDB = object.selfish(new MongoDB({server, port, username, password, authDB}));
 
         mongoDB.connect()

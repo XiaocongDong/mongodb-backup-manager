@@ -9,6 +9,11 @@
         color: $green;
     }
 
+    .error-message {
+        color: red;
+        text-align: center;
+    }
+
     .content {
         margin: auto;
 
@@ -45,10 +50,6 @@
                 //border-color: red;
                 //outline: none;
             }
-
-            .error-message {
-                color: red;
-            }
         }
     }
 
@@ -58,7 +59,6 @@
         .button-left, .button-right, .button-middle {
             width: 135px;
             margin-top: 30px;
-            margin-bottom: 30px;
         }
 
         .button-left {

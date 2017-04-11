@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 export default class Form extends Component {
 
     render() {
-        const { title, items, buttons, className } = this.props;
+        const { title, items, buttons, error, className } = this.props;
 
         return (
             <div className={"form " + (className? className: "")}>
@@ -25,6 +25,9 @@ export default class Form extends Component {
                     (<div className="footer">
                         {
                             buttons.map((button, index) => (<div key={ index }>{ button }</div>))
+                        }
+                        {
+                            (error) && (<div className="error-message">{ error }</div>)
                         }
                     </div>)
                 }

@@ -12,48 +12,17 @@ import object from '../../../utility/object';
 import backupConfigUtil from '../../../utility/backupConfig';
 
 
-export default class BackConfigurations extends Component {
+class BackConfigurations extends Component {
 
     constructor(props) {
         super(props);
         this.totalSteps = 3;
         this.state = {
-            update: (props.backupConfig? true: false),
-            review: (props.review == true),
+            update: props.update ||  false,
+            review: props.review || false,
             step: (props.review? 3: 0),
-            backupConfig: (props.backupConfig) || backupConfigUtil.getInitBackupConfig()
+            backupConfig: (props.backupConfig)
         };
-        // testing data
-        this.dbsColls = [
-            {
-                "db": "osdna",
-                "collections": [
-                    "links",
-                    "clique_constraints",
-                    "clique_types",
-                    "scans",
-                    "inventory",
-                    "cliques",
-                    "constants",
-                    "environments_config",
-                    "environment_config",
-                    "Mirantis-Liberty-UT",
-                    "meteor_accounts_loginServiceConfiguration",
-                    "users",
-                    "messages",
-                    "monitoring_config_templates"
-                ]
-            },
-            {
-                "db": "test",
-                "collections": [
-                    "organizations",
-                    "fiscal_years",
-                    "main",
-                    "country_info"
-                ]
-            }
-        ];
     }
 
     handleBack() {
@@ -78,6 +47,12 @@ export default class BackConfigurations extends Component {
         this.setState({ backupConfig });
     }
 
+    setDbsColls(dbsColls) {
+        this.dbsColls = dbsColls;
+        console.log(this.dbsColls);
+        this.handleNext();
+    }
+
     render() {
         const { step, backupConfig, update, review } = this.state;
         const totalStep = this.totalSteps;
@@ -90,6 +65,7 @@ export default class BackConfigurations extends Component {
 
         const credentialForm = <CredentialForm  backupConfig = { backupConfig }
                                                 handleConfigChange = { this.handleConfigChange.bind(this) }
+                                                setDbsColls = { this.setDbsColls.bind(this) }
                                                 handleNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
@@ -132,3 +108,6 @@ export default class BackConfigurations extends Component {
         )
     }
 }
+
+BackConfigurations.defaultProps = { backupConfig: backupConfigUtil.getInitBackupConfig() }
+export default BackConfigurations;
