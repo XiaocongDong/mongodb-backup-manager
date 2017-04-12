@@ -1,35 +1,27 @@
 .filters {
-   width: 100%;
+   width: 320px;
+   height: 100%;
    padding: 10px;
    background-color: $light-black;
 
    .item {
 
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-
-      > * {
-         vertical-align: top;
-         display: inline-block;
-      }
-
       .name {
          color: $white;
-         padding-left: 20px;
-         padding-right: 10px;
+         padding: 10px;
          text-transform: uppercase;
       }
 
       .filter {
+         width: 100%;
       }
 
       .status-filter {
-         width: 200px;
+        // width: 200px;
       }
 
       .id-filter {
-         width: 300px;
+         //width: 300px;
       }
 
    }

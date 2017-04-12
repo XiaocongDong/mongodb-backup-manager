@@ -26,6 +26,7 @@ export default class Filters extends Component {
                             <div className="filter status-filter">
                                 <Select
                                     name="status-filter"
+                                    multi={ true }
                                     placeholder="please select backup status"
                                     value={ props.status }
                                     options={ statusOpts }
@@ -43,6 +44,7 @@ export default class Filters extends Component {
                             <div className="filter id-filter">
                                 <Select
                                     name="id-filter"
+                                    multi={ props.multiIds }
                                     placeholder="please select backup id"
                                     value={ props.id }
                                     options={ idOpts }
