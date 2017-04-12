@@ -1,24 +1,23 @@
 .form {
     width: 100%;
     padding: 20px 50px 0 50px;
+    color: $black;
 
-    .title {
+    .form-title {
         text-align: center;
         font-weight: 600;
         font-size: 1.8rem;
-        color: $green;
+        color: $blue;
     }
 
-    .content {
-        margin: auto;
-
+    .form-content {
         .item {
+
             label {
                 display: inline-block;
                 margin: 10px 20px 10px 0px;
                 font-size: 1.3rem;
                 font-weight: 600;
-                text-transform: initial;
 
                 .required {
                     color: red;
@@ -33,7 +32,6 @@
                 padding: 8px 20px;
                 font-size: 1.2rem;
                 border: 1px solid rgba(0, 0, 0, 0.26);
-                background-color: $light-green;
             }
 
             input:disabled {
@@ -52,14 +50,14 @@
 
             .Select-control {
                 border: 1px solid rgba(0, 0, 0, 0.26);
-                background-color: $light-green;
                 font-size: 1.2rem;
                 border-radius: 0px;
             }
+
         }
     }
 
-    .footer {
+    .form-footer {
         width: 100%;
 
         .button-left, .button-right, .button-middle {

@@ -217,7 +217,7 @@ export default class ConfigurationForm extends Component {
                            checked = { interval === null }
                            onChange = { this.handleCheckBoxChecked.bind(this, "interval") }
                     />
-                    <span className="info">Backup once</span>
+                    <span className="info">just backup one time</span>
                 </label>
             </div>),
             (<div>

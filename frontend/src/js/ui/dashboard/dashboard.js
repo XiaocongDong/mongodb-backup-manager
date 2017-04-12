@@ -7,11 +7,13 @@ export default class Dashboard extends Component{
     render() {
         return (
             <div className="dashboard">
-                <Filters
-                    showStatus={ true }
-                    showId={ true }
-                    multiIds={ true }
-                />
+                <div className="side-bar">
+                    <Filters
+                        showStatus={ true }
+                        showId={ true }
+                        multiIds={ true }
+                    />
+                </div>
             </div>
         )
     }

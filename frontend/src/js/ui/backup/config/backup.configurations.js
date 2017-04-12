@@ -6,6 +6,7 @@ import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup'
 import CredentialForm from './credential.form';
 import BackupConfiguration from './configuration.form';
 import Review from './review.form';
+import Progress from './progress';
 
 //utility
 import object from '../../../utility/object';
@@ -102,28 +103,15 @@ class BackConfigurations extends Component {
         formsDOM.push(reviewForm);
 
         return (
-            <div className="container">
-                <div className="header">
-                    <div className="title">
-                        {
-                            review?(`Backup Config for ${ backupConfig.db } @ ${ backupConfig.server }`):
-                                update?(`Update BackupConfig for ${ backupConfig.db } @ ${ backupConfig.server }`):
-                                "New Backup Config"
-                        }
+            <div className="configurations-container">
+                <div className="side-bar">
+                    <Progress step={ step }/>
+                </div>
+                <div className="content">
+                    <div className="form-wrapper">
+                    { formsDOM[step] }
                     </div>
                 </div>
-                {
-                    (!this.review) && (
-                    <div className="progress">
-                        <div className="stages">
-                            { stagesDOM }
-                        </div>
-                        <div className="bar-wrapper">
-                            <div className="bar" style={ {width: (step)/(totalStep - 1) * 100 + "%" } }></div>
-                        </div>
-                    </div>)
-                }
-                { formsDOM[step] }
             </div>
         )
     }

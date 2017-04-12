@@ -33,6 +33,7 @@
           width: 70%;
           left: 70%;
           padding: 10px;
+          color: $black;
        }
 
        .disabled {
@@ -41,9 +42,10 @@
    }
 
    .name-row {
+       color: $white;
        width: 100%;
        float: left;
-       background: $green;
+       background: $blue;
        position: relative;
        right: 70%;
    }

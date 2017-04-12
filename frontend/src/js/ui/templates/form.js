@@ -8,8 +8,8 @@ export default class Form extends Component {
 
         return (
             <div className={"form " + (className? className: "")}>
-                <div className="title">{ title }</div>
-                <div className="content">
+                <div className="form-title">{ title }</div>
+                <div className="form-content">
                     {
                         items.map((item, i) => {
                             return (
@@ -20,7 +20,7 @@ export default class Form extends Component {
                         })
                     }
                 </div>
-                <div className="footer">
+                <div className="form-footer">
                     {
                         (error) &&
                         <div className="error-message">

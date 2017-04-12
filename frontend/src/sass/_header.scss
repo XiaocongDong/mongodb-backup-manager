@@ -1,7 +1,6 @@
 .mongo-backup-manager {
 
     > .header {
-        position: fixed;
         height: $header-height;
         width: 100%;
         line-height: #{$header-height};
