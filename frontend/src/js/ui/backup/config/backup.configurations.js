@@ -1,6 +1,6 @@
 //react
 import React, { Component } from 'react';
-// import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup'
 
 //ui
 import CredentialForm from './credential.form';
@@ -76,7 +76,8 @@ class BackConfigurations extends Component {
 
         const formsDOM = [];
 
-        const credentialForm = <CredentialForm  backupConfig = { backupConfig }
+        const credentialForm = <CredentialForm  key = { 0 }
+                                                backupConfig = { backupConfig }
                                                 authState = { authState }
                                                 setAuthState = { this.setAuthState.bind(this) }
                                                 handleConfigChange = { this.handleConfigChange.bind(this) }
@@ -84,7 +85,8 @@ class BackConfigurations extends Component {
                                                 handleNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
-        const backupConfigForm = <BackupConfiguration dbsColls = { this.dbsColls }
+        const backupConfigForm = <BackupConfiguration key = { 1 }
+                                                      dbsColls = { this.dbsColls }
                                                       handleNext = { this.handleNext.bind(this) }
                                                       handleBack = { this.handleBack.bind(this) }
                                                       backupConfig = { backupConfig }
@@ -92,7 +94,8 @@ class BackConfigurations extends Component {
                                                       review = { review }/>;
         formsDOM.push(backupConfigForm);
 
-        const reviewForm = <Review backupConfig = { backupConfig }
+        const reviewForm = <Review key = { 2 }
+                                   backupConfig = { backupConfig }
                                    submitState = { submitState }
                                    setSubmitState = { this.setSubmitState.bind(this) }
                                    handleBack = { this.handleBack.bind(this) }/>;

@@ -7,6 +7,7 @@
          transform: translateX(-50%);
          width: 60%;
          color: $black;
+         overflow: hidden;
 
          box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
          border: 1px solid #eee;
@@ -72,6 +73,26 @@
                      background: $green;
                   }
                }
+         }
+
+         .form-enter {
+            transform: translateX(-100%);
+            transition: transform 1s;
+         }
+
+         .form-enter-active {
+            transform: translateX(0%);
+         }
+
+
+
+         .form-leave {
+            transform: translateX(0%);
+            transition: transform 1s;
+         }
+
+         .form-leave-active {
+            transform: translateX(100%);
          }
     }
 }

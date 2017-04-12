@@ -74,7 +74,7 @@ export default class ConfigurationForm extends Component {
         const keys = backupConfigUtil.configKeys;
         if(!input.validateKeys(keys, errors, backupConfig)) {
             this.forceUpdate();
-           // return;
+            return;
         }
         this.props.handleNext()
     }
