@@ -16,9 +16,25 @@ export default class BackupGrid extends Component {
         return (
             <div className="backup-grid-wrapper">
                 <div className="backup-grid">
-                    <div className="status-wrapper">
-                        <div className="status-ball" style={ { borderColor: colorsMap[backupConfig.status], color: colorsMap[backupConfig.status] } }></div>
-                        <div className="status">{ backupConfig.status }</div>
+                    <div className="backup-grid-overview">
+                        <div className="status-wrapper">
+                            <div className="status-ball" style={ { borderColor: colorsMap[backupConfig.status] } }></div>
+                            <div className="status" style={ { color: colorsMap[backupConfig.status] } }>{ backupConfig.status }</div>
+                        </div>
+                        <div className="numbers-wrapper">
+                            <div className="number">
+                                <div className="name">total</div>
+                                <div className="value">{ backupConfig.backupTotal }</div>
+                            </div>
+                            <div className="number">
+                                <div className="name">success</div>
+                                <div className="value">{ backupConfig.successfulBackups }</div>
+                            </div>
+                            <div className="number">
+                                <div className="name">failure</div>
+                                <div className="value">{ backupConfig.failedBackups }</div>
+                            </div>
+                        </div>
                     </div>
                     <div className="item">
                         <div className="key">server</div>

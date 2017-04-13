@@ -13,7 +13,7 @@
          startTime: the time of backup started, if not specified, started right now
          interval: millisecond interval for backup
          maxBackupNumber: 7// integer
-         backupDuration: millisecond of how long will the backup expire
+         duration: millisecond of how long will the backup expire
     }
 
     backup_id: db_name@server
@@ -72,6 +72,14 @@ const backupUtil = {
             }
         }
         return startTime;
+    },
+
+    updateBackupData(backupConfig) {
+        if(backupConfig.backupTotal == null) {
+            backupConfig.backupTotal = 0;
+            backupConfig.successfulBackups = 0;
+            backupConfig.failedBackups = 0;
+        }
     }
 };
 

@@ -84,6 +84,8 @@ class Controller {
 
         const backupManager = this.backUpsHash.get(backupID);
 
+        //TODO check backup status here, RUNNING backup can not be run!!!
+
         backupManager.backup()
             .then(() => {
                 const nextBackupTime = backupManager.nextBackUpTime;

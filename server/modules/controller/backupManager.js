@@ -12,6 +12,7 @@ class BackupManager {
         this.backupDB = object.selfish(new MongoDB(backupConfig));
         this.localDB = localDB;
         this.backupConfig = backupConfig;
+        backupUtil.updateBackupData(this.backupConfig);
         this.currentBackupCollections = null;
         this.activites = new Set();
         this.start();
@@ -48,7 +49,7 @@ class BackupManager {
                 if (interval) {
                     const now = new Date();
                     let backUpRoutine = () => {
-                        this.backupConfig.nextBackUpTime = new Date(now.valueOf() + interval);
+                        this.backupConfig.nextBackUpTime = new Date(now.valueOf() + interval).toLocaleString();
                         this.backup.call(this);
                     };
                     this.backupConfig.nextBackUpTime = new Date(now.valueOf() + interval);
@@ -144,14 +145,20 @@ class BackupManager {
 
     backupOnWriteSuccess(backupCopyDBName) {
         const now = new Date();
-        const dbDuration = this.backupConfig.backupDuration;
+        const dbDuration = this.backupConfig.duration;
         const deleteTime = dbDuration ? new Date(now.valueOf() + dbDuration) : '';
 
         return this.addBackupCopyDB(backupCopyDBName, now, deleteTime)
             .then(() => {
                 const lastBackupTime = now.toLocaleString();
                 this.addLog(`Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`);
-                this.updateBackupConfigToDB({lastBackupTime});
+                const updates = {
+                    lastBackupTime,
+                    lastBackupStatus: backupCons.result.SUCCEED,
+                    backupTotal: ++this.backupConfig.backupTotal,
+                    successfulBackups: ++this.backupConfig.successfulBackups
+                };
+                this.updateBackupConfigToDB(updates);
 
                 if( dbDuration ) {
                     const deleteDBTask = () => {
@@ -170,9 +177,13 @@ class BackupManager {
     backupOnFailure(err, backupCopyDBName) {
         const now = new Date();
         const lastBackupTime = now.toLocaleString();
-
+        const updates = {
+            lastBackupTime,
+            lastBackupStatus: backupCons.result.FAILED,
+            failedBackups: ++this.backupConfig.failedBackups
+        };
         this.addLog(`Backup ${ this.backupConfig.db } failed for ${ err.message }`, "error");
-        this.updateBackupConfigToDB({lastBackupTime});
+        this.updateBackupConfigToDB(updates);
         this.localDB.deleteDatabase(backupCopyDBName)
     }
 

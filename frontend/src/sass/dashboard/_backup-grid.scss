@@ -13,44 +13,73 @@
         padding: 10px;
         border-radius: 5px;
         box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+        font-size: 1rem;
 
-        .status-wrapper {
-
+        .backup-grid-overview {
             height: 20px;
 
-            .status-ball {
-                width: 0;
-                height: 0;
-                border: 10px solid;
-                border-radius: 50%;
-                display: inline-block;
-                vertical-align: top;
-            }
+            .status-wrapper {
 
-            .status {
-                text-transform: uppercase;
-                display: inline-block;
                 height: 100%;
-                vertical-align: center;
-                line-height: 20px;
-                padding-left: 10px;
+                width: 35%;
+                display: inline-block;
+
+                .status-ball {
+                    width: 0;
+                    height: 0;
+                    border: 10px solid;
+                    border-radius: 50%;
+                    display: inline-block;
+                    vertical-align: top;
+                }
+
+                .status {
+                    text-transform: uppercase;
+                    display: inline-block;
+                    height: 100%;
+                    vertical-align: center;
+                    line-height: 20px;
+                    padding-left: 10px;
+                }
+
             }
 
+            .numbers-wrapper {
+                display: inline-flex;
+                height: 100%;
+                width: 65%;
+                justify-content: space-between;
+
+                .number {
+
+                    .name {
+                        display: inline-block;
+                        padding-right: 5px;
+                        font-weight: bold;
+                        text-transform: uppercase;
+                    }
+
+                    .value {
+                        display: inline-block;
+                    }
+
+                }
+            }
         }
 
         .item {
-            padding: 10px;
-
-            > * {
-                display: inline-block;
-            }
+            padding: 8px;
 
             .key {
+                display: inline-block;
                 padding-right: 5px;
+                text-transform: capitalize;
+                font-weight: 400;
             }
 
             .value {
-
+                display: inline-block;
+                color: #8899a6;
             }
 
         }
