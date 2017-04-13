@@ -2,9 +2,9 @@ html, body {
   margin: 0;
   padding: 0;
   font-size: 12px;
-  font-family: 'Lato','Myriad Pro', 'Helvetica', 'Sans-serif';
+  font-family: 'Roboto', sans-serif;
   font-weight: 300;
-  color: #ECE9E9;
+  color: black;
 }
 
 * {
@@ -21,15 +21,12 @@ $light-green: #DFF0D8;
 $header-height: 60px;
 $sidebar-width: 240px;
 
-
 @mixin user-select($value) {
   -webkit-user-select: $value;
   -moz-user-select: $value;
   -ms-user-select: $value;
   user-select: $value;
 }
-
-
 
 .link {
   text-decoration: none;

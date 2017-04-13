@@ -8,23 +8,22 @@
       background: #fff;
       overflow: auto;
 
-      > * {
-         width: 100%;
-         height: 100%;
-      }
-
       .side-bar {
          display: inline-block;
          width: 320px;
          height: 100%;
          padding: 10px;
          background-color: #eee;
+         vertical-align: top;
+         box-shadow: 2px 0 2px rgba(0, 0, 0, .16)
       }
 
       .content {
+         display: inline-block;
          width: calc(100% - 320px);
          height: 100%;
          overflow: auto;
+         vertical-align: top;
       }
    }
 
