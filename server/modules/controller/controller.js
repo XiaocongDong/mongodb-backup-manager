@@ -59,11 +59,11 @@ class Controller {
                     }
                 }
 
+                backupUtil.updateBackupData(backupConfig);
                 return this.localDB.updateBackupConfig(backupConfig)
             })
             .then(() => {
                 log.info(`Created backup config for ${ backupConfig.id }`);
-                backupConfig.status = backupCons.status.PENDING;
                 const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig));
                 this.backUpsHash.set(backupConfig.id, backupManager);
                 this.getBackupStatus(backupConfig.id, next);

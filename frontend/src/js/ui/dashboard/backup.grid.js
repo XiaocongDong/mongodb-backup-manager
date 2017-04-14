@@ -55,7 +55,7 @@ export default class BackupGrid extends Component {
                     </div>
                     <div className="item">
                         <div className="key">next backup time</div>
-                        <div className="value time-value">{ backupConfig.nextBackUpTime || ""}</div>
+                        <div className="value time-value">{ backupConfig.nextBackUpTime || "N/A"}</div>
                     </div>
                 </div>
             </div>

@@ -76,6 +76,7 @@ const backupUtil = {
 
     updateBackupData(backupConfig) {
         if(backupConfig.backupTotal == null) {
+            backupConfig.status = constants.backup.status.PENDING;
             backupConfig.backupTotal = 0;
             backupConfig.successfulBackups = 0;
             backupConfig.failedBackups = 0;

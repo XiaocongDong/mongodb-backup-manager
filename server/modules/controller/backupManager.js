@@ -12,7 +12,6 @@ class BackupManager {
         this.backupDB = object.selfish(new MongoDB(backupConfig));
         this.localDB = localDB;
         this.backupConfig = backupConfig;
-        backupUtil.updateBackupData(this.backupConfig);
         this.currentBackupCollections = null;
         this.activites = new Set();
         this.start();
@@ -41,7 +40,7 @@ class BackupManager {
                                           status: backupCons.status.WAITING});
 
             const interval = this.backupConfig.interval;
-            const firstTimeout = startTime - new Date();
+            const firstTimeout = startTime?(startTime - new Date()): 0;
 
             let firstBackup = () => {
                 this.backup();
@@ -65,10 +64,6 @@ class BackupManager {
     }
 
     checkBackupAvailable() {
-        if(!this.backupConfig.startTime && !this.backupConfig.interval) {
-            return false;
-        }
-
         if(this.backupStatus == backupCons.status.ABORTED ||
             this.backupStatus == backupCons.status.STOP) {
             return false
@@ -134,7 +129,13 @@ class BackupManager {
                 throw err;
             })
             .finally(() => {
-                this.updateBackupStatus(previousBackupStatus);
+                let nextStatus = previousBackupStatus;
+
+                if(previousBackupStatus == backupCons.status.WAITING && !this.backupConfig.nextBackUpTime) {
+                    nextStatus = backupCons.status.PENDING;
+                }
+
+                this.updateBackupStatus(nextStatus);
             });
     }
 
@@ -189,7 +190,7 @@ class BackupManager {
 
 
     getTargetBackUpDBName(date) {
-        return `${ this.backupConfig.id }-${ date.valueOf() }`
+        return `${ this.backupConfig.db }-${ date.valueOf() }`
     }
 
     getBackupCollections() {
