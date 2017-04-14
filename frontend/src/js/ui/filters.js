@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
+import { STATUS } from '../utility/data';
 
-const statusOpts = [
-    { value: 'STOP', label: 'STOP'},
-    { value: 'WAITING', label: 'WAITING'}
-];
-
-const idOpts = [
-    { value: 'copy@localhost', label: 'copy@localhost' },
-    { value: 'crcdashboard@localhost', label: 'crcdashboard@localhost' }
-];
+const statusOpts = STATUS.map(status => {
+    return {
+        value: status,
+        label: status
+    }
+});
 
 export default class Filters extends Component {
 
@@ -28,9 +26,9 @@ export default class Filters extends Component {
                                     name="status-filter"
                                     multi={ true }
                                     placeholder="please select backup status"
-                                    value={ props.status }
+                                    value={ props.statusFilter }
                                     options={ statusOpts }
-                                    onChange={ props.setStatus }
+                                    onChange={ props.setStatuses }
                                 />
                             </div>
                         </div>
@@ -46,9 +44,9 @@ export default class Filters extends Component {
                                     name="id-filter"
                                     multi={ props.multiIds }
                                     placeholder="please select backup id"
-                                    value={ props.id }
-                                    options={ idOpts }
-                                    onChange={ props.setId }
+                                    value={ props.idFilter }
+                                    options={ props.idOpts }
+                                    onChange={ props.setIds }
                                 />
                             </div>
                         </div>

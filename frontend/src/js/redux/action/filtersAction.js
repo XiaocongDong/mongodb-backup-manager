@@ -1,6 +1,6 @@
 const filtersAction = {
-    set_status: 'SET_STATUS',
-    set_id: 'SET_BACKUP_ID'
+    set_statuses: 'SET_STATUSES',
+    set_ids: 'SET_IDS'
 };
 
 export default filtersAction;

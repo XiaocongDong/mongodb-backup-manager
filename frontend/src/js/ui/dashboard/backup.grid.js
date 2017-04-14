@@ -35,6 +35,7 @@ export default class BackupGrid extends Component {
                                 <div className="value">{ backupConfig.failedBackups }</div>
                             </div>
                         </div>
+                        <div className="backup-id">{ backupConfig.id }</div>
                     </div>
                     <div className="item">
                         <div className="key">server</div>

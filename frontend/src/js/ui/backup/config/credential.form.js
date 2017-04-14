@@ -63,8 +63,6 @@ export default class CredentialForm extends Component {
                 errors.authErr = response.data.message;
                 setAuthState(AUTHSTATES.UNAUTHENTICATED);
             });
-        // TODO authenticate the database
-        // this.props.handleNext();
     }
 
     handleConfigChange(key, event) {

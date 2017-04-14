@@ -5,12 +5,16 @@ import { Provider } from 'react-redux';
 
 import Header from './ui/header';
 import Content from './ui/content';
-import Dashboard from './ui/dashboard/dashboard';
+import Dashboard from './redux/container/dashboard/dashboard';
 import BackupConfigurations from './ui/backup/config/backup.configurations';
+
+import dataLoader from './api/dataLoader';
 
 import store from './redux/store';
 
 import '../sass/style.scss';
+
+dataLoader.loadBackupConfigs();
 
 const PlaceHolder = ({ children, location }) => {
      return (
