@@ -9,12 +9,15 @@ import Dashboard from './redux/container/dashboard/dashboard';
 import BackupConfigurations from './ui/backup/config/backup.configurations';
 
 import dataLoader from './api/dataLoader';
+import clientSocket from './api/socket';
 
 import store from './redux/store';
 
 import '../sass/style.scss';
 
 dataLoader.loadBackupConfigs();
+clientSocket.startSocket();
+
 
 const PlaceHolder = ({ children, location }) => {
      return (

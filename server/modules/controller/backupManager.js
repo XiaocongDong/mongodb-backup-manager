@@ -8,9 +8,10 @@ const backupUtil = require('modules/utility/backup');
 
 class BackupManager {
 
-    constructor(localDB, backupConfig) {
+    constructor(localDB, backupConfig, serverSocket) {
         this.backupDB = object.selfish(new MongoDB(backupConfig));
         this.localDB = localDB;
+        this.serverSocket = serverSocket;
         this.backupConfig = backupConfig;
         this.currentBackupCollections = null;
         this.activites = new Set();
@@ -33,7 +34,8 @@ class BackupManager {
 
             this.addLog(`Started ${ this.backupConfig.id }`);
             const startTime = backupUtil.getStartTime(this.backupConfig);
-            const nextBackUpTime = this.backupConfig.startTime;
+            // no start time, backup start now
+            const nextBackUpTime = startTime? startTime.toLocaleString(): null;
 
             this.updateBackupConfigToDB( {startTime,
                                           nextBackUpTime,
@@ -46,13 +48,20 @@ class BackupManager {
                 this.backup();
 
                 if (interval) {
-                    const now = new Date();
                     let backUpRoutine = () => {
-                        this.backupConfig.nextBackUpTime = new Date(now.valueOf() + interval).toLocaleString();
+                        if(this.backupStatus == backupCons.status.RUNNING) {
+                            return;
+                        }
+                        const now = new Date();
+                        const nextBackUpTime = new Date(now.valueOf() + interval).toLocaleString();
+                        this.updateBackupConfigToDB({ nextBackUpTime });
                         this.backup.call(this);
                     };
-                    this.backupConfig.nextBackUpTime = new Date(now.valueOf() + interval);
+                    const nextBackUpTime = new Date(new Date().valueOf() + interval).toLocaleString();
+                    this.updateBackupConfigToDB({ nextBackUpTime });
                     this.activites.add(setInterval(backUpRoutine, interval));
+                }else{
+                    this.updateBackupConfig({ nextBackupTime: null });
                 }
 
             };
@@ -131,7 +140,7 @@ class BackupManager {
             .finally(() => {
                 let nextStatus = previousBackupStatus;
 
-                if(previousBackupStatus == backupCons.status.WAITING && !this.backupConfig.nextBackUpTime) {
+                if(previousBackupStatus == backupCons.status.WAITING && !this.backupConfig.interval) {
                     nextStatus = backupCons.status.PENDING;
                 }
 
@@ -151,10 +160,9 @@ class BackupManager {
 
         return this.addBackupCopyDB(backupCopyDBName, now, deleteTime)
             .then(() => {
-                const lastBackupTime = now.toLocaleString();
                 this.addLog(`Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`);
                 const updates = {
-                    lastBackupTime,
+                    lastBackupTime: this.backupConfig.nextBackUpTime,
                     lastBackupStatus: backupCons.result.SUCCEED,
                     backupTotal: ++this.backupConfig.backupTotal,
                     successfulBackups: ++this.backupConfig.successfulBackups
@@ -176,11 +184,10 @@ class BackupManager {
     }
 
     backupOnFailure(err, backupCopyDBName) {
-        const now = new Date();
-        const lastBackupTime = now.toLocaleString();
         const updates = {
-            lastBackupTime,
+            lastBackupTime: this.backupConfig.nextBackupTime,
             lastBackupStatus: backupCons.result.FAILED,
+            backupTotal: ++this.backupConfig.backupTotal,
             failedBackups: ++this.backupConfig.failedBackups
         };
         this.addLog(`Backup ${ this.backupConfig.db } failed for ${ err.message }`, "error");
@@ -289,6 +296,7 @@ class BackupManager {
 
     updateBackupConfigToDB(updates) {
         Object.assign(this.backupConfig, updates);
+        this.serverSocket.emit('backupConfigs');
         return this.localDB.updateBackupConfig(this.backupConfig);
     }
 

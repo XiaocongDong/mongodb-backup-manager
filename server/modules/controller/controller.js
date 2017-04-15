@@ -12,11 +12,16 @@ class Controller {
 
     constructor() {
         this.localDB = null;
+        this.serverSocket = null;
         this.backUpsHash = new Map();
     }
 
     setLocalDB(localDB) {
         this.localDB = localDB;
+    }
+
+    setServerSocket(serverSocket) {
+        this.serverSocket = serverSocket;
     }
 
     newBackup(backupConfig, next) {
@@ -64,7 +69,7 @@ class Controller {
             })
             .then(() => {
                 log.info(`Created backup config for ${ backupConfig.id }`);
-                const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig));
+                const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig, this.serverSocket));
                 this.backUpsHash.set(backupConfig.id, backupManager);
                 this.getBackupStatus(backupConfig.id, next);
             })
@@ -288,7 +293,7 @@ class Controller {
                 }
                 backupConfigs.map(backupConfig => {
                     log.info(`Restarted ${ backupConfig.id } from ${ this.localDB.server } ${ this.localDB.configCollectionName }`);
-                    const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig));
+                    const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig, this.serverSocket));
                     log.debug(`Added ${ backupConfig.id } to the backup controller`);
                     this.backUpsHash.set(backupConfig.id, backupManager);
                     backupManager.deleteExtraCopyDBs();
