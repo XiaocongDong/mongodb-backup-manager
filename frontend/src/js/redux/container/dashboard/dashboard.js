@@ -9,12 +9,14 @@ const mapStateToProps = (state) => {
     const statusFilters = filters.get('statuses');
     const idFilters = filters.get('ids');
     const backupConfigs = state.get('data').getIn(['backupConfigs', 'data']);
+    const empty = (backupConfigs.length == 0);
     const idOpts = filter.getIdOpts(backupConfigs, statusFilters);
     const filteredBackupConfigs = filter.backupConfigs(backupConfigs, filters);
 
     return {
         statusFilters,
         idFilters,
+        empty,
         idOpts,
         backupConfigs: filteredBackupConfigs
     };

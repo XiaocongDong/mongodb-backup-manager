@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Filters from '../filters';
+import EmptyContent from './empty.content';
 import BackupsView from './backups.view';
 
 
@@ -8,6 +9,10 @@ export default class Dashboard extends Component{
 
     render() {
         const props = this.props;
+
+        if(props.empty) {
+            return <EmptyContent/>;
+        }
 
         return (
             <div className="dashboard">
@@ -26,6 +31,7 @@ export default class Dashboard extends Component{
                 </div>
                 <div className="content">
                     <BackupsView
+                        empty={ props.empty }
                         backupConfigs={ props.backupConfigs }
                     />
                 </div>

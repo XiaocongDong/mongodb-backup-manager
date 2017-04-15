@@ -1,0 +1,31 @@
+.empty-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .content-wrapper {
+        width: 30%;
+        height: 30%;
+        max-width: 400px;
+        max-height: 400px;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        flex-wrap: wrap;
+
+        .title {
+           font-weight: 600;
+           font-size: 2.5rem;
+           color: #dddddd;
+        }
+
+        .jump-to-new-config-button {
+           margin-top: 20px;
+           padding: 10px 20px;
+           font-size: 2rem;
+        }
+
+    }
+}

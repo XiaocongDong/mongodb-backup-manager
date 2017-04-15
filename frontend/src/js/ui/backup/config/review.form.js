@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Form from '../../templates/form';
+import dataLoader from '../../../api/dataLoader';
 import { hashHistory } from 'react-router'
 
 //utility
@@ -74,9 +75,11 @@ export default class Review extends Component {
         backups.newBackupConfig(backupConfig)
             .then(response => {
                 this.submitErr = response.data.message;
-                setSubmitState(SUBMITSTATES.SUBMITTED);
                 // redirect to the main page
-                hashHistory.push('/');
+                dataLoader.loadBackupConfigs()
+                    .then(() => {
+                        hashHistory.push('/');
+                    })
             })
             .catch(({ response }) => {
                 this.submitErr = response.data.message;

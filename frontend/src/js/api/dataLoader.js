@@ -5,13 +5,13 @@ import { dispatch } from '../redux/store'
 const dataLoader = {
 
     loadBackupConfigs: () => {
-        backups.getBackupConfigs()
-            .then(configs => {
-                dispatch({ type: data.data_set, payload: { key: "backupConfigs", value: configs }})
-            })
-            .catch(err => {
-                console.error('Failed to load the backup configs for ', err.message);
-            })
+        return backups.getBackupConfigs()
+                    .then(configs => {
+                        dispatch({ type: data.data_set, payload: { key: "backupConfigs", value: configs }})
+                    })
+                    .catch(err => {
+                        console.error('Failed to load the backup configs for ', err.message);
+                    })
     }
 
 };
