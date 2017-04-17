@@ -63,7 +63,7 @@ class BackupManager {
                     this.updateBackupConfigToDB({ nextBackUpTime });
                     this.activites.add(setInterval(backUpRoutine, interval));
                 }else{
-                    this.updateBackupConfig({ nextBackupTime: null });
+                    this.updateBackupConfigToDB({ nextBackupTime: null });
                 }
 
             };
@@ -108,7 +108,7 @@ class BackupManager {
         const now = new Date();
         const backupTargetDBName = this.getTargetBackUpDBName(now);
         const previousBackupStatus = this.backupStatus;
-        const lastBackupTime = new Date();
+        const lastBackupTime = new Date().toLocaleString();
         this.updateBackupConfigToDB({ lastBackupTime });
 
         return Promise.resolve()
