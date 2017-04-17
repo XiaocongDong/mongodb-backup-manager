@@ -52,11 +52,13 @@ class BackupManager {
                         if(this.backupStatus == backupCons.status.RUNNING) {
                             return;
                         }
+                        // update next backup time before each backup
                         const now = new Date();
                         const nextBackUpTime = new Date(now.valueOf() + interval).toLocaleString();
                         this.updateBackupConfigToDB({ nextBackUpTime });
                         this.backup.call(this);
                     };
+                    // before next backup, update next backup time
                     const nextBackUpTime = new Date(new Date().valueOf() + interval).toLocaleString();
                     this.updateBackupConfigToDB({ nextBackUpTime });
                     this.activites.add(setInterval(backUpRoutine, interval));
@@ -106,7 +108,9 @@ class BackupManager {
         const now = new Date();
         const backupTargetDBName = this.getTargetBackUpDBName(now);
         const previousBackupStatus = this.backupStatus;
-        log.debug('Backup copy DB Name is ' + backupTargetDBName);
+        const lastBackupTime = new Date();
+        this.updateBackupConfigToDB({ lastBackupTime });
+
         return Promise.resolve()
             .then(() => {
                 if(previousBackupStatus == backupCons.status.RUNNING) {
@@ -162,7 +166,6 @@ class BackupManager {
             .then(() => {
                 this.addLog(`Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`);
                 const updates = {
-                    lastBackupTime: this.backupConfig.nextBackUpTime,
                     lastBackupStatus: backupCons.result.SUCCEED,
                     backupTotal: ++this.backupConfig.backupTotal,
                     successfulBackups: ++this.backupConfig.successfulBackups
@@ -185,7 +188,6 @@ class BackupManager {
 
     backupOnFailure(err, backupCopyDBName) {
         const updates = {
-            lastBackupTime: this.backupConfig.nextBackupTime,
             lastBackupStatus: backupCons.result.FAILED,
             backupTotal: ++this.backupConfig.backupTotal,
             failedBackups: ++this.backupConfig.failedBackups
