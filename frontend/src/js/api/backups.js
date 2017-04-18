@@ -13,6 +13,14 @@ const backups = {
             .then(response => {
                 return response.data;
             })
+    },
+
+    getBackupConfig: (backupId) => {
+       return axios.get(api.backupsPath('/config'), {
+           params: { id: backupId }
+       }).then(response => {
+           return response.data
+       })
     }
 
 };

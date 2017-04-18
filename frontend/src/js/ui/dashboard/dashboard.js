@@ -25,8 +25,8 @@ export default class Dashboard extends Component{
                         idFilter={ props.idFilters }
                         idOpts={ props.idOpts }
                         backupConfigs={ props.backupConfigs }
-                        setStatuses={ props.setStatuses }
-                        setIds={ props.setIds }
+                        setStatuses={ props.onStatusChange }
+                        setIds={ props.onIdChange }
                     />
                 </div>
                 <div className="content">

@@ -51,6 +51,22 @@ const object = {
             }
         }
         return true;
+    },
+
+    updateArrWithKeyValue: (key, value, arr, obj) => {
+        const filteredArr = arr.filter(o => {
+            return o[key] != value
+        });
+
+        if(Array.isArray(obj)) {
+            for(const k in obj ) {
+                filteredArr.push(obj[k])
+            }
+        }else {
+            filteredArr.push(obj)
+        }
+
+        return filteredArr;
     }
 };
 

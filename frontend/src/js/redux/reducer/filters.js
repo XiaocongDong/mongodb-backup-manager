@@ -4,7 +4,8 @@ import filtersAction from '../action/filtersAction';
 
 const initialState = Immutable.Map({
     statuses: [],
-    ids: []
+    ids: [],
+    id: null
 });
 
 const filtersReducer = (state=initialState, action) => {
@@ -17,6 +18,11 @@ const filtersReducer = (state=initialState, action) => {
         case filtersAction.set_ids:
             const ids = action.payload.value;
             return state.setIn(['ids'], ids);
+
+        case filtersAction.set_id:
+            const id = action.payload.value;
+            return state.setIn(['id'], id);
+
         default:
             return state;
     }

@@ -14,7 +14,11 @@ databases.get('/availableDBs', (req, res, next) => {
 databases.get('/copyDBs', (req, res, next) => {
     const backupID = req.query.id;
 
-    controller.getAllBackupCopyDBs(backupID, next);
+    controller.getBackupCopyDBs(backupID, next);
+});
+
+databases.get('/allCopyDBs', (req, res, next) => {
+    controller.getAllBackupCopyDBs(next);
 });
 
 databases.delete('/', (req, res, next) => {

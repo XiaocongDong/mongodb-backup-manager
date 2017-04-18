@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import filtersAction from '../../action/filtersAction';
 import DashBoard from '../../../ui/dashboard/dashboard';
 import filter from '../../../utility/filter';
+import { hashHistory } from 'react-router';
 
 
 const mapStateToProps = (state) => {
@@ -24,11 +25,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setStatuses: value => {
+        onStatusChange: value => {
             dispatch({type: filtersAction.set_ids, payload: { value: [] }});
             dispatch({type: filtersAction.set_statuses, payload: { value }});
         },
-        setIds: (value) => dispatch({type: filtersAction.set_ids, payload: { value }}),
+        onIdChange: (value) => dispatch({type: filtersAction.set_ids, payload: { value }}),
     }
 };
 

@@ -298,7 +298,7 @@ class BackupManager {
 
     updateBackupConfigToDB(updates) {
         Object.assign(this.backupConfig, updates);
-        this.serverSocket.emit('backupConfigs');
+        this.serverSocket.emit('backupConfigs', this.backupConfig.id);
         return this.localDB.updateBackupConfig(this.backupConfig);
     }
 
@@ -314,12 +314,14 @@ class BackupManager {
                 createdTime: createdTime.toLocaleString(),
                 deletedTime: deletedTime.toLocaleString()
         };
+        console.log("copyDBs!");
+        this.serverSocket.emit('copyDBs', this.backupConfig.id);
         return this.localDB.addCopyDB(newBackupCopyDB);
     }
 
     deleteCopyDB(dbName) {
         log.info(`Started to delete ${ dbName }`);
-
+        this.serverSocket.emit('copyDBs', this.backupConfig.id);
         return this.localDB.deleteCopyDBByIDAndName(this.backupConfig.id, dbName)
             .then(() => {
                 this.addLog(`deleted ${ dbName } record for ${ this.backupConfig.id } in backup copyDB collections`);

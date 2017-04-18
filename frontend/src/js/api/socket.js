@@ -4,16 +4,29 @@ import dataLoader from './dataLoader';
 const clientSocket = {
 
     startSocket: () => {
-        const socket = io("http://localhost:8000");
-        socket.on('connect', () => {
+        clientSocket.socket = io("http://localhost:8000");
+        clientSocket.socket.on('connect', () => {
             console.log('socket connected to server successfully');
         });
-        socket.on('backupConfigs', () => {
-            console.log('backupConfigs changed!');
-            dataLoader.loadBackupConfigs();
-        })
-    }
+    },
 
+    startListenBackupConfigsChanges: () => {
+        clientSocket.socket.on('backupConfigs', (backupId) => {
+            console.log('backupConfigs changed!');
+            dataLoader.updateBackupConfig(backupId)
+        })
+    },
+
+    startListenCopyDBsChanges: () => {
+        clientSocket.socket.on('copyDBs', (backupId) => {
+            console.log(`copy database of ${ backupId } changed!`);
+            dataLoader.updateCopyDBs(backupId)
+        })
+    },
+
+    stopListenChanges: (event) => {
+         clientSocket.socket.off(event);
+    }
 };
 
 export default clientSocket;

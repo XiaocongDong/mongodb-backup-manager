@@ -10,7 +10,10 @@ export default class BackupsView extends Component {
             <div className="backup-overview">
                 {
                     props.backupConfigs.map((backupConfig, index) => {
-                        return <BackupGrid key={ index } backupConfig={ backupConfig }/>
+                        return(<BackupGrid
+                            key={ index }
+                            onClick={ props.setCurrentBackupId }
+                            backupConfig={ backupConfig }/>);
                     })
                 }
             </div>

@@ -16,6 +16,14 @@ class LocalDB extends MongoDB {
         return this.readFromCollection(this.backupConfigDBName, this.configCollectionName, { });
     }
 
+    getBackupConfig(backupID) {
+        return this.readFromCollection(this.backupConfigDBName, this.configCollectionName, {id: backupID })
+    }
+
+    getAllBackupDatabases(backupID) {
+        return this.readFromCollection(this.backupConfigDBName, this.copyDBsCollectionName, { });
+    }
+
     getBackupCopyDatabases(backupID) {
         return this.readFromCollection(this.backupConfigDBName, this.copyDBsCollectionName, { id: backupID } );
     }

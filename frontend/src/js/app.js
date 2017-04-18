@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import Header from './ui/header';
 import Content from './ui/content';
 import Dashboard from './redux/container/dashboard/dashboard';
+import BackupDetails from './redux/container/backup/backup.details';
 import BackupConfigurations from './ui/backup/config/backup.configurations';
 
 import dataLoader from './api/dataLoader';
@@ -16,7 +17,10 @@ import store from './redux/store';
 import '../sass/style.scss';
 
 dataLoader.loadBackupConfigs();
+dataLoader.loadAllCopyDatabases();
 clientSocket.startSocket();
+clientSocket.startListenBackupConfigsChanges();
+clientSocket.startListenCopyDBsChanges();
 
 
 const PlaceHolder = ({ children, location }) => {
@@ -37,6 +41,9 @@ const App = () => {
                 <Route path='/' component={ PlaceHolder }>
                     <IndexRoute component={ Dashboard }/>
                     <Route path='/newConfig' component={ BackupConfigurations }/>
+                    <Route path='/backups'>
+                        <Route path='/backups/:backupId' component={ BackupDetails }/>
+                    </Route>
                 </Route>
             </Router>
         </Provider>

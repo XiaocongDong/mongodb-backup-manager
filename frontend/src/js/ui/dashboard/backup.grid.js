@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hashHistory } from 'react-router';
 
 const colorsMap = {
     'PENDING': '#fff23f',
@@ -14,7 +15,7 @@ export default class BackupGrid extends Component {
         const { backupConfig } = this.props;
 
         return (
-            <div className="backup-grid-wrapper">
+            <div className="backup-grid-wrapper clickable" onClick={ () => hashHistory.push('/backups/' + backupConfig.id) }>
                 <div className="backup-grid">
                     <div className="backup-grid-overview">
                         <div className="status-wrapper">

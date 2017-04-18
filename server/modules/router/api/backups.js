@@ -18,6 +18,11 @@ backups.get('/configs', (req, res, next) => {
     controller.getAllBackupConfigs(next);
 });
 
+backups.get('/config', (req, res, next) => {
+    const backupID = req.query.id;
+    controller.getBackupConfig(backupID, next);
+});
+
 backups.post('/run', (req, res, next) => {
     const data = req.body;
     controller.runBackup(data.id, next);

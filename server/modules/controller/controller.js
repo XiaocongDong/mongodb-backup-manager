@@ -266,13 +266,37 @@ class Controller {
             })
     }
 
-    getAllBackupCopyDBs(backupID, next) {
+    getBackupConfig(backupId, next) {
+        this.localDB.getBackupConfig(backupId)
+            .then(backupConfigs => {
+                if(backupConfigs.length == 0) {
+                    return next(response.error(`no backup config for ${ backupId }`));
+                }
+
+                next(response.success(backupConfigs[0]));
+            })
+            .catch(err => {
+                next(response.error(`Failed to get ${ backupId } backup config for ${ err.message }`));
+            })
+    }
+
+    getBackupCopyDBs(backupID, next) {
         this.localDB.getBackupCopyDatabases(backupID)
             .then(backupCopyDBs => {
                 next(response.success(backupCopyDBs));
             })
             .catch(err => {
                 next(response.error(err.message));
+            })
+    }
+
+    getAllBackupCopyDBs(next) {
+        this.localDB.getAllBackupDatabases()
+            .then(copyDBs => {
+                next(response.success(copyDBs))
+            })
+            .catch(err => {
+                next(response.error(`Failed to get all copy dbs for ${ err.message }`));
             })
     }
 

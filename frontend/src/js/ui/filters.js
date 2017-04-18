@@ -28,7 +28,7 @@ export default class Filters extends Component {
                                     placeholder="please select backup status"
                                     value={ props.statusFilter }
                                     options={ statusOpts }
-                                    onChange={ props.setStatuses }
+                                    onChange={ props.onStatusChange }
                                 />
                             </div>
                         </div>
@@ -44,9 +44,10 @@ export default class Filters extends Component {
                                     name="id-filter"
                                     multi={ props.multiIds }
                                     placeholder="please select backup id"
+                                    clearable={ props.clearableId }
                                     value={ props.idFilter }
                                     options={ props.idOpts }
-                                    onChange={ props.setIds }
+                                    onChange={ props.onIdChange }
                                 />
                             </div>
                         </div>
