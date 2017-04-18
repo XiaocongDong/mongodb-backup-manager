@@ -1,22 +1,21 @@
 import { connect } from 'react-redux';
-import filtersAction from '../../action/filtersAction';
+import { filterActionBuilder } from '../../action/filtersAction';
 import DashBoard from '../../../ui/dashboard/dashboard';
 import filter from '../../../utility/filter';
-import { hashHistory } from 'react-router';
 
 
 const mapStateToProps = (state) => {
     const filters = state.get('filters');
-    const statusFilters = filters.get('statuses');
-    const idFilters = filters.get('ids');
+    const statusFilter = filters.get('statuses');
+    const idFilter = filters.get('ids');
     const backupConfigs = state.get('data').getIn(['backupConfigs', 'data']);
     const empty = (backupConfigs.length == 0);
-    const idOpts = filter.getIdOpts(backupConfigs, statusFilters);
+    const idOpts = filter.getIdOptsWithStatus(backupConfigs, statusFilter);
     const filteredBackupConfigs = filter.backupConfigs(backupConfigs, filters);
 
     return {
-        statusFilters,
-        idFilters,
+        statusFilter,
+        idFilter,
         empty,
         idOpts,
         backupConfigs: filteredBackupConfigs
@@ -26,10 +25,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         onStatusChange: value => {
-            dispatch({type: filtersAction.set_ids, payload: { value: [] }});
-            dispatch({type: filtersAction.set_statuses, payload: { value }});
+            dispatch(filterActionBuilder.set_ids([]));
+            dispatch(filterActionBuilder.set_statuses(value));
         },
-        onIdChange: (value) => dispatch({type: filtersAction.set_ids, payload: { value }}),
+        onIdChange: value => dispatch(filterActionBuilder.set_ids(value)),
     }
 };
 

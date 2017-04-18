@@ -12,14 +12,12 @@ const mapStateToProps = (state, ownProps) => {
     const allCopyDBs = state.get("data").getIn(["copyDBs", "data"]);
     const copyDBs = object.filterArrWithKeyValue("id", id, allCopyDBs);
 
-    const idOpts = backupConfigs.map(backupConfig => backupConfig.id);
-
-    console.log(id, backupConfigs, copyDBs, idOpts);
+    const ids = backupConfigs.map(backupConfig => backupConfig.id);
 
     return {
         backupConfig,
         copyDBs,
-        idOpts
+        ids
     }
 };
 

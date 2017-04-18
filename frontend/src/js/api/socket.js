@@ -12,14 +12,12 @@ const clientSocket = {
 
     startListenBackupConfigsChanges: () => {
         clientSocket.socket.on('backupConfigs', (backupId) => {
-            console.log('backupConfigs changed!');
             dataLoader.updateBackupConfig(backupId)
         })
     },
 
     startListenCopyDBsChanges: () => {
         clientSocket.socket.on('copyDBs', (backupId) => {
-            console.log(`copy database of ${ backupId } changed!`);
             dataLoader.updateCopyDBs(backupId)
         })
     },

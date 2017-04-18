@@ -16,12 +16,7 @@ export default class BackupDetails extends Component {
             return null;
         }
 
-        const idsOpts = props.idOpts.map(id => {
-            return {
-                value: id,
-                label: id
-            }
-        });
+        const idsOpts = props.ids.map(id => ({ value: id, label: id}));
 
         const idValue = {
             value: props.backupConfig.id,
@@ -36,7 +31,7 @@ export default class BackupDetails extends Component {
                         multiIds={ false }
                         clearableId={ false }
                         idFilter={ idValue }
-                        options={ idsOpts }
+                        idOpts={ idsOpts }
                         onIdChange={ this.handleFilterChange }
                     />
                 </div>

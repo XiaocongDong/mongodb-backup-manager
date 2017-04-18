@@ -21,12 +21,12 @@ export default class Dashboard extends Component{
                         showStatus={ true }
                         showId={ true }
                         multiIds={ true }
-                        statusFilter={ props.statusFilters }
-                        idFilter={ props.idFilters }
+                        statusFilter={ props.statusFilter }
+                        idFilter={ props.idFilter }
                         idOpts={ props.idOpts }
                         backupConfigs={ props.backupConfigs }
-                        setStatuses={ props.onStatusChange }
-                        setIds={ props.onIdChange }
+                        onStatusChange={ props.onStatusChange }
+                        onIdChange={ props.onIdChange }
                     />
                 </div>
                 <div className="content">

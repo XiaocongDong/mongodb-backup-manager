@@ -28,19 +28,31 @@ const filter = {
         return true;
     },
 
-    getIdOpts: (backupConfigs, statuses) => {
+    getIdOptsWithStatus: (backupConfigs, statuses) => {
+        let filteredBackupConfigs = [];
+
         if(statuses.length > 0) {
-            backupConfigs = backupConfigs.filter(backupConfig => {
-                return filter.arrayValueExists(statuses, backupConfig.status);
+            backupConfigs.forEach(backupConfig => {
+                if(filter.arrayValueExists(statuses, backupConfig.status)) {
+                    filteredBackupConfigs.push(backupConfig);
+                }
             });
+        }else {
+            filteredBackupConfigs = backupConfigs;
         }
 
-        return backupConfigs.map(backupConfig => {
-           return {
-               value: backupConfig.id,
-               label: backupConfig.id
-           }
+        let ret = [];
+
+        filteredBackupConfigs.map(backupConfig => {
+            const id = backupConfig.id;
+
+            ret.push({
+                value: id,
+                label: id
+            })
         });
+
+        return ret;
     },
 
     arrayValueExists: (array, value) => {

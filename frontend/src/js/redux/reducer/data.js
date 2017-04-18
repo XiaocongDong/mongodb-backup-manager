@@ -1,5 +1,5 @@
 import Immutable from "immutable";
-import dataAction from '../action/data';
+import dataAction from '../action/dataAction';
 import object from '../../utility/object';
 
 
