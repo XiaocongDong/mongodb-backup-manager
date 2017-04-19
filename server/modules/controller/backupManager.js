@@ -165,10 +165,14 @@ class BackupManager {
         return this.addBackupCopyDB(backupCopyDBName, now, deleteTime)
             .then(() => {
                 this.addLog(`Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`);
+                const statistics = this.backupConfig.statistics;
+                statistics.total += 1;
+                statistics.success += 1;
+                const lastBackupStatus = backupCons.result.SUCCEED;
+
                 const updates = {
-                    lastBackupStatus: backupCons.result.SUCCEED,
-                    backupTotal: ++this.backupConfig.backupTotal,
-                    successfulBackups: ++this.backupConfig.successfulBackups
+                    lastBackupStatus,
+                    statistics,
                 };
                 this.updateBackupConfigToDB(updates);
 
@@ -187,10 +191,14 @@ class BackupManager {
     }
 
     backupOnFailure(err, backupCopyDBName) {
+        const statistics = this.backupConfig.statistics;
+        statistics.total += 1;
+        statistics.failures += 1;
+        const lastBackupStatus = backupCons.result.FAILED;
+
         const updates = {
-            lastBackupStatus: backupCons.result.FAILED,
-            backupTotal: ++this.backupConfig.backupTotal,
-            failedBackups: ++this.backupConfig.failedBackups
+            lastBackupStatus,
+            statistics
         };
         this.addLog(`Backup ${ this.backupConfig.db } failed for ${ err.message }`, "error");
         this.updateBackupConfigToDB(updates);

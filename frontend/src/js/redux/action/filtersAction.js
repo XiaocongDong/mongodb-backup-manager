@@ -10,7 +10,7 @@ const filterActionBuilder = {
     },
 
     set_ids: (value) => {
-        return { type: filtersAction.set_statuses, payload: { value } }
+        return { type: filtersAction.set_ids, payload: { value } }
     }
 
 };

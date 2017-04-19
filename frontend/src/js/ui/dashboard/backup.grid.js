@@ -1,40 +1,33 @@
 import React, { Component } from 'react';
 import { hashHistory } from 'react-router';
 
-const colorsMap = {
-    'PENDING': '#fff23f',
-    'WAITING': '#2a9ced',
-    'RUNNING': '#4cd139',
-    'ABORTED': '#1e1f21',
-    'STOP': '#ed281a'
-};
+import colorPicker from '../../utility/colorPicker';
 
 export default class BackupGrid extends Component {
 
     render() {
         const { backupConfig } = this.props;
+        const color = colorPicker.getColorWithStatus(backupConfig.status);
 
         return (
             <div className="backup-grid-wrapper clickable" onClick={ () => hashHistory.push('/backups/' + backupConfig.id) }>
                 <div className="backup-grid">
                     <div className="backup-grid-overview">
                         <div className="status-wrapper">
-                            <div className="status-ball" style={ { borderColor: colorsMap[backupConfig.status] } }></div>
-                            <div className="status" style={ { color: colorsMap[backupConfig.status] } }>{ backupConfig.status }</div>
+                            <div className="status-ball" style={ { borderColor: color } }></div>
+                            <div className="status" style={ { color } }>{ backupConfig.status }</div>
                         </div>
                         <div className="numbers-wrapper">
-                            <div className="number">
-                                <div className="name">total</div>
-                                <div className="value">{ backupConfig.backupTotal }</div>
-                            </div>
-                            <div className="number">
-                                <div className="name">success</div>
-                                <div className="value">{ backupConfig.successfulBackups }</div>
-                            </div>
-                            <div className="number">
-                                <div className="name">failure</div>
-                                <div className="value">{ backupConfig.failedBackups }</div>
-                            </div>
+                            {
+                                Object.keys(backupConfig.statistics).map((key, index) => {
+                                    return (
+                                        <div className="number" style={ { color: colorPicker.getColorWithKey(key) } } key={ index }>
+                                            <div className="name">{ key }</div>
+                                            <div className="value">{ backupConfig.statistics[key] }</div>
+                                        </div>
+                                    )
+                                })
+                            }
                         </div>
                         <div className="backup-id">{ backupConfig.id }</div>
                     </div>

@@ -21,8 +21,15 @@ const backups = {
        }).then(response => {
            return response.data
        })
-    }
+    },
 
+    stopBackup: (backupId) => {
+        return axios.post(api.backupsPath('/stop'), { id: backupId });
+    },
+
+    resumeBackup: (backupId) => {
+        return axios.post(api.backupsPath('/resume'), { id: backupId });
+    }
 };
 
 export default backups;

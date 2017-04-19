@@ -151,6 +151,8 @@ class Controller {
         if(backupManager.backupStatus != backupCons.status.STOP) {
             return next(response.error(`Failed to resume backup for ${ backupID } for current status is ${ backupManager.backupStatus}`))
         }
+
+        // TODO change the resume
         backupManager.updateBackupStatus(backupCons.status.PENDING)
             .then(() => {
                 backupManager.start();

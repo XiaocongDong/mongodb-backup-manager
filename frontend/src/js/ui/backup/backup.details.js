@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
 import { hashHistory } from 'react-router';
 import Filters from '../filters';
+import Summary from './summary';
+import Panel from './panel';
+
 
 export default class BackupDetails extends Component {
 
@@ -36,7 +39,8 @@ export default class BackupDetails extends Component {
                     />
                 </div>
                 <div className="content">
-                    { props.backupConfig.id }
+                    <Summary backupConfig={ props.backupConfig }/>
+                    <Panel backupConfig={ props.backupConfig }/>
                 </div>
             </div>
         )

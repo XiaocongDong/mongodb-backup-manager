@@ -52,13 +52,23 @@ const backupUtil = {
     },
 
     getStartTime: (backupConfig) => {
-        let { startTime } = backupConfig;
+        let { startTime, nextBackUpTime } = backupConfig;
+        console.log("next", nextBackUpTime);
+
+        const now = new Date();
+
+        if(nextBackUpTime) {
+            const nextBackupDateTime = new Date(nextBackUpTime);
+            if(nextBackupDateTime > now) {
+                console.log("in");
+                return nextBackupDateTime
+            }
+        }
 
         if(!startTime) {
             return null;
         }
 
-        const now = new Date();
         startTime = new Date(Date.parse(startTime));
         if(startTime) {
             // if the original startTime has past, change it to today
@@ -77,9 +87,11 @@ const backupUtil = {
     updateBackupData(backupConfig) {
         if(backupConfig.backupTotal == null) {
             backupConfig.status = constants.backup.status.PENDING;
-            backupConfig.backupTotal = 0;
-            backupConfig.successfulBackups = 0;
-            backupConfig.failedBackups = 0;
+            backupConfig.statistics = {
+                total: 0,
+                success: 0,
+                failures: 0
+            };
         }
     }
 };
