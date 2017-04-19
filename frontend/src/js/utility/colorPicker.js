@@ -1,15 +1,26 @@
+const red = '#ed281a';
+const green = '#4cd139';
+const yellow = '#fff23f';
+const grey = '#989ca5';
+const blue = '#2a9ced';
+
 const statusColorMap =  {
-    'PENDING': '#fff23f',
-    'WAITING': '#2a9ced',
-    'RUNNING': '#4cd139',
-    'ABORTED': '#1e1f21',
-    'STOP': '#ed281a'
+    'PENDING': yellow,
+    'WAITING': blue,
+    'RUNNING': green,
+    'ABORTED': grey,
+    'STOP': red
 };
 
 const keyColorMap = {
-    "total": "#2a9ced",
-    "success": "#4cd139",
-    "failures": "#ed281a"
+    "total": blue,
+    "success": green,
+    "failures": red
+};
+
+const resultColorMap = {
+    "SUCCEED": green,
+    "FAILED": red
 };
 
 const colorPicker = {
@@ -20,6 +31,10 @@ const colorPicker = {
 
    getColorWithKey: (key) => {
         return keyColorMap[key];
+   },
+
+   getColorWithResult: (result) => {
+        return resultColorMap[result];
    }
 
 };

@@ -3,4 +3,4 @@ const logger = (req, resp, next) => {
     next();
 };
 
-module.exports = logger
+module.exports = logger;

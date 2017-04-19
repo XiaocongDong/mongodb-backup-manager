@@ -97,7 +97,7 @@ class Controller {
                 const result = {
                     status: backupCons.result.SUCCEED,
                 };
-                (nextBackupTime) && (result.nextBackUpTime = nextBackupTime);
+                (nextBackupTime) && (result.nextBackupTime = nextBackupTime);
                 next(response.success(result))
             })
             .catch(err => {
@@ -106,7 +106,7 @@ class Controller {
                     status: backupCons.result.FAILED,
                     reason: err.message
                 };
-                (nextBackupTime) && (result.nextBackUpTime = nextBackupTime);
+                (nextBackupTime) && (result.nextBackupTime = nextBackupTime);
                 next(response.error(result))
             })
     }
@@ -174,7 +174,7 @@ class Controller {
         const result = { status, id: backupID };
 
         if(status == backupCons.status.WAITING && nextBackupTime) {
-            result.nextBackUpTime = nextBackupTime.toLocaleString();
+            result.nextBackupTime = nextBackupTime.toLocaleString();
         }
 
         return next(response.success(result));

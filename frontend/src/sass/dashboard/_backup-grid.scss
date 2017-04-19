@@ -80,16 +80,22 @@
         .item {
             padding: 4px 0;
 
-            .key {
+            > * {
                 display: inline-block;
                 padding-right: 5px;
+            }
+
+            .key {
                 text-transform: capitalize;
                 font-weight: 400;
             }
 
             .value {
-                display: inline-block;
                 color: #8899a6;
+            }
+
+            .result {
+
             }
 
         }

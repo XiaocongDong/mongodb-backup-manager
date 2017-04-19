@@ -9,7 +9,7 @@ const backup = {
     },
 
     result: {
-        'SUCCEED': 'SUCCESS',
+        'SUCCEED': 'SUCCEED',
         'FAILED': 'FAILED'
     }
 

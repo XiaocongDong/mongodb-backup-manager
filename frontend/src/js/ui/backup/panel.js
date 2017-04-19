@@ -31,13 +31,21 @@ export default class Panel extends Component {
                     <div className="backup-info">
                         <div className="item">
                             <div className="title">
+                                backup created time
+                            </div>
+                            <div className="time">
+                                { backupConfig.createdTime }
+                            </div>
+                        </div>
+                        <div className="item">
+                            <div className="title">
                                 last backup time
                             </div>
                             <div className="time">
                                 { backupConfig.lastBackupTime }
                             </div>
-                            <div className="backup-result">
-                                { backupConfig.lastBackupStatus }
+                            <div className="result" style={{ color: colorPicker.getColorWithResult(backupConfig.lastBackupResult)}}>
+                                { backupConfig.lastBackupResult }
                             </div>
                         </div>
                         <div className="item">

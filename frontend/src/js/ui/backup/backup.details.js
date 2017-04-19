@@ -3,6 +3,7 @@ import { hashHistory } from 'react-router';
 import Filters from '../filters';
 import Summary from './summary';
 import Panel from './panel';
+import BackupData from './backup.data';
 
 
 export default class BackupDetails extends Component {
@@ -41,6 +42,7 @@ export default class BackupDetails extends Component {
                 <div className="content">
                     <Summary backupConfig={ props.backupConfig }/>
                     <Panel backupConfig={ props.backupConfig }/>
+                    <BackupData backupConfig={ props.backupConfig }/>
                 </div>
             </div>
         )

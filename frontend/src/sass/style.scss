@@ -9,8 +9,9 @@
 @import "backup/config/review-form";
 @import "backup/config/_progress.scss";
 @import "backup/backup_details";
-@import "backup/_panel.scss";
-@import "backup/_summary.scss";
+@import "backup/panel.scss";
+@import "backup/summary.scss";
+@import "backup/backup-data";
 @import "dashboard/dashboard";
 @import "dashboard/backup-grid";
 @import "dashboard/backups_view";

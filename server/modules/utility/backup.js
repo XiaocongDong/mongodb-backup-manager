@@ -51,14 +51,16 @@ const backupUtil = {
         return `${ backupConfig.db }@${ backupConfig.server }`;
     },
 
-    getStartTime: (backupConfig) => {
+    getNextBackupTime: (backupConfig) => {
         let { startTime, nextBackupTime } = backupConfig;
 
         const now = new Date();
 
         if(nextBackupTime) {
+            console.log("get next backup time", nextBackupTime);
             const nextBackupDateTime = new Date(nextBackupTime);
             if(nextBackupDateTime > now) {
+                console.log("in");
                 return nextBackupDateTime
             }
         }
@@ -79,6 +81,7 @@ const backupUtil = {
                 }
             }
         }
+
         return startTime;
     },
 
@@ -90,6 +93,7 @@ const backupUtil = {
                 success: 0,
                 failures: 0
             };
+            backupConfig.createdTime = new Date().toLocaleString();
         }
     }
 };

@@ -42,10 +42,7 @@ export default class BackupGrid extends Component {
                     <div className="item">
                         <div className="key">last backup time</div>
                         <div className="value time-value">{ backupConfig.lastBackupTime || "N/A" }</div>
-                    </div>
-                    <div className="item">
-                        <div className="key">last backup status</div>
-                        <div className="value backup-status">{  backupConfig.lastBackupStatus || "N/A" }</div>
+                        <div className="result" style={ {color: colorPicker.getColorWithResult(backupConfig.lastBackupResult)} }>{ backupConfig.lastBackupResult }</div>
                     </div>
                     <div className="item">
                         <div className="key">next backup time</div>

@@ -33,16 +33,19 @@ class BackupManager {
             }
 
             this.addLog(`Started ${ this.backupConfig.id }`);
-            const startTime = backupUtil.getStartTime(this.backupConfig);
-            // no start time, backup start now
-            const nextBackupTime = startTime? startTime.toLocaleString(): null;
 
-            this.updateBackupConfigToDB( {startTime,
-                                          nextBackupTime,
-                                          status: backupCons.status.WAITING});
+            const nextBackupTime = backupUtil.getNextBackupTime(this.backupConfig);
+            console.log(nextBackupTime);
+
+            this.updateBackupConfigToDB(
+                    {
+                        nextBackupTime: nextBackupTime? nextBackupTime.toLocaleString(): null ,
+                        status: backupCons.status.WAITING
+                    }
+                );
 
             const interval = this.backupConfig.interval;
-            const firstTimeout = startTime?(startTime - new Date()): 0;
+            const firstTimeout = nextBackupTime? nextBackupTime - new Date(): 0;
 
             let firstBackup = () => {
                 this.backup();
@@ -54,8 +57,8 @@ class BackupManager {
                         }
                         // update next backup time before each backup
                         const now = new Date();
-                        const nextBackUpTime = new Date(now.valueOf() + interval).toLocaleString();
-                        this.updateBackupConfigToDB({ nextBackUpTime });
+                        const nextBackupTime = new Date(now.valueOf() + interval).toLocaleString();
+                        this.updateBackupConfigToDB({ nextBackupTime });
                         this.backup.call(this);
                     };
                     // before next backup, update next backup time
@@ -67,7 +70,7 @@ class BackupManager {
                 }
 
             };
-
+            console.log("firstTime out", firstTimeout);
             this.activites.add(setTimeout(firstBackup, firstTimeout));
         }catch(e) {
             console.log(e);
@@ -95,8 +98,6 @@ class BackupManager {
             .then(() => {
                 this.stopAllActivities();
                 this.addLog(`Stop all the backup activities`);
-                this.backupConfig.nextBackUpTime = null;
-                this.currentBackupCollections = null;
             })
             .catch(err => {
                 this.addLog(`Failed to stop backup for ${ err.message }`, 'error');
@@ -168,10 +169,10 @@ class BackupManager {
                 const statistics = this.backupConfig.statistics;
                 statistics.total += 1;
                 statistics.success += 1;
-                const lastBackupStatus = backupCons.result.SUCCEED;
+                const lastBackupResult = backupCons.result.SUCCEED;
 
                 const updates = {
-                    lastBackupStatus,
+                    lastBackupResult,
                     statistics,
                 };
                 this.updateBackupConfigToDB(updates);
@@ -194,10 +195,10 @@ class BackupManager {
         const statistics = this.backupConfig.statistics;
         statistics.total += 1;
         statistics.failures += 1;
-        const lastBackupStatus = backupCons.result.FAILED;
+        const lastBackupResult = backupCons.result.FAILED;
 
         const updates = {
-            lastBackupStatus,
+            lastBackupResult,
             statistics
         };
         this.addLog(`Backup ${ this.backupConfig.db } failed for ${ err.message }`, "error");
@@ -322,7 +323,6 @@ class BackupManager {
                 createdTime: createdTime.toLocaleString(),
                 deletedTime: deletedTime.toLocaleString()
         };
-        console.log("copyDBs!");
         this.serverSocket.emit('copyDBs', this.backupConfig.id);
         return this.localDB.addCopyDB(newBackupCopyDB);
     }
@@ -369,7 +369,6 @@ class BackupManager {
     deleteExtraCopyDBs() {
         return new Promise((resolve, reject) => {
             const { maxBackupNumber } = this.backupConfig;
-            console.log(maxBackupNumber);
 
             if(!maxBackupNumber) {
                 return resolve();
