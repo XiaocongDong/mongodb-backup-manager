@@ -45,7 +45,7 @@ export default class Panel extends Component {
                                 next backup time
                             </div>
                             <div className="time">
-                                { backupConfig.nextBackUpTime }
+                                { backupConfig.nextBackupTime }
                             </div>
                         </div>
                     </div>

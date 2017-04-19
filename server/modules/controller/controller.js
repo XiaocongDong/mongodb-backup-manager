@@ -93,7 +93,7 @@ class Controller {
 
         backupManager.backup()
             .then(() => {
-                const nextBackupTime = backupManager.nextBackUpTime;
+                const nextBackupTime = backupManager.nextBackupTime;
                 const result = {
                     status: backupCons.result.SUCCEED,
                 };
@@ -101,7 +101,7 @@ class Controller {
                 next(response.success(result))
             })
             .catch(err => {
-                const nextBackupTime = backupManager.nextBackUpTime;
+                const nextBackupTime = backupManager.nextBackupTime;
                 const result = {
                     status: backupCons.result.FAILED,
                     reason: err.message
@@ -170,7 +170,7 @@ class Controller {
 
         const backupManager = this.backUpsHash.get(backupID);
         const status = backupManager.backupStatus;
-        const nextBackupTime = backupManager.nextBackUpTime;
+        const nextBackupTime = backupManager.nextBackupTime;
         const result = { status, id: backupID };
 
         if(status == backupCons.status.WAITING && nextBackupTime) {

@@ -52,15 +52,13 @@ const backupUtil = {
     },
 
     getStartTime: (backupConfig) => {
-        let { startTime, nextBackUpTime } = backupConfig;
-        console.log("next", nextBackUpTime);
+        let { startTime, nextBackupTime } = backupConfig;
 
         const now = new Date();
 
-        if(nextBackUpTime) {
-            const nextBackupDateTime = new Date(nextBackUpTime);
+        if(nextBackupTime) {
+            const nextBackupDateTime = new Date(nextBackupTime);
             if(nextBackupDateTime > now) {
-                console.log("in");
                 return nextBackupDateTime
             }
         }

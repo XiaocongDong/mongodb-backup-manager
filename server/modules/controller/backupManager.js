@@ -22,8 +22,8 @@ class BackupManager {
         return this.backupConfig.status;
     }
 
-    get nextBackUpTime() {
-        return this.backupConfig.nextBackUpTime;
+    get nextBackupTime() {
+        return this.backupConfig.nextBackupTime;
     }
 
     start() {
@@ -35,10 +35,10 @@ class BackupManager {
             this.addLog(`Started ${ this.backupConfig.id }`);
             const startTime = backupUtil.getStartTime(this.backupConfig);
             // no start time, backup start now
-            const nextBackUpTime = startTime? startTime.toLocaleString(): null;
+            const nextBackupTime = startTime? startTime.toLocaleString(): null;
 
             this.updateBackupConfigToDB( {startTime,
-                                          nextBackUpTime,
+                                          nextBackupTime,
                                           status: backupCons.status.WAITING});
 
             const interval = this.backupConfig.interval;
@@ -59,8 +59,8 @@ class BackupManager {
                         this.backup.call(this);
                     };
                     // before next backup, update next backup time
-                    const nextBackUpTime = new Date(new Date().valueOf() + interval).toLocaleString();
-                    this.updateBackupConfigToDB({ nextBackUpTime });
+                    const nextBackupTime = new Date(new Date().valueOf() + interval).toLocaleString();
+                    this.updateBackupConfigToDB({ nextBackupTime });
                     this.activites.add(setInterval(backUpRoutine, interval));
                 }else{
                     this.updateBackupConfigToDB({ nextBackupTime: null });
