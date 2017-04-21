@@ -22,7 +22,7 @@ databases.get('/allCopyDBs', (req, res, next) => {
 });
 
 databases.delete('/', (req, res, next) => {
-    const { id, db } = req.body;
+    const { id, db } = req.query;
 
     controller.deleteDB(id, db, next)
 });

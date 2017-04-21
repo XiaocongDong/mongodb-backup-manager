@@ -23,6 +23,12 @@ const databases = {
                 .then(response => {
                     return response.data;
                 })
+    },
+
+    deleteCopyDB: (id, db) => {
+        return axios.delete(api.databasesPath('/'), {
+            params: {id, db}
+        })
     }
 };
 

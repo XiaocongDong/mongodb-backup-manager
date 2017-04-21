@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import databases from '../../../api/databases';
 
 
 export default class BackupDatabase extends Component {
@@ -8,6 +9,11 @@ export default class BackupDatabase extends Component {
         this.state ={
             show: false
         }
+    }
+
+    handleDelete(id, db) {
+        console.log("deleted");
+        databases.deleteCopyDB(id, db)
     }
 
     handleToggle() {
@@ -42,10 +48,10 @@ export default class BackupDatabase extends Component {
                         <span className="number">{ database.collections.length }</span>
                     </div>
                     <div className="operations-wrapper">
-                        <span className="operation button yes clickable" onClick={ this.handleDelete.bind(this) }>
+                        <span className="operation button yes clickable">
                             restore
                         </span>
-                        <span className="operation button no clickable">
+                        <span className="operation button no clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>
                             delete
                         </span>
                     </div>
