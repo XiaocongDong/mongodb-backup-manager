@@ -20,11 +20,11 @@ class LocalDB extends MongoDB {
         return this.readFromCollection(this.backupConfigDBName, this.configCollectionName, {id: backupID })
     }
 
-    getAllBackupDatabases(backupID) {
+    getAllCopyDBs() {
         return this.readFromCollection(this.backupConfigDBName, this.copyDBsCollectionName, { });
     }
 
-    getBackupCopyDatabases(backupID) {
+    getBackupCopyDBsWithId(backupID) {
         return this.readFromCollection(this.backupConfigDBName, this.copyDBsCollectionName, { id: backupID } );
     }
 
@@ -48,8 +48,12 @@ class LocalDB extends MongoDB {
         return this.deleteDocs(this.backupConfigDBName, this.copyDBsCollectionName, { id, name });
     }
 
+    deleteBackupConfig(id) {
+        return this.deleteDocs(this.backupConfigDBName, this.configCollectionName, { id })
+    }
+
     clearLogsByID(id) {
-        return this.deleteDocs(this.backupConfigDBName, this.logsCollectionName, {})
+        return this.deleteDocs(this.backupConfigDBName, this.logsCollectionName, { id })
     }
 
 }

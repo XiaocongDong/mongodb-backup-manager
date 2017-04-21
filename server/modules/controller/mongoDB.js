@@ -230,8 +230,8 @@ class MongoDB {
                             });
                     }).map(p => p.catch(e => e)))
             })
-            .then(collectionsDocs => {
-                const errors = collectionsDocs.filter(collectionDocs => !collectionDocs.collection);
+            .then(results => {
+                const errors = results.filter(collectionDocs => collectionDocs instanceof Error);
 
                 if(errors.length > 0) {
                     log.error(`Failed to read all the data from ${ collections } of ${ db } for ${errors[0].message}`);
@@ -239,7 +239,7 @@ class MongoDB {
                 }
 
                 log.info(`Finished read data from the ${ collections } of ${ db }`);
-                return collectionsDocs;
+                return results;
             });
     }
 
@@ -256,7 +256,7 @@ class MongoDB {
                         }).map(p => p.catch(e => e)))
             })
             .then(results => {
-                const errors = results.filter(result => result);
+                const errors = results.filter(result => result instanceof Error);
                 if(errors.length > 0) {
                     log.error(`Failed to backup all the data to ${ db } for ${errors[0].message}`);
                     throw errors[0];

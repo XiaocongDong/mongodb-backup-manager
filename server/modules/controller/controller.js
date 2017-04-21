@@ -180,6 +180,22 @@ class Controller {
         return next(response.success(result));
     }
 
+    deleteBackup(backupID, clearLog=true, clearDBs=false, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`backupID ${ backupID } doesn't exist`));
+        }
+
+        const backupManager = this.backUpsHash.get(backupID);
+        backupManager.clear(clearLog, clearDBs)
+            .then(() => {
+                next(response.success(`Successfully deleted ${ backupID }`))
+            })
+            .catch(err => {
+
+                next(response.error(err,message))
+            })
+    }
+
     deleteDB(backupID, dbName, next) {
         if(!this.backUpsHash.has(backupID)) {
             return next(response.error(`backupID ${ backupID } doesn't exist`));
@@ -272,7 +288,7 @@ class Controller {
         this.localDB.getBackupConfig(backupId)
             .then(backupConfigs => {
                 if(backupConfigs.length == 0) {
-                    return next(response.error(`no backup config for ${ backupId }`));
+                    return next(response.success(null));
                 }
 
                 next(response.success(backupConfigs[0]));
@@ -283,7 +299,7 @@ class Controller {
     }
 
     getBackupCopyDBs(backupID, next) {
-        this.localDB.getBackupCopyDatabases(backupID)
+        this.localDB.getBackupCopyDBsWithId(backupID)
             .then(backupCopyDBs => {
                 next(response.success(backupCopyDBs));
             })
@@ -293,7 +309,7 @@ class Controller {
     }
 
     getAllBackupCopyDBs(next) {
-        this.localDB.getAllBackupDatabases()
+        this.localDB.getAllCopyDBs()
             .then(copyDBs => {
                 next(response.success(copyDBs))
             })

@@ -29,6 +29,16 @@ const backups = {
 
     resumeBackup: (backupId) => {
         return axios.post(api.backupsPath('/resume'), { id: backupId });
+    },
+
+    deleteBackup: (id, clearLog, clearDBs) => {
+        return axios.delete(api.backupsPath('/delete'), {
+            params: {
+                id,
+                clearLog,
+                clearDBs
+            }
+        })
     }
 };
 

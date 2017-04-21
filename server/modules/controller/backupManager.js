@@ -328,20 +328,25 @@ class BackupManager {
     }
 
     deleteCopyDB(dbName) {
+        // TODO need to fix the order of delete, db first then log?
         log.info(`Started to delete ${ dbName }`);
         this.serverSocket.emit('copyDBs', this.backupConfig.id);
         return this.localDB.deleteCopyDBByIDAndName(this.backupConfig.id, dbName)
             .then(() => {
-                this.addLog(`deleted ${ dbName } record for ${ this.backupConfig.id } in backup copyDB collections`);
                 return this.localDB.deleteDatabase(dbName);
-            })
-            .then(() => {
-                this.addLog(`deleted ${ dbName } completely`)
             })
             .catch(err => {
                 this.addLog(`Failed to delete ${ dbName } for ${ err.message }`, "error");
                 throw err;
             });
+    }
+
+    deleteCopyDBs(dbs) {
+        // best effort delete dbs
+        log.debug(`Started to delete ${ dbs }`);
+        return Promise.all(dbs.map(db => {
+            return this.deleteCopyDB(db)
+        }))
     }
 
     deleteCollections(dbName, collections) {
@@ -374,7 +379,7 @@ class BackupManager {
                 return resolve();
             }
 
-            this.localDB.getBackupCopyDatabases(this.backupConfig.id)
+            this.localDB.getBackupCopyDBsWithId(this.backupConfig.id)
                 .then(backupCopyDBs => {
                     const copyDBsNumber = backupCopyDBs.length;
                     if(copyDBsNumber <= maxBackupNumber) {
@@ -400,7 +405,7 @@ class BackupManager {
     deleteOverdueCopyDBs() {
         return Promise.resolve()
             .then(() => {
-                return this.localDB.getBackupCopyDatabases(this.backupConfig.id);
+                return this.localDB.getBackupCopyDBsWithId(this.backupConfig.id);
             })
             .then(backupCopyDBs => {
                 return Promise.all(backupCopyDBs.map(copyDB => {
@@ -427,6 +432,34 @@ class BackupManager {
                 log.error(`Failed to deleted all the overdue databases for ${ this.backupConfig.id } for ${ err.message }`);
                 throw err;
             })
+    }
+
+    clear(log=true, copyDBs=false) {
+        // clear logic, clear log, dbs,
+        const id = this.backupConfig.id;
+
+        return this.stop()
+            .then(() => {
+                if(!log && !copyDBs) {
+                    return Promise.resolve();
+                }
+                const clearTasks = [];
+                (log) && (clearTasks.push(this.localDB.clearLogsByID(id)));
+
+                if(copyDBs) {
+                    const clearDBsTasks = Promise.resolve()
+                        .then(() => this.localDB.getAllCopyDBs(id))
+                        .then(dbs => {
+                            const dbNames = dbs.map(db => db.name);
+                            this.deleteCopyDBs(dbNames)
+                        });
+
+                    clearTasks.push(clearDBsTasks)
+                }
+
+                return Promise.all(clearTasks);
+            })
+            .then(() => this.localDB.deleteBackupConfig(id))
     }
 }
 

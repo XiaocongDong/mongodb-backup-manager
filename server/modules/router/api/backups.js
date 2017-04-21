@@ -48,6 +48,11 @@ backups.post('/resume', (req, res, next) => {
     controller.resume(backupID, next);
 });
 
+backups.delete('/delete', (req, res, next) => {
+    const { id, clearLog, clearDBs } = req.query;
+
+    controller.deleteBackup(id,clearLog, clearDBs, next)
+});
 
 backups.delete('/:backupID/databases/:dbName', (req, res, next) => {
     const backupID = req.params.backupID;

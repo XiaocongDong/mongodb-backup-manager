@@ -13,12 +13,13 @@ export default class BackupTitle extends Component {
         backups.stopBackup(id);
     }
 
-    handleResume(id) {
-        backups.resumeBackup(id);
+    handleDelete(id) {
+        // TODO add options here
+        backups.deleteBackup(id, true, true);
     }
 
-    handleDelete(id) {
-
+    handleResume(id) {
+        backups.resumeBackup(id);
     }
 
     render() {
