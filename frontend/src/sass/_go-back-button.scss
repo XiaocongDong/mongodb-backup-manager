@@ -1,0 +1,38 @@
+.go-back-button {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    border: 1px solid rgba(0, 0, 0, .12);
+    transition: all .25s;
+    opacity: .7;
+    top: 5px;
+    left: 5px;
+    background-color: #fff;
+    border-radius: 2px;
+
+    &::before,
+    &::after{
+       position: absolute;
+       content: "";
+       height: 15px;
+       width: 4px;
+       left: 50%;
+       background-color: $black;
+       border-radius: 3px
+    }
+
+    &::before {
+       top: 0;
+       transform: rotateZ(45deg) translateY(4px);
+    }
+
+    &::after {
+       top: 50%;
+       transform: rotateZ(-45deg) translateY(-4px);
+    }
+
+    &:hover {
+       opacity: 1;
+       background-color: #eee;
+    }
+}

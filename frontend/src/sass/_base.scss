@@ -15,21 +15,16 @@ $black: #191f28;
 $light-black: #656565;
 $blue: rgba(24, 109, 218, 0.8);
 $light-blue: rgba(46, 144, 218, 0.8);
-$white: #ECE9E9;
+$white: #fff;
 $green: #0CC39F;
+$grey: #989ca5;
+$red: #ed281a;
 $light-green: #DFF0D8;
 $header-height: 60px;
 $sidebar-width: 240px;
 
 $border: 1px solid rgba(0, 0, 0, .1);
 $box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
-
-@mixin user-select($value) {
-  -webkit-user-select: $value;
-  -moz-user-select: $value;
-  -ms-user-select: $value;
-  user-select: $value;
-}
 
 .link {
   text-decoration: none;
@@ -41,7 +36,7 @@ $box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
   text-align: center;
   border-radius: 3px;
   transition: all .4s ease;
-  @include user-select(none);
+  user-select: none;
 
   &.yes {
       background: $blue;
@@ -53,11 +48,11 @@ $box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
   }
 
   &.no {
-      background: #eee;
+      background: #ccc;
       color: #888;
 
       &:hover {
-        background: #ddd;
+        background: #bbb;
       }
   }
 

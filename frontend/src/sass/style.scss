@@ -7,11 +7,11 @@
 @import "backup/config/credential-form";
 @import "backup/config/configuration-form";
 @import "backup/config/review-form";
-@import "backup/config/_progress.scss";
-@import "backup/backup_details";
-@import "backup/panel.scss";
-@import "backup/summary.scss";
-@import "backup/backup-data";
+@import "backup/config/progress";
+@import "backup/view/backup_details";
+@import "backup/view/backup_title";
+@import "backup/view/backup_databases";
+@import "backup/view/backup_database";
 @import "dashboard/dashboard";
 @import "dashboard/backup-grid";
 @import "dashboard/backups_view";
@@ -21,3 +21,5 @@
 @import "templates/time-input";
 @import "templates/form";
 @import "filters";
+@import "go-back-button";
+@import "status";

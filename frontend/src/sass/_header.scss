@@ -6,7 +6,7 @@
         line-height: #{$header-height};
         background-color: $black;
         color: white;
-        @include user-select(none);
+        user-select: none;
 
         > * {
             display: inline-block;

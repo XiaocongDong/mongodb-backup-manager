@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import BackupDetails from '../../../ui/backup/backup.details';
+import BackupDetails from '../../../ui/backup/view/backup.details';
 import object from '../../../utility/object';
 
 

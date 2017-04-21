@@ -1,0 +1,25 @@
+.status {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-block;
+
+  .ball {
+    width: 0;
+    height: 0;
+    border: 10px solid;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .text {
+    text-transform: uppercase;
+    display: inline-block;
+    height: 100%;
+    vertical-align: center;
+    line-height: 20px;
+    padding-left: 10px;
+  }
+
+}

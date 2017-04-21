@@ -1,0 +1,25 @@
+.backup-details {
+   height: 100%;
+   width: 100%;
+
+   .backup-content {
+      padding-top: 10px;
+      display: flex;
+      justify-content: center;
+
+      > * {
+         display: inline-block;
+      }
+
+      .backup-databases-wrapper {
+         width: 80%;
+         max-width: 1000px;
+         padding: 10px;
+      }
+
+      .backup-statistics-wrapper {
+          width: 15%;
+          max-width: 300px;
+      }
+   }
+}

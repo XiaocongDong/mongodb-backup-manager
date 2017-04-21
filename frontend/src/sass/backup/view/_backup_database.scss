@@ -1,0 +1,49 @@
+.database {
+
+   border-bottom: $border;
+   transition: all .25s;
+
+   .database-header {
+      padding: 10px 5px;
+      display: flex;
+      justify-content: space-between;
+
+      > * {
+         display: inline-block;
+         margin-right: 10px;
+      }
+
+      .time-wrapper {
+
+         .time {
+            display: inline-block;
+            font-size: 1.1rem;
+            padding-right: 20px;
+
+            .name {
+               padding-right: 5px;
+            }
+         }
+      }
+
+      .collection-number-wrapper {
+         .name {
+            padding-right: 5px;
+         }
+      }
+
+      .operations-wrapper {
+
+          .operation {
+              padding: 5px 6px;
+              color: $white;
+              border-radius: 2px;
+
+              &:not(:last-of-type) {
+                 margin-right: 10px;
+              }
+          }
+      }
+   }
+
+}

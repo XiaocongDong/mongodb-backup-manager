@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import { hashHistory } from 'react-router';
 
+import Status from '../status';
+
 import colorPicker from '../../utility/colorPicker';
 
 export default class BackupGrid extends Component {
 
     render() {
         const { backupConfig } = this.props;
-        const color = colorPicker.getColorWithStatus(backupConfig.status);
 
         return (
             <div className="backup-grid-wrapper clickable" onClick={ () => hashHistory.push('/backups/' + backupConfig.id) }>
                 <div className="backup-grid">
                     <div className="backup-grid-overview">
                         <div className="status-wrapper">
-                            <div className="status-ball" style={ { borderColor: color } }></div>
-                            <div className="status" style={ { color } }>{ backupConfig.status }</div>
+                            <Status status={ backupConfig.status }/>
                         </div>
                         <div className="numbers-wrapper">
                             {
