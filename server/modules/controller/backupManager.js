@@ -78,8 +78,7 @@ class BackupManager {
     }
 
     checkBackupAvailable() {
-        if(this.backupStatus == backupCons.status.ABORTED ||
-            this.backupStatus == backupCons.status.STOP) {
+        if(this.backupStatus == backupCons.status.STOP) {
             return false
         }
 
@@ -87,10 +86,6 @@ class BackupManager {
     }
 
     stop() {
-        if(this.backupStatus == backupCons.status.ABORTED){
-            return Promise.reject();
-        }
-
         return this.backupDB.close()
             .then(() => {
                 return this.updateBackupStatus(backupCons.status.STOP);
@@ -344,6 +339,9 @@ class BackupManager {
     deleteCopyDBs(dbs) {
         // best effort delete dbs
         log.debug(`Started to delete ${ dbs }`);
+        if(dbs.length == 0) {
+            return Promise.resolve();
+        }
         return Promise.all(dbs.map(db => {
             return this.deleteCopyDB(db)
         }))

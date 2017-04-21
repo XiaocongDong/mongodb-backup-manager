@@ -1,3 +1,3 @@
-const STATUS = ['PENDING', 'WAITING', 'RUNNING', 'ABORTED', 'STOP'];
+const STATUS = ['PENDING', 'WAITING', 'RUNNING', 'STOP'];
 
 export { STATUS };

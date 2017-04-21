@@ -4,7 +4,6 @@ const backup = {
         'PENDING': 'PENDING',
         'WAITING': 'WAITING',
         'RUNNING': 'RUNNING',
-        'ABORTED': 'ABORTED',
         'STOP': 'STOP'
     },
 
