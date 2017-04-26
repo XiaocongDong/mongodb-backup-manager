@@ -49,6 +49,9 @@ export default class BackupDatabase extends Component {
                     </div>
                     <div className="operations-wrapper">
                         <span className="operation button yes clickable">
+                            details
+                        </span>
+                        <span className="operation button yes clickable">
                             restore
                         </span>
                         <span className="operation button no clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>

@@ -12,10 +12,10 @@
 @import "backup/view/backup_title";
 @import "backup/view/backup_databases";
 @import "backup/view/backup_database";
+@import "backup/view/backup_statistics";
 @import "dashboard/dashboard";
 @import "dashboard/backup-grid";
 @import "dashboard/backups_view";
-@import "dashboard/backups_statistics";
 @import "dashboard/empty.content";
 @import "datetime_picker";
 @import "templates/time-input";

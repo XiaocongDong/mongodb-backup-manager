@@ -4,8 +4,6 @@ import Status from '../../status';
 
 import backups from '../../../api/backups';
 
-import colorPicker from '../../../utility/colorPicker';
-
 
 export default class BackupTitle extends Component {
 
