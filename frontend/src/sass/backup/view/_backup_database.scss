@@ -17,7 +17,6 @@
 
          .time {
             display: inline-block;
-            font-size: 1.1rem;
             padding-right: 20px;
 
             .name {
@@ -43,6 +42,25 @@
                  margin-right: 10px;
               }
           }
+
+      }
+   }
+
+   .database-details {
+
+      .database-collection {
+         padding: 10px;
+
+         &:hover {
+            background-color: #ddd;
+         }
+
+         input {
+            margin-right: 20px;
+         }
+
+         .collection-name {
+         }
 
       }
    }

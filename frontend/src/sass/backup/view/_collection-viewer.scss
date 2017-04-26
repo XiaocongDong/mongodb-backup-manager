@@ -1,0 +1,63 @@
+.data-viewer {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    &,
+    & * {
+       box-sizing: border-box;
+    }
+
+    .viewer-loading {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+
+       .loader {
+          border: 3px solid #aaa;
+          border-top-color: #333;
+          border-radius: 50%;
+          height: 120px;
+          width: 120px;
+          animation: spin 2s linear infinite;
+       }
+
+    }
+
+    .viewer-error {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+
+        .error-message {
+           color: red;
+        }
+    }
+
+    .viewer-query {
+       padding: 10px;
+       background-color: #ddd;
+       border: 1px solid rgba(0, 0, 0, .2);
+       border-bottom: none;
+    }
+
+    .viewer-pagination {
+       padding: 10px;
+       background-color: #ddd;
+       border: 1px solid rgba(0, 0, 0, .2);
+    }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

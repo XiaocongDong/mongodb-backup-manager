@@ -12,7 +12,6 @@ export default class BackupDatabase extends Component {
     }
 
     handleDelete(id, db) {
-        console.log("deleted");
         databases.deleteCopyDB(id, db)
     }
 
@@ -22,6 +21,7 @@ export default class BackupDatabase extends Component {
 
     render() {
         const database = this.props.database;
+        const show = this.state.show;
 
         return (
             <div className="database clickable">
@@ -48,7 +48,7 @@ export default class BackupDatabase extends Component {
                         <span className="number">{ database.collections.length }</span>
                     </div>
                     <div className="operations-wrapper">
-                        <span className="operation button yes clickable">
+                        <span className="operation button yes clickable" onClick={ this.handleToggle.bind(this) }>
                             details
                         </span>
                         <span className="operation button yes clickable">
@@ -59,6 +59,23 @@ export default class BackupDatabase extends Component {
                         </span>
                     </div>
                 </div>
+                {
+                    (show) &&
+                    (
+                        <div className="database-details">
+                            {
+                                database.collections.map((collection, index) => {
+                                    return (
+                                        <div className="database-collection" key={ index }>
+                                            <input type="checkbox"/>
+                                            <span className="collection-name">{ collection }</span>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    )
+                }
             </div>
         )
     }
