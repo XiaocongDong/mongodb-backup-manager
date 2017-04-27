@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import databases from '../../../api/databases';
+import collections from '../../../api/collections'
+import ModalWrapper from '../../../modal.wrapper';
+import CollectionViewer from './collection.viewer';
+import dom from '../../../utility/dom';
+import Portal from '../../portal';
 
 
 export default class BackupDatabase extends Component {
@@ -7,8 +13,9 @@ export default class BackupDatabase extends Component {
     constructor(props) {
         super(props);
         this.state ={
-            show: false
-        }
+            show: false,
+            collection: null,
+        };
     }
 
     handleDelete(id, db) {
@@ -19,9 +26,13 @@ export default class BackupDatabase extends Component {
         this.setState({ show: !this.state.show})
     }
 
+    showCollectionData(collection) {
+        this.setState({ collection })
+    }
+
     render() {
         const database = this.props.database;
-        const show = this.state.show;
+        const {show, collection} = this.state;
 
         return (
             <div className="database clickable">
@@ -66,7 +77,7 @@ export default class BackupDatabase extends Component {
                             {
                                 database.collections.map((collection, index) => {
                                     return (
-                                        <div className="database-collection" key={ index }>
+                                        <div className="database-collection" key={ index } onClick={ this.showCollectionData.bind(this, collection) }>
                                             <input type="checkbox"/>
                                             <span className="collection-name">{ collection }</span>
                                         </div>
@@ -74,6 +85,16 @@ export default class BackupDatabase extends Component {
                                 })
                             }
                         </div>
+                    )
+                }
+                {
+                    (collection) &&
+                    (
+                        <Portal portalId="collection-viewer-portal">
+                            <ModalWrapper onClickOverlay={ this.showCollectionData.bind(this, null)}>
+                                <CollectionViewer promise={ collections.getDataFromCollection(database.id, database.name, collection)}/>
+                            </ModalWrapper>
+                        </Portal>
                     )
                 }
             </div>
