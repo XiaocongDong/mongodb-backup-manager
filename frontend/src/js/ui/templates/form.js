@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 export default class Form extends Component {
 
     render() {
-        const { title, items, buttons, error, className } = this.props;
+        const { title, items, buttons, error, className, showHistory } = this.props;
 
         return (
             <div className={"form " + (className? className: "")}>

@@ -6,11 +6,17 @@ import Form from '../../templates/form';
 
 //utility
 import input from '../../../utility/input';
+import object from '../../../utility/object';
 import backupConfigUtil from '../../../utility/backupConfig';
 import { AUTHSTATES } from '../../../utility/constants';
 
 //api
 import databases from '../../../api/databases';
+
+const getConnectionsHistory = () => {
+    const connections = localStorage.getItem('connections');
+    return JSON.parse(connections);
+};
 
 export default class CredentialForm extends Component {
 
@@ -24,7 +30,30 @@ export default class CredentialForm extends Component {
             authDB: null,
             authErr: null,
         };
+        this.state = {
+          showHistory: false
+        };
+        this.connections = getConnectionsHistory();
     }
+
+    createNewConnection(connection) {
+        const id = connection.username? `${ connection.username }@${ connection.server}`: `${ connection.server }`;
+        connection.id = id;
+        if(this.connections == null) {
+            this.connections = [];
+        }
+
+        const filteredConnections = object.filterArrWithKeyValue("id", id, this.connections);
+
+        if(filteredConnections.length > 0) {
+            object.updateArrWithKeyValue('id', id, this.connections, connection);
+        }else {
+            this.connections.push(connection);
+        }
+
+        localStorage.setItem('connections', JSON.stringify(this.connections));
+    };
+
 
     handleAuthenticate() {
         const { authState, setAuthState, backupConfig, setDbsColls, handleNext } = this.props;
@@ -57,9 +86,11 @@ export default class CredentialForm extends Component {
                 }
 
                 setAuthState(AUTHSTATES.AUTHENTICATED);
+                this.createNewConnection(backupConfig);
                 setDbsColls(data);
             })
-            .catch( ({ response })  => {
+            .catch( err  => {
+                console.error(err);
                 errors.authErr = response.data.message;
                 setAuthState(AUTHSTATES.UNAUTHENTICATED);
             });
@@ -73,13 +104,25 @@ export default class CredentialForm extends Component {
         this.props.handleConfigChange({[key]: value});
     }
 
+    setCredentials(connectionId) {
+        const connection = object.filterArrWithKeyValue("id", connectionId, this.connections);
+        const {id, ...backupConfig} = connection;
+        this.props.handleConfigChange(backupConfig);
+    }
+
+    toggleHistory() {
+        this.setState({
+            showHistory: !this.state.showHistory
+        })
+    }
+
     render() {
         const { backupConfig, authState } = this.props;
+        const showHistory = this.state.showHistory;
         const errors = this.errors;
         const requiredKeys = backupConfigUtil.requiredKeys;
         const uiKeys = backupConfigUtil.uiKeys;
         const title = "Backup Database Credential";
-
         const items = backupConfigUtil.credentialKeys.map((key) => {
                                 const error = errors[key];
                                 return (
@@ -88,6 +131,31 @@ export default class CredentialForm extends Component {
                                             { uiKeys[key] }
                                             { requiredKeys.includes(key) && <div className="required">*</div> }
                                         </label>
+                                        {
+                                            this.connections && this.connections.length > 0 && key == 'server' &&
+                                            (
+                                                <div className="history">
+                                                    <div className="text" onClick={ this.toggleHistory.bind(this) }>import from history</div>
+                                                    {
+                                                        showHistory &&
+                                                        (
+                                                            <ul className="history-connections">
+                                                                {
+                                                                    this.connections.map((connection, index) => {
+                                                                        return (
+                                                                            <li className="connection" key={ index }
+                                                                                onClick={ this.setCredentials.bind(this, connection.id) }>
+                                                                                { connection.id }
+                                                                            </li>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </ul>
+                                                        )
+                                                    }
+                                                </div>
+                                            )
+                                        }
                                         <input className={"input-field" + ((error)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}
                                                defaultValue={ backupConfig[key] }
