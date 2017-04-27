@@ -12,10 +12,12 @@ export default class CollectionViewer extends Component {
         this.queryStringError = undefined;
         this.promise = props.promise;
         this.dataLoaded = this.promise? false: true;
+        this.inputKeyCode = 13;
         this.state = {
             loaded: this.dataLoaded,
             error: false
-        }
+        };
+        this.keyDownHandler = this.keyDownHandler.bind(this);
     }
 
     componentDidMount() {
@@ -41,6 +43,11 @@ export default class CollectionViewer extends Component {
                     )
                 })
         }
+        document.addEventListener('keydown', this.keyDownHandler);
+    }
+
+    componentWillUnmount() {
+        document.removeListener('keydown', this.keyDownHandler);
     }
 
     onSearchClick(event) {
@@ -49,17 +56,24 @@ export default class CollectionViewer extends Component {
         if(input.isEmpty(queryString)) {
             this.filteredData = this.data;
             this.queryStringError = null;
+        }else {
+            try {
+                const query = JSON.parse(queryString);
+                this.filteredData = sift(query, this.data);
+                this.queryStringError = null;
+            } catch (e) {
+                this.queryStringError = e.message;
+            }
         }
-        let query = {};
-        try {
-            query = JSON.parse(queryString);
-            this.filteredData = sift(query, this.data);
-            this.queryStringError = null;
-        }catch (e){
-            this.queryStringError = e.message;
-        }
-
+        this.input.blur();
         this.forceUpdate();
+    }
+
+    keyDownHandler(event) {
+        const keyCode = event.keyCode;
+        if(keyCode == this.inputKeyCode) {
+            this.onSearchClick(event);
+        }
     }
 
     render() {
@@ -88,6 +102,7 @@ export default class CollectionViewer extends Component {
 
         return (
             <div className="data-viewer">
+                <div className="viewer-title">{ this.props.title }</div>
                 <div className="viewer-query">
                     <div className="text">query</div>
                     <div className="search-field" data-error={ this.queryStringError }><input type="text" ref={ input => this.input = input }/></div>

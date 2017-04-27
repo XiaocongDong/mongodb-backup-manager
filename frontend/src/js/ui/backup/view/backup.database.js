@@ -37,6 +37,9 @@ export default class BackupDatabase extends Component {
         return (
             <div className="database clickable">
                 <div className="database-header">
+                    <div className="database-name">
+                        { database.name }
+                    </div>
                     <div className="time-wrapper">
                         <div className="time">
                             <span className="name" style={ { color: "#aaa"} }>created time</span>
@@ -92,7 +95,7 @@ export default class BackupDatabase extends Component {
                     (
                         <Portal portalId="collection-viewer-portal">
                             <ModalWrapper onClickOverlay={ this.showCollectionData.bind(this, null)}>
-                                <CollectionViewer promise={ collections.getDataFromCollection(database.id, database.name, collection)}/>
+                                <CollectionViewer title={ collection} promise={ collections.getDataFromCollection(database.id, database.name, collection)}/>
                             </ModalWrapper>
                         </Portal>
                     )

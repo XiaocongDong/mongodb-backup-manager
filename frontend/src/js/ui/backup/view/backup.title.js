@@ -20,6 +20,10 @@ export default class BackupTitle extends Component {
         backups.resumeBackup(id);
     }
 
+    runBackup(id) {
+        backups.runBackup(id);
+    }
+
     render() {
         const { backupConfig } = this.props;
         const { id, status } = backupConfig;
@@ -35,6 +39,7 @@ export default class BackupTitle extends Component {
                         <Status status={ status }/>
                     </div>
                     <div className="operations-wrapper">
+                        <div className="operation backup clickable yes" onClick={ this.runBackup.bind(this, id)}>run backup</div>
                         {
                             (status == "WAITING" || status == "RUNNING") && (
                                 <div className="operation stop clickable" onClick={ this.handleStop.bind(this, id) }>stop backup</div>
@@ -45,9 +50,7 @@ export default class BackupTitle extends Component {
                                 <div className="operation resume clickable" onClick={ this.handleResume.bind(this, id) }>resume backup</div>
                             )
                         }
-                        {
-                            <div className="operation delete clickable" onClick={ this.handleDelete.bind(this, id) }>delete backup</div>
-                        }
+                        <div className="operation delete clickable" onClick={ this.handleDelete.bind(this, id) }>delete backup</div>
                     </div>
                 </div>
             </div>

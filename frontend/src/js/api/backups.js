@@ -39,6 +39,10 @@ const backups = {
                 clearDBs
             }
         })
+    },
+
+    runBackup: (backupId) => {
+        return axios.post(api.backupsPath('/run'), { id: backupId })
     }
 };
 

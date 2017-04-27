@@ -23,7 +23,7 @@
       }
 
       .operations-wrapper {
-         width: 20%;
+         width: 30%;
 
          .operation {
             position: relative;
@@ -49,6 +49,10 @@
 
          .delete {
             background-color: $grey;
+         }
+
+         .backup {
+            background-color: $blue;
          }
       }
    }

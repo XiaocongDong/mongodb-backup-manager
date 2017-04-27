@@ -11,7 +11,6 @@ export default class Portal extends Component {
             p.id = this.props.portalId;
             document.body.appendChild(p);
         }
-        console.log(p);
         this.portalElement = p;
         this.componentDidUpdate();
     }
