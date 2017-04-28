@@ -1,16 +1,21 @@
 .history-connections {
    position: fixed;
    top: 20%;
-   left: 60%;
+   left: 40%;
    width: 400px;
    height: 400px;
    border: $border;
-   border-radius: 2px;
-   box-shadow: $box-shadow;
+   border-radius: 4px;
+   box-shadow: 0 0 18px 3px rgba(0, 0, 0, .1);
 
-   .history-connections-operations {
+   .history-connections-header {
       background-color: #eee;
       height: 20px;
+      padding: 2px;
+
+      .hint {
+         color: #888;
+      }
 
       .close {
          display: inline-block;
@@ -22,26 +27,9 @@
       }
    }
 
-   .connections-operations {
-      background-color: #eee;
-      height: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      .connect {
-         padding: 2px 5px;
-         background-color: $blue;
-         color: $white;
-
-         &:hover {
-            background-color: $light-blue;
-         }
-      }
-   }
 
    .connections-table {
-      height: calc(100% - 60px);
+      height: calc(100% - 20px);
       background-color: $white;
    }
 }

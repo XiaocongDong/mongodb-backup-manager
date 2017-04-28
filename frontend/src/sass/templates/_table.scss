@@ -18,11 +18,17 @@
    }
 
    .tbody {
+
       .tr:nth-child(even) {
          background-color: #eee;
       }
+
       .tr {
          cursor: pointer;
+      }
+
+      .selected {
+         background-color: $light-blue !important;
       }
    }
 }

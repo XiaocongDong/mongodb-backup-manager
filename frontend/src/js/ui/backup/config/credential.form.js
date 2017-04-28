@@ -40,6 +40,7 @@ export default class CredentialForm extends Component {
     }
 
     createNewConnection(connection) {
+        connection = object.clone(connection);
         const id = connection.username? `${ connection.username }@${ connection.server}`: `${ connection.server }`;
         connection.id = id;
         if(this.connections == null) {
@@ -59,7 +60,7 @@ export default class CredentialForm extends Component {
 
 
     handleAuthenticate() {
-        const { authState, setAuthState, backupConfig, setDbsColls, handleNext } = this.props;
+        const { authState, setAuthState, backupConfig, handleNext } = this.props;
         const errors = this.errors;
         const keys = backupConfigUtil.credentialKeys;
 
@@ -78,7 +79,6 @@ export default class CredentialForm extends Component {
         }
 
         setAuthState(AUTHSTATES.AUTHENTICATING);
-
         databases.getAvailableDBs(backupConfig)
             .then( ( { data } ) => {
 
@@ -88,12 +88,15 @@ export default class CredentialForm extends Component {
                     return;
                 }
 
-                setAuthState(AUTHSTATES.AUTHENTICATED);
-                this.createNewConnection(backupConfig);
-                setDbsColls(data);
+                const newBackupConfig = backupConfigUtil.getInitBackupConfig();
+                backupConfigUtil.credentialKeys.forEach(key => {
+                   newBackupConfig[key] = backupConfig[key];
+                });
+
+                this.createNewConnection(newBackupConfig);
+                this.props.authenticated(newBackupConfig, data);
             })
-            .catch( err  => {
-                console.error(err);
+            .catch( ({ response })  => {
                 errors.authErr = response.data.message;
                 setAuthState(AUTHSTATES.UNAUTHENTICATED);
             });
@@ -107,10 +110,14 @@ export default class CredentialForm extends Component {
         this.props.handleConfigChange({[key]: value});
     }
 
-    setCredentials(connectionId) {
-        const connection = object.filterArrWithKeyValue("id", connectionId, this.connections);
-        const {id, ...backupConfig} = connection;
-        this.props.handleConfigChange(backupConfig);
+    setCredentials(connection) {
+        this.toggleHistory.call(this);
+        const newBackupConfig = backupConfigUtil.getInitBackupConfig();
+        backupConfigUtil.credentialKeys.forEach(key => {
+           newBackupConfig[key] = connection[key];
+        });
+        this.props.setAuthState(AUTHSTATES.UNAUTHENTICATED);
+        this.props.handleConfigChange(newBackupConfig);
     }
 
     toggleHistory() {
@@ -146,7 +153,7 @@ export default class CredentialForm extends Component {
                                                                 <ModalWrapper style={{ backgroundColor: 'transparent' }}>
                                                                     <HistoryConnections connections={ this.connections }
                                                                                         onClickClose={ this.toggleHistory.bind(this) }
-                                                                                        onClickConnect={ this.setCredentials.bind(this) }
+                                                                                        setCredentials={ this.setCredentials.bind(this) }
                                                                     />
                                                                 </ModalWrapper>
                                                             </Portal>
@@ -157,7 +164,7 @@ export default class CredentialForm extends Component {
                                         }
                                         <input className={"input-field" + ((error)? " error-input": "")}
                                                type = { key == "password"? "password": "text"}
-                                               defaultValue={ backupConfig[key] }
+                                               value={ backupConfig[key] || "" }
                                                onChange={ this.handleConfigChange.bind(this, key)}
                                         />
                                         <div className="error-message">{ error }</div>

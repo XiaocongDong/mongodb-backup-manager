@@ -28,22 +28,27 @@ export default class HistoryConnections extends DraggableComponent {
         super(props);
     }
 
+    setCredentials(index, backupConfig) {
+        this.props.setCredentials(backupConfig);
+    }
+
     render() {
         const props = this.props;
+        const head = connectionsTableConfig.head;
+        const body = props.connections;
 
         return (
             <div className="history-connections" data-draggable={ true } ref={ input => this.draggableDOM = input }>
-                <div className="history-connections-operations">
+                <div className="history-connections-header">
+                    <div className="hint">double click to select connection</div>
                     <div className="close clickable" onClick={ props.onClickClose }>X</div>
                 </div>
                 <div className="connections-table">
                     <Table
-                        head={ connectionsTableConfig.head }
-                        body={ props.connections }
+                        head={ head }
+                        body={ body }
+                        handleRowDoubleClick={ this.setCredentials.bind(this) }
                     />
-                </div>
-                <div className="connections-operations">
-                    <div className="button connect" onClick={ props.onClickConnect}>connect</div>
                 </div>
             </div>
         )

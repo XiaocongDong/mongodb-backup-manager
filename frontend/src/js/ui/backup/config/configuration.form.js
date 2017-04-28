@@ -31,7 +31,7 @@ export default class ConfigurationForm extends Component {
             startTime: undefined,
             interval: timeUtil.getTime(1, 0, 0, 0),
             duration: timeUtil.getTime(1, 0, 0, 0),
-            maxBackupNumber: 1
+            maxBackupNumber: 7
         };
         this.getCollOpts = this.getCollOpts.bind(this);
         this.getError = this.getError.bind(this);

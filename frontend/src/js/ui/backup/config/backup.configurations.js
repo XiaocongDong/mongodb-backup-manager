@@ -35,8 +35,6 @@ class BackConfigurations extends Component {
     }
 
     handleNext() {
-        // TODO check if the data is correct
-        // next form
         this.setState({
             step: this.state.step + 1
         })
@@ -50,17 +48,19 @@ class BackConfigurations extends Component {
         this.setState({ backupConfig });
     }
 
-    setDbsColls(dbsColls) {
+    setAuthState(state) {
+        this.setState({ authState: state});
+    }
+
+    authenticated(backupConfig, dbsColls) {
         this.dbsColls = dbsColls;
         const prevState = object.clone(this.state);
+        prevState.backupConfig = backupConfig;
         prevState.backupConfig.db = this.dbsColls[0].db;
         prevState.collections = undefined;
         prevState.step += 1;
+        prevState.authState = AUTHSTATES.AUTHENTICATED;
         this.setState(prevState);
-    }
-
-    setAuthState(state) {
-        this.setState({ authState: state});
     }
 
     setSubmitState(state) {
@@ -82,7 +82,7 @@ class BackConfigurations extends Component {
                                                 authState = { authState }
                                                 setAuthState = { this.setAuthState.bind(this) }
                                                 handleConfigChange = { this.handleConfigChange.bind(this) }
-                                                setDbsColls = { this.setDbsColls.bind(this) }
+                                                authenticated = { this.authenticated.bind(this) }
                                                 handleNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
@@ -117,5 +117,5 @@ class BackConfigurations extends Component {
     }
 }
 
-BackConfigurations.defaultProps = { backupConfig: backupConfigUtil.getInitBackupConfig() }
+BackConfigurations.defaultProps = { backupConfig: backupConfigUtil.getInitBackupConfig() };
 export default BackConfigurations;

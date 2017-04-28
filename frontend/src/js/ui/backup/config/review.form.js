@@ -89,6 +89,7 @@ export default class Review extends Component {
 
     render() {
         const { backupConfig, submitState } = this.props;
+        console.log(backupConfig);
         const uiKeys = backupConfigUtil.uiKeys;
         const submitError = this.submitErr;
 

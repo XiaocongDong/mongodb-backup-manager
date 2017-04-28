@@ -29,7 +29,7 @@ const backupConfig = {
             collections: undefined,
             startTime: null,
             interval: timeUtil.getTime(1, 0, 0, 0),
-            maxBackupNumber: 1,
+            maxBackupNumber: 7,
             duration: timeUtil.getTime(1, 0, 0, 0)
         }
     },
