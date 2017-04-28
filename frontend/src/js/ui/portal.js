@@ -4,11 +4,16 @@ import ReactDOM from 'react-dom';
 // from http://stackoverflow.com/questions/28802179/how-to-create-a-react-modalwhich-is-append-to-body-with-transitions
 export default class Portal extends Component {
 
+    constructor(props) {
+        super(props);
+        this.portalId = "portal-component";
+    }
+
     componentDidMount() {
-        let p = this.props.portalId && document.getElementById(this.props.portalId);
+        let p = this.portalId && document.getElementById(this.portalId);
         if(!p) {
             p = document.createElement('div');
-            p.id = this.props.portalId;
+            p.id = this.portalId;
             document.body.appendChild(p);
         }
         this.portalElement = p;
@@ -20,8 +25,7 @@ export default class Portal extends Component {
     }
 
     componentDidUpdate() {
-        const { portalId, ...rest } = this.props;
-        ReactDOM.render(<div {...rest}>{ this.props.children }</div>, this.portalElement);
+        ReactDOM.render(<div>{ this.props.children }</div>, this.portalElement);
     }
 
     render() {

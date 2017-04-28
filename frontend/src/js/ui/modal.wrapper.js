@@ -4,11 +4,13 @@ import React, { Component } from 'react';
 export default class ModalWrapper extends Component {
 
     render() {
+        const props = this.props;
+        const { children, ...overlayProps } = props;
         return (
             <div id="modal-wrapper">
-                <div className="overlay"  onClick={ this.props.onClickOverlay }>
+                <div className="overlay"  {...overlayProps} >
                 </div>
-                { this.props.children }
+                { children }
             </div>
         )
     }

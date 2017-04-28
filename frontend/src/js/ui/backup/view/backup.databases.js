@@ -5,6 +5,19 @@ import BackupDatabase from './backup.database';
 
 export default class BackupDatabases extends Component {
 
+    constructor(props) {
+        super(props);
+        this.dbToggleMap = {};
+    }
+
+    toggleDatabase(dbName) {
+        if(!this.dbToggleMap.hasOwnProperty(dbName)) {
+           this.dbToggleMap[dbName] = false;
+        }
+        this.dbToggleMap[dbName] = !this.dbToggleMap[dbName];
+        this.forceUpdate();
+    }
+
     render() {
         const copyDBs = this.props.copyDBs;
 
@@ -28,7 +41,13 @@ export default class BackupDatabases extends Component {
                 <div className="databases">
                     {
                         copyDBs.map((db, index) => {
-                            return <BackupDatabase key={ index } database={ db }/>
+                            return(
+                                <BackupDatabase key={ index }
+                                                database={ db }
+                                                toggleOpen={ this.toggleDatabase.bind(this) }
+                                                open={ this.dbToggleMap.hasOwnProperty(db.name)? this.dbToggleMap[db.name]: false }
+                                />
+                            )
                         })
                     }
                 </div>

@@ -8,6 +8,7 @@
 @import "backup/config/configuration-form";
 @import "backup/config/review-form";
 @import "backup/config/progress";
+@import "backup/config/history-connections";
 @import "backup/view/backup_details";
 @import "backup/view/backup_title";
 @import "backup/view/backup_databases";
@@ -21,6 +22,7 @@
 @import "datetime_picker";
 @import "templates/time-input";
 @import "templates/form";
+@import "templates/table";
 @import "filters";
 @import "go-back-button";
 @import "modal-wrapper";

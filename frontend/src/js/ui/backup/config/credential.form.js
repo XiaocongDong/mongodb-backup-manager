@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 
 //ui
 import Form from '../../templates/form';
+import Portal from '../../portal';
+import ModalWrapper from '../../modal.wrapper';
+import HistoryConnections from './historyConnections';
 
 //utility
 import input from '../../../utility/input';
@@ -135,22 +138,18 @@ export default class CredentialForm extends Component {
                                             this.connections && this.connections.length > 0 && key == 'server' &&
                                             (
                                                 <div className="history">
-                                                    <div className="text" onClick={ this.toggleHistory.bind(this) }>import from history</div>
+                                                    <div className="text clickable" onClick={ this.toggleHistory.bind(this) }>recent connections</div>
                                                     {
                                                         showHistory &&
                                                         (
-                                                            <ul className="history-connections">
-                                                                {
-                                                                    this.connections.map((connection, index) => {
-                                                                        return (
-                                                                            <li className="connection" key={ index }
-                                                                                onClick={ this.setCredentials.bind(this, connection.id) }>
-                                                                                { connection.id }
-                                                                            </li>
-                                                                        )
-                                                                    })
-                                                                }
-                                                            </ul>
+                                                            <Portal>
+                                                                <ModalWrapper style={{ backgroundColor: 'transparent' }}>
+                                                                    <HistoryConnections connections={ this.connections }
+                                                                                        onClickClose={ this.toggleHistory.bind(this) }
+                                                                                        onClickConnect={ this.setCredentials.bind(this) }
+                                                                    />
+                                                                </ModalWrapper>
+                                                            </Portal>
                                                         )
                                                     }
                                                 </div>

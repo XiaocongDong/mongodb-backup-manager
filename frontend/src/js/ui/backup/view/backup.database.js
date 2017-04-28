@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import databases from '../../../api/databases';
 import collections from '../../../api/collections'
-import ModalWrapper from '../../../modal.wrapper';
+import ModalWrapper from '../../modal.wrapper';
 import CollectionViewer from './collection.viewer';
-import dom from '../../../utility/dom';
 import Portal from '../../portal';
 
 
@@ -13,7 +11,6 @@ export default class BackupDatabase extends Component {
     constructor(props) {
         super(props);
         this.state ={
-            show: false,
             collection: null,
         };
     }
@@ -22,17 +19,14 @@ export default class BackupDatabase extends Component {
         databases.deleteCopyDB(id, db)
     }
 
-    handleToggle() {
-        this.setState({ show: !this.state.show})
-    }
-
     showCollectionData(collection) {
         this.setState({ collection })
     }
 
     render() {
         const database = this.props.database;
-        const {show, collection} = this.state;
+        const { collection } = this.state;
+        const open = this.props.open;
 
         return (
             <div className="database clickable">
@@ -62,7 +56,7 @@ export default class BackupDatabase extends Component {
                         <span className="number">{ database.collections.length }</span>
                     </div>
                     <div className="operations-wrapper">
-                        <span className="operation button yes clickable" onClick={ this.handleToggle.bind(this) }>
+                        <span className="operation button yes clickable" onClick={ () => this.props.toggleOpen(database.name) }>
                             details
                         </span>
                         <span className="operation button yes clickable">
@@ -74,13 +68,17 @@ export default class BackupDatabase extends Component {
                     </div>
                 </div>
                 {
-                    (show) &&
+                    open &&
                     (
                         <div className="database-details">
                             {
                                 database.collections.map((collection, index) => {
                                     return (
-                                        <div className="database-collection" key={ index } onClick={ this.showCollectionData.bind(this, collection) }>
+                                        <div
+                                            className="database-collection"
+                                            key={ index }
+                                            onClick={ this.showCollectionData.bind(this, collection) }
+                                        >
                                             <input type="checkbox"/>
                                             <span className="collection-name">{ collection }</span>
                                         </div>
@@ -93,8 +91,8 @@ export default class BackupDatabase extends Component {
                 {
                     (collection) &&
                     (
-                        <Portal portalId="collection-viewer-portal">
-                            <ModalWrapper onClickOverlay={ this.showCollectionData.bind(this, null)}>
+                        <Portal>
+                            <ModalWrapper onClick={ this.showCollectionData.bind(this, null)}>
                                 <CollectionViewer title={ collection} promise={ collections.getDataFromCollection(database.id, database.name, collection)}/>
                             </ModalWrapper>
                         </Portal>
