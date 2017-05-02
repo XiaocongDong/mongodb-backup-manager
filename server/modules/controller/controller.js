@@ -182,7 +182,7 @@ class Controller {
 
     deleteBackup(backupID, clearLog=true, clearDBs=false, next) {
         if(!this.backUpsHash.has(backupID)) {
-            return next(response.error(`backupID ${ backupID } doesn't exist`));
+            return next(response.error(`backupID ${ backupID } doesn't exist`, 404));
         }
 
         const backupManager = this.backUpsHash.get(backupID);
@@ -198,7 +198,7 @@ class Controller {
 
     deleteDB(backupID, dbName, next) {
         if(!this.backUpsHash.has(backupID)) {
-            return next(response.error(`backupID ${ backupID } doesn't exist`));
+            return next(response.error(`backupID ${ backupID } doesn't exist`, 404));
         }
 
         this.backUpsHash.get(backupID)

@@ -58,6 +58,10 @@ const object = {
             return o[key] != value
         });
 
+        if(obj == null) {
+            return filteredArr;
+        }
+
         if(Array.isArray(obj)) {
             for(const k in obj ) {
                 filteredArr.push(obj[k])

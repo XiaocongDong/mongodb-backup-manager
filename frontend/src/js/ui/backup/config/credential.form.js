@@ -120,6 +120,14 @@ export default class CredentialForm extends Component {
         this.props.handleConfigChange(newBackupConfig);
     }
 
+    deleteConnections(ids) {
+        for(let id of ids) {
+            this.connections = object.updateArrWithKeyValue('id', id, this.connections, null);
+        }
+        this.forceUpdate();
+        localStorage.setItem('connections', JSON.stringify(this.connections));
+    }
+
     toggleHistory() {
         this.setState({
             showHistory: !this.state.showHistory
@@ -154,6 +162,7 @@ export default class CredentialForm extends Component {
                                                                     <HistoryConnections connections={ this.connections }
                                                                                         onClickClose={ this.toggleHistory.bind(this) }
                                                                                         setCredentials={ this.setCredentials.bind(this) }
+                                                                                        deleteConnections={ this.deleteConnections.bind(this) }
                                                                     />
                                                                 </ModalWrapper>
                                                             </Portal>
