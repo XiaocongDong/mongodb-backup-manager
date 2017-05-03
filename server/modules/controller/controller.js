@@ -188,10 +188,10 @@ class Controller {
         const backupManager = this.backUpsHash.get(backupID);
         backupManager.clear(clearLog, clearDBs)
             .then(() => {
+                this.backUpsHash.remove(backupID);
                 next(response.success(`Successfully deleted ${ backupID }`))
             })
             .catch(err => {
-
                 next(response.error(err,message))
             })
     }

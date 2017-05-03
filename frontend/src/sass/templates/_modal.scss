@@ -1,0 +1,38 @@
+.modal {
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+
+   .content {
+      width: 20vw;
+      text-align: center;
+
+      .icon {
+         font-size: 4rem;
+      }
+
+      .title {
+
+      }
+
+      .text {
+
+      }
+   }
+
+   .operations {
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .operation {
+         padding: 2px 5px;
+         text-align: center;
+         border: 1px solid rgba(0, 0, 0, .2);
+         border-radius: 3px;
+         cursor: pointer;
+      }
+   }
+}

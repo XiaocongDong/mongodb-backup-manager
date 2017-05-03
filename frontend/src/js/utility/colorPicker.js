@@ -21,6 +21,13 @@ const resultColorMap = {
     "FAILED": red
 };
 
+const modalTypeColorMap = {
+    'ok': green,
+    'info': blue,
+    'caution': yellow,
+    'error': red
+};
+
 const colorPicker = {
 
    getColorWithStatus: (status) => {
@@ -33,6 +40,10 @@ const colorPicker = {
 
    getColorWithResult: (result) => {
         return resultColorMap[result];
+   },
+
+   getColorWithType: (type) => {
+        return modalTypeColorMap[type];
    }
 
 };
