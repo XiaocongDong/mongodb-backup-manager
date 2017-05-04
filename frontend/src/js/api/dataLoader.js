@@ -30,6 +30,7 @@ const dataLoader = {
     updateBackupConfig: (backupId) => {
         return backups.getBackupConfig(backupId)
                     .then(backupConfig => {
+                        console.log("backup", typeof backupConfig);
                         dispatch(dataActionBuilder.update_data("backupConfigs", backupId, backupConfig))
                     })
                     .catch(err => {

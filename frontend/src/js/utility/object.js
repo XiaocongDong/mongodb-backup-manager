@@ -1,3 +1,6 @@
+import input from './input';
+
+
 const object = {
 
     filterArrWithKeyValue: (key, value, arr) => {
@@ -58,7 +61,7 @@ const object = {
             return o[key] != value
         });
 
-        if(obj == null) {
+        if(input.isEmpty(obj)) {
             return filteredArr;
         }
 

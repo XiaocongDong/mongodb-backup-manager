@@ -6,7 +6,8 @@ export default class Portal extends Component {
 
     constructor(props) {
         super(props);
-        this.portalId = "portal-component";
+        this.portalId = props.portalId || "portal-component";
+        this.clear = this.props.clear != false;
     }
 
     componentDidMount() {

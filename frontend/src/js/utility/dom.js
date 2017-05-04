@@ -5,6 +5,13 @@ const dom = {
         if(modal) {
             document.body.removeChild(modal);
         }
+    },
+
+    createDiv: (className, innerHTML) => {
+        const div = document.createElement('div');
+        div.className = className;
+        div.innerHTML = innerHTML;
+        return div;
     }
 
 };

@@ -1,38 +1,104 @@
-.modal {
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
+.modal-container {
 
-   .content {
-      width: 20vw;
-      text-align: center;
+   .modal-overlay {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      background: rgba(150, 150, 150, .25);
+   }
 
-      .icon {
-         font-size: 4rem;
+   .modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: $white;
+      color: black;
+      border-radius: 2px;
+
+
+      .content {
+         width: 30vw;
+         max-width: 600px;
+         text-align: center;
+         padding: 40px 40px;
+
+         .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+         }
+
+         .title {
+
+         }
+
+         .text {
+            font-size: 2rem;
+         }
       }
 
-      .title {
+      .operations {
+         padding: 20px 60px;
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
 
-      }
+         .operation {
+            padding: 6px 16px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, .2);
+            border-radius: 3px;
+            background-color: #ffffff;
+            transition: all .25s ease-in-out;
 
-      .text {
-
+            &:hover {
+               cursor: pointer;
+               background-color: #dddddd;
+            }
+         }
       }
    }
 
-   .operations {
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+   .pop-in {
+      animation: popIn .5s ease-in;
+   }
 
-      .operation {
-         padding: 2px 5px;
-         text-align: center;
-         border: 1px solid rgba(0, 0, 0, .2);
-         border-radius: 3px;
-         cursor: pointer;
-      }
+   .pop-out {
+      animation: popOut .5s ease-in;
+   }
+
+}
+
+@keyframes popIn{
+   0% {
+      visibility: hidden;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(.8, .8);
+   }
+   65.5% {
+      transform: translate(-50%, -50%) scale(1.03, 1.03);
+   }
+   100% {
+      visibility: visible;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1, 1);
+   }
+}
+
+@keyframes popOut {
+   0% {
+      visibility: visible;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1, 1)
+   }
+   20% {
+      visibility: visible;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.03, 1.03)
+   }
+   100% {
+      visibility: hidden;
+      opacity: 0;
+      transform: translate(-50%, -2000px) scale(.97, .97);
    }
 }

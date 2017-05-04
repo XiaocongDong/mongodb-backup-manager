@@ -4,6 +4,7 @@ import collections from '../../../api/collections'
 import ModalWrapper from '../../modal.wrapper';
 import CollectionViewer from './collection.viewer';
 import Portal from '../../portal';
+import modalController from '../../../utility/modal';
 
 
 export default class BackupDatabase extends Component {
@@ -16,7 +17,42 @@ export default class BackupDatabase extends Component {
     }
 
     handleDelete(id, db) {
-        databases.deleteCopyDB(id, db)
+        modalController.showModal({
+            type: 'caution',
+            text: `delete ${ db }?`,
+            buttons: [
+                {
+                    text: 'cancel',
+                    onClick: modalController.closeModal
+                },
+                {
+                    text: 'delete',
+                    onClick: () => {
+                        modalController.showModal({
+                            type: 'info',
+                            text: `deleting ${ db }`,
+                            content: 'progress',
+                            buttons: []
+                        });
+                        databases.deleteCopyDB(id, db)
+                            .then(modalController.closeModal)
+                            .catch(({ response }) => {
+                                const err = response.data.message;
+                                modalController.showModal({
+                                    type: 'error',
+                                    text: `failed to delete ${ db } for ${ err }`,
+                                    buttons: [
+                                        {
+                                            text: 'ok',
+                                            onClick: modalController.closeModal
+                                        }
+                                    ]
+                                })
+                            })
+                    }
+                }
+            ]
+        });
     }
 
     showCollectionData(collection) {
