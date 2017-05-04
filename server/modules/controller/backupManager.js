@@ -302,8 +302,10 @@ class BackupManager {
 
     updateBackupConfigToDB(updates) {
         Object.assign(this.backupConfig, updates);
-        this.serverSocket.emit('backupConfigs', this.backupConfig.id);
-        return this.localDB.updateBackupConfig(this.backupConfig);
+        return this.localDB.updateBackupConfig(this.backupConfig)
+            .finally(() => {
+                this.serverSocket.emit('backupConfigs', this.backupConfig.id);
+            });
     }
 
     addBackupCopyDB(copyDBName, createdTime, deletedTime) {
@@ -318,14 +320,15 @@ class BackupManager {
                 createdTime: createdTime.toLocaleString(),
                 deletedTime: deletedTime.toLocaleString()
         };
-        this.serverSocket.emit('copyDBs', this.backupConfig.id);
-        return this.localDB.addCopyDB(newBackupCopyDB);
+        return this.localDB.addCopyDB(newBackupCopyDB)
+            .finally(() => {
+                this.serverSocket.emit('copyDBs', this.backupConfig.id);
+            });
     }
 
     deleteCopyDB(dbName) {
         // TODO need to fix the order of delete, db first then log?
         log.info(`Started to delete ${ dbName }`);
-        this.serverSocket.emit('copyDBs', this.backupConfig.id);
         return this.localDB.deleteCopyDBByIDAndName(this.backupConfig.id, dbName)
             .then(() => {
                 return this.localDB.deleteDatabase(dbName);
@@ -333,6 +336,9 @@ class BackupManager {
             .catch(err => {
                 this.addLog(`Failed to delete ${ dbName } for ${ err.message }`, "error");
                 throw err;
+            })
+            .finally(() => {
+                this.serverSocket.emit('copyDBs', this.backupConfig.id);
             });
     }
 
@@ -458,6 +464,9 @@ class BackupManager {
                 return Promise.all(clearTasks);
             })
             .then(() => this.localDB.deleteBackupConfig(id))
+            .finally(() => {
+                this.serverSocket.emit('backupConfigs', id)
+            })
     }
 }
 

@@ -36,6 +36,9 @@ export default class BackupDatabases extends Component {
                             <span className="name">To</span>
                             <div className="selector"><Datetime/></div>
                         </div>
+                        <span className="filter-button">
+                            filter
+                        </span>
                     </div>
                 </div>
                 <div className="databases">

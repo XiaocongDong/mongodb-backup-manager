@@ -75,16 +75,24 @@ const modalController = {
     modal: null,
     animationTime: 500,
 
-    closeModal: () => {
+    closeModal: (animate=true) => {
         return new Promise(resolve => {
+
             if(modalController.modal) {
-                const modal = modalController.modal.getElementsByClassName('modal')[0];
-                modal.className += ' pop-out';
-                setTimeout(() => {
-                    document.body.removeChild(modalController.modal);
-                    modalController.modal = null;
-                    resolve();
-                }, modalController.animationTime)
+
+                if(animate) {
+                    const modal = modalController.modal.getElementsByClassName('modal')[0];
+
+                    modal.className += ' pop-out';
+                    setTimeout(() => {
+                        modalController.removeModal();
+                        resolve();
+                    }, modalController.animationTime)
+
+                }else {
+                    modalController.removeModal();
+                }
+
             }else {
                 resolve();
             }
@@ -92,8 +100,13 @@ const modalController = {
 
     },
 
+    removeModal: () => {
+        document.body.removeChild(modalController.modal);
+        modalController.modal = null;
+    },
+
     showModal: (props) => {
-        modalController.closeModal()
+        modalController.closeModal(false)
                        .then(() => {
                            modalController.modal = modal.create(props);
                            document.body.appendChild(modalController.modal);
