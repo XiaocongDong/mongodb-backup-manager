@@ -38,6 +38,19 @@
                }
             }
          }
+
+         .reset-button {
+            padding: 5px 10px;
+            margin-right: 10px;
+            border-radius: 3px;
+            transition: all .2s;
+            background-color: $light-green;
+
+            &:hover {
+               background-color: darken($light-green, 2%);
+            }
+         }
+
       }
    }
 
