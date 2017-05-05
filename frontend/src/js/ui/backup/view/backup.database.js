@@ -16,7 +16,8 @@ export default class BackupDatabase extends Component {
         };
     }
 
-    handleDelete(id, db) {
+    handleDelete(id, db, event) {
+        event.stopPropagation();
         modalController.showModal({
             type: 'caution',
             text: `delete ${ db }?`,
@@ -55,6 +56,11 @@ export default class BackupDatabase extends Component {
         });
     }
 
+    handleCollectionSelect(collection, event) {
+        event.preventDefault();
+        event.stopPropagation()
+    }
+
     showCollectionData(collection) {
         this.setState({ collection })
     }
@@ -66,7 +72,7 @@ export default class BackupDatabase extends Component {
 
         return (
             <div className="database clickable">
-                <div className="database-header">
+                <div className="database-header" onClick={ this.props.toggleOpen.bind(this, database.name) }  >
                     <div className="database-name">
                         { database.name }
                     </div>
@@ -74,16 +80,16 @@ export default class BackupDatabase extends Component {
                         <div className="time">
                             <span className="name" style={ { color: "#aaa"} }>created time</span>
                             <span className="value">
-                                { database.createdTime }
-                            </span>
+                                    { database.createdTime }
+                                </span>
                         </div>
                         {
                             (database.deletedTime) &&
                             (<div className="time">
                                 <span className="name" style={ { color: "#ed281a"} }>deleted time</span>
                                 <span className="value">
-                                    { database.deletedTime }
-                                </span>
+                                        { database.deletedTime }
+                                    </span>
                             </div>)
                         }
                     </div>
@@ -92,14 +98,8 @@ export default class BackupDatabase extends Component {
                         <span className="number">{ database.collections.length }</span>
                     </div>
                     <div className="operations-wrapper">
-                        <span className="operation button yes clickable" onClick={ () => this.props.toggleOpen(database.name) }>
-                            details
-                        </span>
-                        <span className="operation button yes clickable">
-                            restore
-                        </span>
-                        <span className="operation button no clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>
-                            delete
+                        <span className="operation clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>
+                            <i className="fa fa-trash"></i>
                         </span>
                     </div>
                 </div>
@@ -115,7 +115,7 @@ export default class BackupDatabase extends Component {
                                             key={ index }
                                             onClick={ this.showCollectionData.bind(this, collection) }
                                         >
-                                            <input type="checkbox"/>
+                                            <input type="checkbox" onChange={ this.handleCollectionSelect.bind(this, collection) }/>
                                             <span className="collection-name">{ collection }</span>
                                         </div>
                                     )

@@ -4,51 +4,62 @@
    transition: all .25s;
 
    .database-header {
-      padding: 10px 5px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px;
 
-      > * {
-         display: inline-block;
-         margin-right: 10px;
-      }
 
-      .database-name {
-
-      }
-
-      .time-wrapper {
-
-         .time {
+         > * {
             display: inline-block;
-            padding-right: 20px;
+            margin-right: 10px;
+         }
 
+         .database-name {
+
+         }
+
+         .time-wrapper {
+
+            .time {
+               display: inline-block;
+               padding-right: 20px;
+
+               .name {
+                  padding-right: 5px;
+               }
+            }
+         }
+
+         .collection-number-wrapper {
             .name {
                padding-right: 5px;
             }
          }
-      }
 
-      .collection-number-wrapper {
-         .name {
-            padding-right: 5px;
+         .operations-wrapper {
+            width: 5%;
+            text-align: center;
+            background-color: white;
+
+            .operation {
+               padding: 5px 6px;
+               color: $white;
+
+               i {
+                  color: #ccc;
+                  transition: all .25s;
+
+                  &:hover {
+                     color: #ddd;
+                  }
+               }
+
+               &:not(:last-of-type) {
+                  margin-right: 10px;
+               }
+            }
          }
-      }
-
-      .operations-wrapper {
-
-          .operation {
-              padding: 5px 6px;
-              color: $white;
-              border-radius: 2px;
-
-              &:not(:last-of-type) {
-                 margin-right: 10px;
-              }
-          }
-
-      }
    }
 
    .database-details {
@@ -63,6 +74,7 @@
          input {
             margin-right: 20px;
          }
+
 
          .collection-name {
          }
