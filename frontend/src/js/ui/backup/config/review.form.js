@@ -76,10 +76,7 @@ export default class Review extends Component {
             .then(response => {
                 this.submitErr = response.data.message;
                 // redirect to the main page
-                dataLoader.loadBackupConfigs()
-                    .then(() => {
-                        hashHistory.push('/');
-                    })
+                hashHistory.push('/');
             })
             .catch(({ response }) => {
                 this.submitErr = response.data.message;
@@ -89,7 +86,6 @@ export default class Review extends Component {
 
     render() {
         const { backupConfig, submitState } = this.props;
-        console.log(backupConfig);
         const uiKeys = backupConfigUtil.uiKeys;
         const submitError = this.submitErr;
 

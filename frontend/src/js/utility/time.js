@@ -34,6 +34,17 @@ const time = {
         });
 
         return ret;
+    },
+
+    getTimeStringFromMilliseconds(milliseconds) {
+        const t = time.convertToTime(milliseconds);
+        let ret = '';
+
+        for(let key in t) {
+            ret += `${ t[key] } ${ key }`
+        }
+
+        return ret;
     }
 };
 

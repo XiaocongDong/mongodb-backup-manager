@@ -33,6 +33,7 @@ export default class BackupDetails extends Component {
             <DatabasesContent
                 originalDB={ props.originalDB }
                 copyDBs={ props.copyDBs }
+                id={ props.backupConfig.id }
             />
         ];
 

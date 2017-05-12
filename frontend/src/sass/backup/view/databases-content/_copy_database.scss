@@ -4,58 +4,111 @@
    transition: all .25s;
 
    .database-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
 
+      .basic-info {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+
+         .name {
+            padding: 10px;
+         }
 
          > * {
             display: inline-block;
             margin-right: 10px;
          }
 
-         .operations-wrapper {
-            width: 5%;
-            text-align: center;
-            background-color: white;
+         .operation {
+            padding: 5px 6px;
+            color: $white;
 
-            .operation {
-               padding: 5px 6px;
-               color: $white;
+            i {
+               color: #ccc;
+               transition: all .25s;
 
-               i {
-                  color: #ccc;
-                  transition: all .25s;
-
-                  &:hover {
-                     color: #ddd;
-                  }
-               }
-
-               &:not(:last-of-type) {
-                  margin-right: 10px;
+               &:hover {
+                  color: #ddd;
                }
             }
          }
+      }
+
+      .time-info {
+         display: flex;
+
+         .time {
+            padding: 0 10px 3px;
+            display: inline-block;
+            margin-right: 10px;
+            color: $grey;
+            flex-grow: 1;
+            font-size: 1rem;
+
+            i {
+               margin-right: 5px;
+            }
+         }
+      }
    }
 
    .database-details {
+      background-color: #f0f0f0;
 
       .database-collection {
-         padding: 10px;
-
+         display: flex;
+         justify-content: space-between;
          &:hover {
             background-color: #ddd;
          }
 
-         input {
-            margin-right: 20px;
+         .collection-select {
+            padding: 10px;
+            flex-grow: 1;
+
+            input {
+               margin-right: 20px;
+            }
+
+            .collection-name {
+            }
          }
 
-         .collection-name {
+         .collection-view {
+            padding: 0 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .view-icon {
+               transition: all .25s ease-in-out;
+
+               &:hover {
+                  color: #444444;
+               }
+            }
+         }
+      }
+
+      .operations {
+         display: flex;
+         justify-content: flex-end;
+         padding: 10px 0;
+
+         .operation {
+            margin-right: 10px;
+            padding: 5px 10px;
+            border-radius: 3px;
          }
 
+         .select-all {
+            color: $blue;
+         }
+
+         .restore {
+            background-color: $light-green;
+            color: $white;
+         }
       }
    }
 

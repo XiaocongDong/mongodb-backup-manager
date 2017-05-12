@@ -18,7 +18,7 @@ export default class BackupTitle extends Component {
 
     handleDelete(id) {
         modalController.showModal({
-                type: 'caution',
+                type: 'info',
                 title: `delete ${ id }?`,
                 text: `this action will delete all the databases ang logs this backup created`,
                 buttons: [

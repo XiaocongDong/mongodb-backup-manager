@@ -11,12 +11,13 @@ export default class DatabasesContent extends Component {
 
     render() {
         const { originalDB, copyDBs } = this.props;
-
+        const id = this.props.id;
 
         return (
             <div className="backup-content databases-content">
                 <OriginalDatabase
                     originalDB={ originalDB }
+                    id={ id }
                 />
                 <CopyDatabases
                     copyDBs={ copyDBs }

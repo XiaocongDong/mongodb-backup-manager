@@ -17,12 +17,38 @@ export default class CopyDatabases extends Component {
         this.filteredDBs = this.copyDBs;
     }
 
-    toggleDatabase(dbName) {
+    toggleDatabaseOpen(dbName) {
         if(!this.dbToggleMap.hasOwnProperty(dbName)) {
-           this.dbToggleMap[dbName] = false;
+           this.dbToggleMap[dbName] = { open: false };
+        }else if(!this.dbToggleMap[dbName].hasOwnProperty("open")) {
+            this.dbToggleMap[dbName].open = false;
         }
-        this.dbToggleMap[dbName] = !this.dbToggleMap[dbName];
+
+        this.dbToggleMap[dbName].open = !this.dbToggleMap[dbName].open;
         this.forceUpdate();
+    }
+
+    toggleCollectionSelect(dbName, collection) {
+        console.log(this.dbToggleMap);
+        if(!this.dbToggleMap.hasOwnProperty(dbName)) {
+            this.dbToggleMap[dbName] = { collections: [] };
+        }else if(!this.dbToggleMap[dbName].hasOwnProperty("collections")) {
+            this.dbToggleMap[dbName].collections = [];
+        }
+
+        const prevCollections = this.dbToggleMap[dbName]["collections"];
+        let nextCollections = null;
+
+        if(prevCollections.includes(collection)) {
+            nextCollections = prevCollections.filter(coll => coll != collection);
+        }else {
+            prevCollections.push(collection);
+            nextCollections = prevCollections;
+        }
+
+        this.dbToggleMap[dbName]["collections"] = nextCollections;
+        console.log(this.dbToggleMap);
+        this.forceUpdate()
     }
 
     onTimeChange(key, value) {
@@ -114,19 +140,26 @@ export default class CopyDatabases extends Component {
                         </span>
                     </div>
                 </div>
-                <div className="databases">
-                    {
-                        copyDBs.map((db, index) => {
-                            return(
-                                <CopyDatabase key={ index }
-                                              database={ db }
-                                              toggleOpen={ this.toggleDatabase.bind(this) }
-                                              open={ this.dbToggleMap.hasOwnProperty(db.name)? this.dbToggleMap[db.name]: false }
-                                />
-                            )
-                        })
-                    }
-                </div>
+                {
+                    copyDBs &&
+                    (
+                        <div className="databases">
+                        {
+                            copyDBs.map((db, index) => {
+                                return (
+                                    <CopyDatabase key={ index }
+                                                  database={ db }
+                                                  toggleOpen={ this.toggleDatabaseOpen.bind(this) }
+                                                  toggleCollectionSelect={ this.toggleCollectionSelect.bind(this) }
+                                                  selectedCollections={ this.dbToggleMap.hasOwnProperty(db.name) && this.dbToggleMap[db.name].hasOwnProperty("collections")?this.dbToggleMap[db.name]["collections"]: [] }
+                                                  open={ this.dbToggleMap.hasOwnProperty(db.name) && this.dbToggleMap[db.name].hasOwnProperty("open")?this.dbToggleMap[db.name]["open"]: false  }
+                                    />
+                                )
+                            })
+                        }
+                        </div>
+                    )
+                }
             </div>
         )
     }

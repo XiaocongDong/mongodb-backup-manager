@@ -5,8 +5,7 @@ import dom from './dom';
 const modal = {
 
     getTitle: (title, type) => {
-        const titleHTML = `<div class="title" style="">${ title }</div>`;
-        const titleDOM = dom.createDiv('icon', titleHTML);
+        const titleDOM = dom.createDiv('title', title);
         titleDOM.style.backgroundColor = colorPicker.getColorWithType(type);
         return titleDOM;
     },

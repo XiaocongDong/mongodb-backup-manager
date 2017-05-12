@@ -4,6 +4,7 @@ import collections from '../../../../api/collections'
 import ModalWrapper from '../../../modal.wrapper';
 import CollectionViewer from '../collection.viewer';
 import Portal from '../../../portal';
+import Timer from '../../../timer';
 import modalController from '../../../../utility/modal';
 
 
@@ -13,13 +14,14 @@ export default class CopyDatabase extends Component {
         super(props);
         this.state ={
             collection: null,
+            collections: []
         };
     }
 
     handleDelete(id, db, event) {
         event.stopPropagation();
         modalController.showModal({
-            type: 'caution',
+            type: 'info',
             title: `delete ${ db }`,
             text: `all the collections in this database will be deleted`,
             buttons: [
@@ -58,30 +60,41 @@ export default class CopyDatabase extends Component {
         });
     }
 
-    handleCollectionSelect(collection, event) {
-        event.preventDefault();
-        event.stopPropagation()
-    }
-
     showCollectionData(collection) {
         this.setState({ collection })
     }
 
     render() {
-        const database = this.props.database;
+        const { database,selectedCollections, open } = this.props;
         const { collection } = this.state;
-        const open = this.props.open;
 
         return (
             <div className="database clickable">
                 <div className="database-header" onClick={ this.props.toggleOpen.bind(this, database.name) }  >
-                    <div className="database-name">
-                        { database.name }
-                    </div>
-                    <div className="operations-wrapper">
-                        <span className="operation clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>
+                    <div className="basic-info">
+                        <div className="name">
+                            { database.name }
+                        </div>
+                        <div className="operation clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>
                             <i className="fa fa-trash"></i>
-                        </span>
+                        </div>
+                    </div>
+                    <div className="time-info">
+                        <div className="time created-time">
+                            <i className="fa fa-clock-o" aria-hidden={ true }></i>
+                            <span>created at </span>
+                            <span>{ database.createdTime }</span>
+                        </div>
+                        {
+                            database.deletedTime &&
+                            (
+                                <div className="time deleted-time">
+                                    <i className="fa fa-times-circle-o" aria-hidden={ true }></i>
+                                    <span>deleted after: </span>
+                                    <span><Timer endTime={ database.deletedTime }/></span>
+                                </div>
+                            )
+                        }
                     </div>
                 </div>
                 {
@@ -94,14 +107,22 @@ export default class CopyDatabase extends Component {
                                         <div
                                             className="database-collection"
                                             key={ index }
-                                            onClick={ this.showCollectionData.bind(this, collection) }
                                         >
-                                            <input type="checkbox" onChange={ this.handleCollectionSelect.bind(this, collection) }/>
-                                            <span className="collection-name">{ collection }</span>
+                                            <div className="collection-select" onClick={ () => this.props.toggleCollectionSelect(database.name, collection)}>
+                                                <input type="checkbox" checked={ selectedCollections.includes(collection) }/>
+                                                <span className="collection-name">{ collection }</span>
+                                            </div>
+                                            <div className="collection-view">
+                                                <i className="fa fa-eye view-icon" aria-hidden={ true } onClick={ this.showCollectionData.bind(this, collection) }></i>
+                                            </div>
                                         </div>
                                     )
                                 })
                             }
+                            <div className="operations">
+                                <div className="operation select-all">select all</div>
+                                <div className="operation restore">restore</div>
+                            </div>
                         </div>
                     )
                 }

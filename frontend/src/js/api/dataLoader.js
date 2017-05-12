@@ -59,7 +59,7 @@ const dataLoader = {
                       })
     },
 
-    updateOriginalDBs: (backupId) => {
+    updateOriginalDB: (backupId) => {
         return databases.getOriginalDB(backupId)
             .then(originalDB => {
                 dispatch(dataActionBuilder.update_data("originalDBs", backupId, originalDB));
@@ -67,6 +67,25 @@ const dataLoader = {
             .catch(err => {
                 console.error(`Failed to update original database for ${ backupId } for ${ err.message }`);
             })
+    },
+
+    loadAll: () => {
+        const loads = [];
+        loads.push(dataLoader.loadBackupConfigs());
+        loads.push(dataLoader.loadAllCopyDatabases());
+        // original database can only be updating manually
+        //loads.push(dataLoader.loadAllOriginalDatabases());
+
+        return Promise.all(loads);
+    },
+
+    updateWithBackupID: (backupID) => {
+        const updates = [];
+        updates.push(dataLoader.updateBackupConfig(backupID));
+        updates.push(dataLoader.updateCopyDBs(backupID));
+        updates.push(dataLoader.updateOriginalDB(backupID))
+
+        return Promise.all(updates);
     }
 };
 

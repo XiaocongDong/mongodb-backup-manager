@@ -16,9 +16,7 @@ import store from './redux/store';
 
 import '../sass/style.scss';
 
-dataLoader.loadBackupConfigs();
-dataLoader.loadAllCopyDatabases();
-dataLoader.loadAllOriginalDatabases();
+dataLoader.loadAll();
 
 clientSocket.startSocket();
 clientSocket.startListenBackupConfigsChanges();
