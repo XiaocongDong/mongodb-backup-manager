@@ -111,6 +111,23 @@ class Controller {
             })
     }
 
+    restore(backupID, dbName, collections, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`Can't not restore for nonexistent backup id ${ backupID }`));
+        }
+
+        const backupManager = this.backUpsHash.get(backupID);
+
+        backupManager.restore(dbName, collections)
+            .then(() => {
+                next(response.success(`Successfully restore ${ backupID } from ${ dbName }`))
+            })
+            .catch(err => {
+                console.error(err);
+                next(response.error(`Failed to restore ${ backupID } from ${ dbName } for ${ err.message }`))
+            })
+    }
+
     updateBackupConfig(backupID, updates, next) {
         if(!this.backUpsHash.has(backupID)) {
             return next(response.error(`Can't not update a nonexistent backup`, 404))

@@ -14,7 +14,8 @@ export default class CopyDatabase extends Component {
         super(props);
         this.state ={
             collection: null,
-            collections: []
+            collections: [],
+            restoreErr: null
         };
     }
 
@@ -64,9 +65,73 @@ export default class CopyDatabase extends Component {
         this.setState({ collection })
     }
 
+    restore(dbName) {
+        const { selectedCollections } = this.props;
+
+        if(selectedCollections.length == 0) {
+            this.setState({
+                restoreErr: `must select restore collections`
+            });
+            return;
+        }else {
+            this.setState({
+                restoreErr: null
+            });
+        }
+
+        modalController.showModal({
+            type: 'info',
+            title: `Are you sure to restore ${ dbName}`,
+            text: `${ selectedCollections } of ${ dbName } will be written to the original databases, the original collections will be removed`,
+            buttons: [
+                {
+                    text: 'cancel',
+                    onClick: modalController.closeModal
+                },
+                {
+                    text: 'restore',
+                    onClick: () => {
+                        modalController.showModal({
+                            type: 'info',
+                            text: `restoring ${ dbName }`,
+                            content: 'progress'
+                        });
+                        this.props.restore(dbName)
+                            .then(() => {
+                                modalController.showModal({
+                                    type: 'info',
+                                    title: 'restore succeeded',
+                                    text: `successfully restore ${ dbName }`,
+                                    buttons: [
+                                        {
+                                            text: 'ok',
+                                            onClick: modalController.closeModal
+                                        }
+                                    ]
+                                })
+                            })
+                            .catch(err => {
+                                modalController.showModal({
+                                    type: 'error',
+                                    title: 'restore failed',
+                                    text: `failed to restore ${ dbName } for ${ err.message }`,
+                                    buttons: [
+                                        {
+                                            text: 'ok',
+                                            onClick: modalController.closeModal
+                                        }
+                                    ]
+                                })
+                            })
+                    }
+                }
+            ]
+        });
+    }
+
     render() {
         const { database,selectedCollections, open } = this.props;
-        const { collection } = this.state;
+        const { collection, restoreErr } = this.state;
 
         return (
             <div className="database clickable">
@@ -105,7 +170,7 @@ export default class CopyDatabase extends Component {
                                 database.collections.map((collection, index) => {
                                     return (
                                         <div
-                                            className="database-collection"
+                                            className={"database-collection" + (selectedCollections.includes(collection)? " selected": "")}
                                             key={ index }
                                         >
                                             <div className="collection-select" onClick={ () => this.props.toggleCollectionSelect(database.name, collection)}>
@@ -120,8 +185,21 @@ export default class CopyDatabase extends Component {
                                 })
                             }
                             <div className="operations">
-                                <div className="operation select-all">select all</div>
-                                <div className="operation restore">restore</div>
+                                <div className="error-message">{ restoreErr }</div>
+                                <div
+                                    className="operation select-all"
+                                    onClick={ () => this.props.toggleSelectAll(database.name, database.collections) }
+                                >
+                                    {
+                                        selectedCollections.length != database.collections.length?"select all": "clear"
+                                    }
+                                </div>
+                                <div
+                                    className="operation restore"
+                                    onClick={ this.restore.bind(this, database.name) }
+                                >
+                                    restore
+                                </div>
                             </div>
                         </div>
                     )

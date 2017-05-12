@@ -58,6 +58,7 @@
       .database-collection {
          display: flex;
          justify-content: space-between;
+
          &:hover {
             background-color: #ddd;
          }
@@ -81,19 +82,30 @@
             align-items: center;
 
             .view-icon {
+               color: #777777;
                transition: all .25s ease-in-out;
 
                &:hover {
-                  color: #444444;
+                  color: #333333;
                }
             }
          }
+      }
+
+      .database-collection.selected {
+         background-color: #ddd;
       }
 
       .operations {
          display: flex;
          justify-content: flex-end;
          padding: 10px 0;
+
+         .error-message {
+            color: $red;
+            font-size: .8rem;
+            padding: 8px 10px;
+         }
 
          .operation {
             margin-right: 10px;

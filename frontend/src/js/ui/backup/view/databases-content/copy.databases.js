@@ -3,6 +3,7 @@ import Datetime from 'react-datetime'
 import CopyDatabase from './copy.database';
 import input from '../../../../utility/input';
 
+import backups from '../../../../api/backups';
 
 export default class CopyDatabases extends Component {
 
@@ -29,7 +30,6 @@ export default class CopyDatabases extends Component {
     }
 
     toggleCollectionSelect(dbName, collection) {
-        console.log(this.dbToggleMap);
         if(!this.dbToggleMap.hasOwnProperty(dbName)) {
             this.dbToggleMap[dbName] = { collections: [] };
         }else if(!this.dbToggleMap[dbName].hasOwnProperty("collections")) {
@@ -47,8 +47,34 @@ export default class CopyDatabases extends Component {
         }
 
         this.dbToggleMap[dbName]["collections"] = nextCollections;
-        console.log(this.dbToggleMap);
         this.forceUpdate()
+    }
+
+    toggleSelectAll(dbName, collections) {
+        if(!this.dbToggleMap.hasOwnProperty(dbName)) {
+            this.dbToggleMap[dbName] = { collections: [] };
+        }else if(!this.dbToggleMap[dbName].hasOwnProperty("collections")) {
+            this.dbToggleMap[dbName].collections = [];
+        }
+
+        const prevCollections = this.dbToggleMap[dbName].collections;
+        let nextCollections = null;
+
+        if(prevCollections.length !== collections.length) {
+            nextCollections = collections;
+        }else {
+            nextCollections = [];
+        }
+
+        this.dbToggleMap[dbName].collections = nextCollections;
+        this.forceUpdate();
+    }
+
+    restore(dbName) {
+        const id = this.props.id;
+        const collections = this.dbToggleMap[dbName].collections;
+
+        return backups.restore(id, dbName, collections);
     }
 
     onTimeChange(key, value) {
@@ -151,6 +177,8 @@ export default class CopyDatabases extends Component {
                                                   database={ db }
                                                   toggleOpen={ this.toggleDatabaseOpen.bind(this) }
                                                   toggleCollectionSelect={ this.toggleCollectionSelect.bind(this) }
+                                                  toggleSelectAll={ this.toggleSelectAll.bind(this) }
+                                                  restore={ this.restore.bind(this) }
                                                   selectedCollections={ this.dbToggleMap.hasOwnProperty(db.name) && this.dbToggleMap[db.name].hasOwnProperty("collections")?this.dbToggleMap[db.name]["collections"]: [] }
                                                   open={ this.dbToggleMap.hasOwnProperty(db.name) && this.dbToggleMap[db.name].hasOwnProperty("open")?this.dbToggleMap[db.name]["open"]: false  }
                                     />

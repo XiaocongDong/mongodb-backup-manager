@@ -148,6 +148,20 @@ class BackupManager {
             });
     }
 
+    restore(fromDB, collections) {
+        return this.backupDB
+                    .connect()
+                    .then(() => this.localDB.readFromCollections(fromDB, collections))
+                    .then(collsDocs => {
+                        return this.backupDB.deleteCollections(this.backupConfig.db, collections)
+                                   .then(() => this.backupDB.writeToCollections(collsDocs))
+                    })
+                    .finally(() => {
+                        this.backupDB.close()
+                    })
+
+    }
+
     stopAllActivities() {
         this.activites.forEach(activity => clearTimeout(activity));
         this.activites.clear();

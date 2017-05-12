@@ -41,7 +41,7 @@ const time = {
         let ret = '';
 
         for(let key in t) {
-            ret += `${ t[key] } ${ key }`
+            ret += `${ t[key] } ${ key }  `
         }
 
         return ret;

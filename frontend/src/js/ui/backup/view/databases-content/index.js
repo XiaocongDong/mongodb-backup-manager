@@ -21,6 +21,7 @@ export default class DatabasesContent extends Component {
                 />
                 <CopyDatabases
                     copyDBs={ copyDBs }
+                    id={ id }
                 />
             </div>
         )

@@ -9,7 +9,6 @@ databases.get('/availableDBs', (req, res, next) => {
     controller.getAvailableDBsCollections(mongoParams, next)
 });
 
-
 databases.get('/copyDBs', (req, res, next) => {
     const backupID = req.query.id;
 

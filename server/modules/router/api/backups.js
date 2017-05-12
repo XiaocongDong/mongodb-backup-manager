@@ -48,6 +48,11 @@ backups.post('/resume', (req, res, next) => {
     controller.resume(backupID, next);
 });
 
+backups.post('/restore', (req, res, next) => {
+    const {id, db, collections} = req.body;
+    controller.restore(id, db, collections, next);
+});
+
 backups.delete('/delete', (req, res, next) => {
     const { id, clearLog, clearDBs } = req.query;
 
