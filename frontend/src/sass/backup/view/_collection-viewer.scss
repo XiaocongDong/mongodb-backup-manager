@@ -15,13 +15,80 @@
        box-sizing: border-box;
     }
 
-    .viewer-title {
-       font-size: 2rem;
-       font-weight: 600;
-       padding: 0 10px;
-       color: $grey;
-       text-align: center;
-       border-bottom: $border;
+    .data-content {
+        width: 100%;
+        height: 100%;
+
+        .content-title {
+            font-size: 2rem;
+            font-weight: 600;
+            padding: 0 10px;
+            color: $dark-grey;
+            text-align: center;
+            border-bottom: $border;
+        }
+
+        .content-pagination {
+            height: 20px;
+            padding: 10px;
+            border: 1px solid rgba(0, 0, 0, .2);
+        }
+
+        .content-text {
+            width: 100%;
+            height: calc(100% - 60px);
+
+            textarea {
+               width: 100%;
+                height: 100%;
+                resize: none;
+            }
+        }
+
+        .content-query {
+            padding: 10px;
+            height: 40px;
+            border: 1px solid rgba(0, 0, 0, .2);
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .query-text {
+                display: inline-block;
+                width: 30px;
+                height: 20px;
+                line-height: 20px;
+                text-align: center;
+            }
+
+            .query-search-field {
+                display: inline-block;
+                width: calc(100% - 60px);
+                padding: 0 10px;
+                position: relative;
+
+                &::after {
+                  content: attr(data-error);
+                  position: absolute;
+                  bottom: -10px;
+                  left: 10px;
+                  color: $red;
+                  text-transform: lowercase;
+                  font-size: 9px;
+                }
+
+                input {
+                  padding: 2px;
+                  display: inline-block;
+                  width: 100%;
+                }
+            }
+
+            .query-search-button {
+                padding: 2px 6px;
+            }
+        }
     }
 
     .viewer-loading {
@@ -31,12 +98,19 @@
        transform: translate(-50%, -50%);
 
        .loader {
-          border: 3px solid #aaa;
-          border-top-color: #333;
-          border-radius: 50%;
-          height: 120px;
-          width: 120px;
-          animation: spin 2s linear infinite;
+         border: 3px solid #aaa;
+         border-top-color: #333;
+         border-radius: 50%;
+         height: 120px;
+         width: 120px;
+         animation: spin 2s linear infinite;
+       }
+
+       .text {
+          width: 100%;
+          margin-top: 10px;
+          display: inline-block;
+          text-align: center;
        }
 
     }
@@ -46,73 +120,12 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        text-align: center;
 
         .error-message {
            color: red;
         }
     }
 
-    .viewer-query {
-       padding: 10px;
-       height: 40px;
-       border: 1px solid rgba(0, 0, 0, .2);
-       border-bottom: none;
-       display: flex;
-       justify-content: space-between;
-       align-items: center;
-
-       .text {
-          display: inline-block;
-          width: 30px;
-          height: 20px;
-          line-height: 20px;
-       }
-
-       .search-field {
-         display: inline-block;
-         width: calc(100% - 60px);
-         padding: 0 10px;
-         position: relative;
-
-         &::after {
-           content: attr(data-error);
-           position: absolute;
-           bottom: -10px;
-           left: 10px;
-           color: $red;
-           text-transform: lowercase;
-           font-size: 9px;
-         }
-
-         input {
-           padding: 2px;
-           display: inline-block;
-           width: 100%;
-         }
-       }
-
-       .search-button {
-          padding: 2px 6px;
-       }
-    }
-
-    .viewer-pagination {
-       height: 20px;
-       padding: 10px;
-       border: 1px solid rgba(0, 0, 0, .2);
-    }
-
-    .viewer-content {
-       width: 100%;
-       height: calc(100% - 60px);
-
-       textarea {
-          width: 100%;
-          height: 100%;
-          resize: none;
-       }
-    }
 }
 
 @keyframes spin {

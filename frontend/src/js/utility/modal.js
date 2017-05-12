@@ -4,25 +4,11 @@ import dom from './dom';
 
 const modal = {
 
-    getIcon: (type) => {
-        let iconHTML = null;
-
-        switch (type) {
-            case 'ok':
-                iconHTML = `<div class="icon"><i class="fa fa-check" aria-hidden="true"></i></div>`;
-                break;
-            case 'info':
-                iconHTML = `<i class="fa fa-info" aria-hidden="true"></i></div>`;
-                break;
-            case 'caution':
-                iconHTML = `<i class="fa fa-exclamation" aria-hidden="true"></i>`;
-                break;
-            case 'error':
-                iconHTML = `<i class="fa fa-times" aria-hidden={ true }></i>`;
-                break;
-        }
-
-        return dom.createDiv('icon', iconHTML);
+    getTitle: (title, type) => {
+        const titleHTML = `<div class="title" style="">${ title }</div>`;
+        const titleDOM = dom.createDiv('icon', titleHTML);
+        titleDOM.style.backgroundColor = colorPicker.getColorWithType(type);
+        return titleDOM;
     },
 
     getButton: (button) => {
@@ -41,10 +27,9 @@ const modal = {
 
     getContent: (props) => {
         const contentDOM = dom.createDiv('content', null);
-        contentDOM.style.backgroundColor = colorPicker.getColorWithType(props.type);
-        contentDOM.appendChild(modal.getIcon(props.type));
-        (props.title) && (contentDOM.appendChild(dom.createDiv('title', props.title)));
-        (props.text) && (contentDOM.appendChild(dom.createDiv('text', props.text)));
+        const titleDOM = modal.getTitle(props.title, props.type);
+        contentDOM.appendChild(titleDOM);
+        contentDOM.appendChild(dom.createDiv('text', props.text));
         return contentDOM;
     },
 

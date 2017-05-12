@@ -19,7 +19,8 @@ export default class BackupTitle extends Component {
     handleDelete(id) {
         modalController.showModal({
                 type: 'caution',
-                text: `delete ${ id }?`,
+                title: `delete ${ id }?`,
+                text: `this action will delete all the databases ang logs this backup created`,
                 buttons: [
                     {
                         text: 'cancel',
@@ -29,7 +30,6 @@ export default class BackupTitle extends Component {
                         text: 'delete',
                         onClick: () => {
                             modalController.showModal({
-                                type: 'info',
                                 text: `deleting ${ id }`,
                                 content: 'progress',
                                 buttons: []
@@ -38,7 +38,8 @@ export default class BackupTitle extends Component {
                                 .then(() => {
                                     modalController.showModal({
                                         type: 'info',
-                                        text: `successfully deleted ${ id }`,
+                                        title: `successfully deleted ${ id }`,
+                                        text: `all the databases and logs related to this backup have been removed`,
                                         buttons: []
                                     });
                                     setTimeout(() => {
@@ -50,7 +51,8 @@ export default class BackupTitle extends Component {
                                     const err = response.data.message;
                                     modalController.showModal({
                                         type: 'error',
-                                        text: `failed to delete ${ id } for ${ err }`,
+                                        title: `failed to delete ${ id }`,
+                                        text: err.message,
                                         buttons: [
                                             {
                                                 text: 'ok',

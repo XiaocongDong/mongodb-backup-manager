@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import databases from '../../../api/databases';
-import collections from '../../../api/collections'
-import ModalWrapper from '../../modal.wrapper';
-import CollectionViewer from './collection.viewer';
-import Portal from '../../portal';
-import modalController from '../../../utility/modal';
+import databases from '../../../../api/databases';
+import collections from '../../../../api/collections'
+import ModalWrapper from '../../../modal.wrapper';
+import CollectionViewer from '../collection.viewer';
+import Portal from '../../../portal';
+import modalController from '../../../../utility/modal';
 
 
-export default class BackupDatabase extends Component {
+export default class CopyDatabase extends Component {
 
     constructor(props) {
         super(props);
@@ -20,7 +20,8 @@ export default class BackupDatabase extends Component {
         event.stopPropagation();
         modalController.showModal({
             type: 'caution',
-            text: `delete ${ db }?`,
+            title: `delete ${ db }`,
+            text: `all the collections in this database will be deleted`,
             buttons: [
                 {
                     text: 'cancel',
@@ -41,7 +42,8 @@ export default class BackupDatabase extends Component {
                                 const err = response.data.message;
                                 modalController.showModal({
                                     type: 'error',
-                                    text: `failed to delete ${ db } for ${ err }`,
+                                    title: `failed to delete ${ db }`,
+                                    text: err.message,
                                     buttons: [
                                         {
                                             text: 'ok',
@@ -75,27 +77,6 @@ export default class BackupDatabase extends Component {
                 <div className="database-header" onClick={ this.props.toggleOpen.bind(this, database.name) }  >
                     <div className="database-name">
                         { database.name }
-                    </div>
-                    <div className="time-wrapper">
-                        <div className="time">
-                            <span className="name" style={ { color: "#aaa"} }>created time</span>
-                            <span className="value">
-                                    { database.createdTime }
-                                </span>
-                        </div>
-                        {
-                            (database.deletedTime) &&
-                            (<div className="time">
-                                <span className="name" style={ { color: "#ed281a"} }>deleted time</span>
-                                <span className="value">
-                                        { database.deletedTime }
-                                    </span>
-                            </div>)
-                        }
-                    </div>
-                    <div className="collection-number-wrapper">
-                        <span className="name">collections</span>
-                        <span className="number">{ database.collections.length }</span>
                     </div>
                     <div className="operations-wrapper">
                         <span className="operation clickable" onClick={ this.handleDelete.bind(this, database.id, database.name) }>

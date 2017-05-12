@@ -1,21 +1,23 @@
-.backup-databases {
+.copy-databases {
    border: $border;
 
    .header {
       padding: 10px;
       display: flex;
-      background-color: $blue;
-      color: $white;
+      color: $light-black;
       justify-content: space-between;
+      border-bottom: $border;
+      height: 50px;
 
       > * {
-        display: inline-block;
+         display: inline-block;
       }
 
       .title {
-        left: 0;
-        font-size: 2rem;
+         font-size: 1.5rem;
+         line-height: 30px;
       }
+
 
       .filter {
          height: 100%;
@@ -52,8 +54,5 @@
          }
 
       }
-   }
-
-   .databases {
    }
 }

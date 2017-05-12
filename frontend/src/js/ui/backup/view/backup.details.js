@@ -1,29 +1,46 @@
 import React, { Component } from 'react'
 import BackupTitle from './backup.title';
-import BackupDatabases from './backup.databases';
-import Statistics from './backup.statistics';
+import BackupSubtitle from './backup.subtitle';
+import DatabasesContent from './databases-content';
 
 
 export default class BackupDetails extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            current: 0
+        }
+    }
+
+    setCurrentTab(current) {
+        this.setState(
+            {
+                current
+            }
+        )
+    }
+
     render() {
         const props = this.props;
+        const current = this.state.current;
 
         if(!props.backupConfig) {
             return null;
         }
 
+        const contents = [
+            <DatabasesContent
+                originalDB={ props.originalDB }
+                copyDBs={ props.copyDBs }
+            />
+        ];
+
         return (
             <div className="backup-details">
                 <BackupTitle backupConfig={ props.backupConfig }/>
-                <div className="backup-content">
-                    <div className="backup-databases-wrapper">
-                        <BackupDatabases copyDBs={ props.copyDBs } />
-                    </div>
-                    <div className="backup-statistics-wrapper">
-                        <Statistics backupConfig={ props.backupConfig }/>
-                    </div>
-                </div>
+                <BackupSubtitle current={ this.state.current } setCurrentTab={ this.setCurrentTab.bind(this) }/>
+                { contents[current] }
             </div>
         )
     }

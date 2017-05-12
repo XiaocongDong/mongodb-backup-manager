@@ -1,0 +1,19 @@
+.backup-subtitle {
+  position: relative;
+  height: 40px;
+  background-color: $light-grey;
+  display: flex;
+  justify-content: center;
+
+  .subtitle-tab {
+    margin-right: 20px;
+    padding: 0 10px;
+    line-height: 40px;
+    color: $light-black;
+  }
+
+  .active {
+    border-bottom: 2px solid $blue;
+    color: $blue;
+  }
+}

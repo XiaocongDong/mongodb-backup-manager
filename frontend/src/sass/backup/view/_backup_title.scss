@@ -1,9 +1,8 @@
 .backup-title {
    width: 100%;
    padding: 10px 0 5px 40px;
-   background-color: $white;
-   color: $black;
-   border-bottom: 1px solid rgba(0, 0, 0, .12);
+   background-color: #fafafa;
+   color: #333333;
 
    .backup-id {
       font-weight: 600;
@@ -48,7 +47,7 @@
          }
 
          .delete {
-            background-color: $grey;
+            background-color: $dark-grey;
          }
 
          .backup {

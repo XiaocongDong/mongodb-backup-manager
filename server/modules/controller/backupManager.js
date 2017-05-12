@@ -222,6 +222,21 @@ class BackupManager {
         })
     }
 
+    getOriginalDB() {
+        return this.backupDB.connect()
+            .then(() => this.backupDB.getCollectionNamesWithDB(this.backupConfig.db))
+            .then(collections => {
+                return {
+                    id: this.backupConfig.id,
+                    db: this.backupConfig.db,
+                    collections
+                }
+            })
+            .finally(() => {
+                this.backupDB.close();
+            })
+    }
+
     getCollections(dbName) {
         if(dbName != this.backupConfig.db) {
             return this.localDB.getCollectionNamesWithDB(dbName)
@@ -235,7 +250,7 @@ class BackupManager {
                 return this.backupDB.getCollectionNamesWithDB(this.backupConfig.db);
             })
             .then(collections => {
-                return {db: dbName, collections};
+                return {id: this.backupConfig.id, db: dbName, collections};
             })
             .finally(() => {
                 this.backupDB.close();

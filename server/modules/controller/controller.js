@@ -318,6 +318,24 @@ class Controller {
             })
     }
 
+    getAllOriginalDBs(next) {
+        Promise.all([...this.backUpsHash.keys()].map(key => this.backUpsHash.get(key).getOriginalDB()))
+            .then(dbs=> next(response.success(dbs)))
+            .catch(err => next(response.error(err.message)))
+    }
+
+    getOriginalDB(backupID, next) {
+        if(!this.backUpsHash.has(backupID)) {
+            return next(response.error(`backupID ${ backupID } doesn't exist`, 404));
+        }
+
+        this.backUpsHash.get(backupID)
+            .getOriginalDB()
+            .then(db => next(response.success(db)))
+            .catch(err => next(response.error(err.message)))
+
+    }
+
     getAllBackupLogs(backupID, next) {
         this.localDB.getBackupLogs(backupID)
             .then(logs => next(response.success(logs)))

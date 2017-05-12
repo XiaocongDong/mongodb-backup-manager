@@ -14,26 +14,25 @@
       transform: translate(-50%, -50%);
       background-color: $white;
       color: black;
-      border-radius: 2px;
+      border-radius: 4px;
 
 
       .content {
          width: 30vw;
          max-width: 600px;
-         text-align: center;
-         padding: 40px 40px;
-
-         .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-         }
+         border-bottom: $border;
 
          .title {
-
+            font-size: 1.5rem;
+            background-color: $black;
+            color: $white;
+            padding: 10px;
          }
 
          .text {
-            font-size: 2rem;
+            padding: 10px;
+            font-size: 1.3rem;
+            color: $grey;
          }
       }
 

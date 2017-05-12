@@ -11,6 +11,10 @@ const initData = Immutable.Map({
     copyDBs: Immutable.Map({
         data: [],
         loaded: false
+    }),
+    originalDBs: Immutable.Map({
+        data: [],
+        loaded: false
     })
 });
 

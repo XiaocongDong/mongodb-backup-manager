@@ -1,0 +1,34 @@
+.databases-content {
+
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    > * {
+        width: 45%;
+    }
+
+    .original-database {
+        margin: 0 20px 0 0;
+        @media screen and (max-width: 1400px) {
+          width: 95%;
+          margin: 0;
+        }
+    }
+
+    .copy-databases {
+        @media screen and (max-width: 1400px) {
+          width: 95%;
+          margin: 0;
+        }
+    }
+
+    .database-info {
+
+       .database-details {
+
+       }
+    }
+}

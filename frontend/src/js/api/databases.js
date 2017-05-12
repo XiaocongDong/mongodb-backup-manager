@@ -25,6 +25,22 @@ const databases = {
                 })
     },
 
+    getAllOriginalDBs: () => {
+        return axios.get(api.databasesPath('/allOriginalDBs'))
+            .then(response => {
+                return response.data;
+            })
+    },
+
+    getOriginalDB: (backupID) => {
+        return axios.get(api.databasesPath('/originalDB'), {
+                params: {id: backupID}
+            })
+            .then(response => {
+                return response.data;
+            })
+    },
+
     deleteCopyDB: (id, db) => {
         return axios.delete(api.databasesPath('/'), {
             params: {id, db}

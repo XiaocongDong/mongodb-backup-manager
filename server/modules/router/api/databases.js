@@ -6,7 +6,6 @@ const databases = express.Router();
 
 databases.get('/availableDBs', (req, res, next) => {
     const mongoParams = req.query;
-    console.log(mongoParams.server);
     controller.getAvailableDBsCollections(mongoParams, next)
 });
 
@@ -15,6 +14,16 @@ databases.get('/copyDBs', (req, res, next) => {
     const backupID = req.query.id;
 
     controller.getBackupCopyDBs(backupID, next);
+});
+
+databases.get('/originalDB', (req, res, next) => {
+    const backupID = req.query.id;
+
+    controller.getOriginalDB(backupID, next);
+});
+
+databases.get('/allOriginalDBs', (req, res, next) => {
+    controller.getAllOriginalDBs(next);
 });
 
 databases.get('/allCopyDBs', (req, res, next) => {

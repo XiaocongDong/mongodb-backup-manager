@@ -77,43 +77,45 @@ export default class CollectionViewer extends Component {
     }
 
     render() {
-        if(!this.state.loaded) {
-            return (
-                <div className="data-viewer">
-                    <div className="viewer-loading">
-                        <div className="loader"></div>
-                        <div className="text" data-content="loading">loading...</div>
-                    </div>
-                </div>
-            )
-        }
-
-        if(!this.state.loaded && this.state.error) {
-            return (
-                <div className="data-viewer">
-                    <div className="viewer-error">
-                        <div>{ this.state.error }</div>
-                    </div>
-                </div>
-            )
-        }
-
+        const { loaded, error } = this.state;
         const prettyData = JSON.stringify(this.filteredData, undefined, 8);
 
         return (
             <div className="data-viewer">
-                <div className="viewer-title">{ this.props.title }</div>
-                <div className="viewer-query">
-                    <div className="text">query</div>
-                    <div className="search-field" data-error={ this.queryStringError }><input type="text" ref={ input => this.input = input }/></div>
-                    <div className="button yes search-button" onClick={ this.onSearchClick.bind(this)} >search</div>
-                </div>
-                <div className="viewer-pagination">
+                {
+                    !loaded && (
+                        <div className="viewer-loading">
+                            <div className="loader"></div>
+                            <div className="text" data-content="loading">loading...</div>
+                        </div>
+                    )
+                }
+                {
+                    loaded && error && (
+                        <div className="viewer-error">
+                            <div>{ error }</div>
+                        </div>
+                    )
+                }
+                {
+                    loaded && !error && (
+                        <div className="data-content">
+                            <div className="content-title">{ this.props.title }</div>
+                            <div className="content-query">
+                                <div className="query-text">query</div>
+                                <div className="query-search-field" data-error={ this.queryStringError }><input type="text" ref={ input => this.input = input }/></div>
+                                <div className="button yes query-search-button" onClick={ this.onSearchClick.bind(this)} >search</div>
+                            </div>
+                            <div className="content-pagination">
 
-                </div>
-                <div className="viewer-content">
-                    <textarea disabled="disabled" value={ prettyData }/>
-                </div>
+                            </div>
+                            <div className="content-text">
+                                <textarea disabled="disabled" value={ prettyData }/>
+                            </div>
+                        </div>
+                    )
+                }
+
             </div>
         )
     }

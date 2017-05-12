@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Datetime from 'react-datetime'
-import BackupDatabase from './backup.database';
-import input from '../../../utility/input';
+import CopyDatabase from './copy.database';
+import input from '../../../../utility/input';
 
 
-export default class BackupDatabases extends Component {
+export default class CopyDatabases extends Component {
 
     constructor(props) {
         super(props);
@@ -85,10 +85,10 @@ export default class BackupDatabases extends Component {
         }
 
         return (
-            <div className="backup-databases">
+            <div className="database-info copy-databases">
                 <div className="header">
                     <div className="title">
-                        databases
+                        local
                     </div>
                     <div className="filter">
                         <div className="time-selector">
@@ -118,10 +118,10 @@ export default class BackupDatabases extends Component {
                     {
                         copyDBs.map((db, index) => {
                             return(
-                                <BackupDatabase key={ index }
-                                                database={ db }
-                                                toggleOpen={ this.toggleDatabase.bind(this) }
-                                                open={ this.dbToggleMap.hasOwnProperty(db.name)? this.dbToggleMap[db.name]: false }
+                                <CopyDatabase key={ index }
+                                              database={ db }
+                                              toggleOpen={ this.toggleDatabase.bind(this) }
+                                              open={ this.dbToggleMap.hasOwnProperty(db.name)? this.dbToggleMap[db.name]: false }
                                 />
                             )
                         })

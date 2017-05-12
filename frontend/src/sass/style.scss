@@ -11,10 +11,13 @@
 @import "backup/config/history-connections";
 @import "backup/view/backup_details";
 @import "backup/view/backup_title";
-@import "backup/view/backup_databases";
-@import "backup/view/backup_database";
+@import "backup/view/databases-content/copy_databases";
+@import "backup/view/databases-content/copy_database";
+@import "backup/view/databases-content/original-database";
+@import "backup/view/databases-content/databases_content";
 @import "backup/view/backup_statistics";
 @import "backup/view/collection-viewer";
+@import "backup/view/backup-subtitle";
 @import "dashboard/dashboard";
 @import "dashboard/backup-grid";
 @import "dashboard/backups_view";

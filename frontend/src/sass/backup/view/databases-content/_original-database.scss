@@ -1,0 +1,39 @@
+.original-database {
+
+    border: $border;
+
+    .header {
+      padding-left: 10px;
+      color: $light-black;
+      font-size: 1.5rem;
+      border-bottom: $border;
+      height: 50px;
+      line-height: 50px;
+    }
+
+    .database {
+
+         .database-name {
+            padding: 10px;
+         }
+
+        .database-details {
+
+            .database-collection {
+                padding: 10px;
+
+                &:hover {
+                  background-color: #ddd;
+                }
+
+                input {
+                  margin-right: 20px;
+                }
+
+                .collection-name {
+                }
+
+            }
+        }
+    }
+}

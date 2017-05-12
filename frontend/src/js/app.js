@@ -18,6 +18,8 @@ import '../sass/style.scss';
 
 dataLoader.loadBackupConfigs();
 dataLoader.loadAllCopyDatabases();
+dataLoader.loadAllOriginalDatabases();
+
 clientSocket.startSocket();
 clientSocket.startListenBackupConfigsChanges();
 clientSocket.startListenCopyDBsChanges();
