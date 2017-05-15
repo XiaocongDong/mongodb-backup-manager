@@ -333,7 +333,14 @@ class MongoDB {
 
     deleteCollections(dbName, collectionNames) {
         return Promise.all(collectionNames.map(collectionName => {
-            return this.getDBByName(dbName).dropCollection(collectionName);
+            return this.getDBByName(dbName).dropCollection(collectionName)
+                       .catch(err => {
+                           // when the collection doesn't exist the delete action will throw a 'ns not found' error,
+                           // need to skip this error
+                           if(!err.message.includes('ns not found')) {
+                               throw err
+                           }
+                       });
         }))
     }
 
