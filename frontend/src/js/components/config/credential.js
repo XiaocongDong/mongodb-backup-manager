@@ -12,14 +12,11 @@ import input from 'utility/input';
 import object from 'utility/object';
 import backupConfigUtil from 'utility/backupConfig';
 import { AUTHSTATES } from 'utility/constants';
+import localStore from 'utility/localStore';
 
 //api
 import databases from 'api/databases';
 
-const getConnectionsHistory = () => {
-    const connections = localStorage.getItem('connections');
-    return JSON.parse(connections);
-};
 
 export default class Credential extends Component {
 
@@ -36,7 +33,7 @@ export default class Credential extends Component {
         this.state = {
           showHistory: false
         };
-        this.connections = getConnectionsHistory();
+        this.connections = localStore.getItem('connections');
     }
 
     createNewConnection(connection) {
@@ -55,7 +52,7 @@ export default class Credential extends Component {
             this.connections.push(connection);
         }
 
-        localStorage.setItem('connections', JSON.stringify(this.connections));
+        localStore.setItem('connections', this.connections);
     };
 
 
@@ -125,7 +122,7 @@ export default class Credential extends Component {
             this.connections = object.updateArrWithKeyValue('id', id, this.connections, null);
         }
         this.forceUpdate();
-        localStorage.setItem('connections', JSON.stringify(this.connections));
+        localStore.setItem('connections', this.connections);
     }
 
     toggleHistory() {

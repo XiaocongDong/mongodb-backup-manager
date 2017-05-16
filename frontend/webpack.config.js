@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -50,7 +51,11 @@ module.exports= {
                 from: 'src/index.html', to: 'index.html'
             }
         ]),
-        new ExtractTextPlugin('style.css')
+        new ExtractTextPlugin('style.css'),
+        new webpack.DefinePlugin({
+            __DEV__: JSON.stringify(JSON.parse(process.env.NODE_ENV == 'dev' || 'false'))
+
+        })
     ],
     resolve: {
         modules: [
