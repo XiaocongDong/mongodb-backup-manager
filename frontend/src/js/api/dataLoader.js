@@ -1,7 +1,7 @@
 import backups from './backups';
 import databases from './databases';
-import { dataActionBuilder } from '../redux/action/dataAction';
-import { dispatch } from '../redux/store'
+import * as dataActionsCreators from 'actions/data';
+import { dispatch } from 'store/store'
 
 
 const dataLoader = {
@@ -9,7 +9,7 @@ const dataLoader = {
     loadBackupConfigs: () => {
         return backups.getBackupConfigs()
                     .then(configs => {
-                        dispatch(dataActionBuilder.set_data("backupConfigs", configs))
+                        dispatch(dataActionsCreators.setData("backupConfigs", configs))
                     })
                     .catch(err => {
                         console.error(err);
@@ -20,7 +20,7 @@ const dataLoader = {
     loadAllCopyDatabases: (backupId) => {
         return databases.getAllCopyDbs(backupId)
                      .then(copyDBs => {
-                         dispatch(dataActionBuilder.set_data("copyDBs", copyDBs));
+                         dispatch(dataActionsCreators.setData("copyDBs", copyDBs));
                      })
                      .catch(err => {
                          console.log(err);
@@ -31,7 +31,7 @@ const dataLoader = {
     loadAllOriginalDatabases: () => {
         return databases.getAllOriginalDBs()
             .then(dbs => {
-                dispatch(dataActionBuilder.set_data("originalDBs", dbs));
+                dispatch(dataActionsCreators.setData("originalDBs", dbs));
             })
             .catch(err => {
                 console.error(`Failed to load all the original databases for ${ err.message }`);
@@ -41,7 +41,7 @@ const dataLoader = {
     updateBackupConfig: (backupId) => {
         return backups.getBackupConfig(backupId)
                     .then(backupConfig => {
-                        dispatch(dataActionBuilder.update_data("backupConfigs", backupId, backupConfig))
+                        dispatch(dataActionsCreators.updateData("backupConfigs", backupId, backupConfig))
                     })
                     .catch(err => {
                         console.error(`Failed to update backup config for ${ err.message }`);
@@ -51,7 +51,7 @@ const dataLoader = {
     updateCopyDBs: (backupId) => {
         return databases.getCopyDbs(backupId)
                       .then(copyDbs => {
-                          dispatch(dataActionBuilder.update_data("copyDBs", backupId, copyDbs));
+                          dispatch(dataActionsCreators.updateData("copyDBs", backupId, copyDbs));
                       })
                       .catch(err => {
                           console.log(err);
@@ -62,7 +62,7 @@ const dataLoader = {
     updateOriginalDB: (backupId) => {
         return databases.getOriginalDB(backupId)
             .then(originalDB => {
-                dispatch(dataActionBuilder.update_data("originalDBs", backupId, originalDB));
+                dispatch(dataActionsCreators.updateData("originalDBs", backupId, originalDB));
             })
             .catch(err => {
                 console.error(`Failed to update original database for ${ backupId } for ${ err.message }`);
@@ -83,7 +83,7 @@ const dataLoader = {
         const updates = [];
         updates.push(dataLoader.updateBackupConfig(backupID));
         updates.push(dataLoader.updateCopyDBs(backupID));
-        updates.push(dataLoader.updateOriginalDB(backupID))
+        updates.push(dataLoader.updateOriginalDB(backupID));
 
         return Promise.all(updates);
     }

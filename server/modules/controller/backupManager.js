@@ -154,7 +154,7 @@ class BackupManager {
                     .then(() => this.localDB.readFromCollections(fromDB, collections))
                     .then(collsDocs => {
                         return this.backupDB.deleteCollections(this.backupConfig.db, collections)
-                                   .then(() => this.backupDB.writeToCollections(collsDocs))
+                                   .then(() => this.backupDB.writeToCollections(this.backupConfig.db, collsDocs))
                     })
                     .finally(() => {
                         this.backupDB.close()
