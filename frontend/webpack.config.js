@@ -7,7 +7,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports= {
     devtool: 'source-map',
     entry: {
-        app: path.resolve(__dirname, './src/js/app.js')
+        app: path.resolve(__dirname, './src/app.js')
     },
     output: {
         filename: '[name].js',
@@ -55,11 +55,21 @@ module.exports= {
         new webpack.DefinePlugin({
             __DEV__: JSON.stringify(JSON.parse(process.env.NODE_ENV == 'dev' || 'false'))
 
+        }),
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                context: '/', // <- putting this line right under "options" did the trick
+                sassLoader: {
+                    includePaths: [
+                        path.resolve('./src'),
+                    ]
+                }
+            }
         })
     ],
     resolve: {
         modules: [
-            path.resolve('./src/js'),
+            path.resolve('./src'),
             path.resolve('./node_modules')
         ]
     }

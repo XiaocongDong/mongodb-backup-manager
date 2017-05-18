@@ -1,0 +1,130 @@
+.backup-details {
+   height: 100%;
+   width: 100%;
+   font-size: 1.3rem;
+
+   .backup-content {
+      padding-top: 10px;
+      display: flex;
+      justify-content: center;
+
+      > * {
+         display: inline-block;
+      }
+
+   }
+
+   .backup-title {
+      width: 100%;
+      padding: 10px 0 5px 40px;
+      background-color: #fafafa;
+      color: #333333;
+
+      .backup-id {
+         font-weight: 600;
+         font-size: 2.5rem;
+      }
+
+      .panel {
+         height: 50px;
+         display: flex;
+         justify-content: flex-end;
+
+         .status-wrapper {
+            width: 20%;
+            height: 100%;
+            text-align: center;
+            font-size: 1.2rem;
+         }
+
+         .operations-wrapper {
+            width: 30%;
+
+            .operation {
+               position: relative;
+               top: 50%;
+               transform: translateY(-50%);
+               padding: 10px;
+               width: 120px;
+               text-align: center;
+               display: inline-block;
+               color: $white;
+               margin-right: 10px;
+               border-radius: 5px;
+               font-size: 1.1rem;
+            }
+
+            .stop {
+               background-color: $red;
+            }
+
+            .resume {
+               background-color: $green;
+            }
+
+            .delete {
+               background-color: $dark-grey;
+            }
+
+            .backup {
+               background-color: $blue;
+            }
+         }
+      }
+   }
+
+   .backup-subtitle {
+      position: relative;
+      height: 40px;
+      background-color: $light-grey;
+      display: flex;
+      justify-content: center;
+
+      .subtitle-tab {
+         margin-right: 20px;
+         padding: 0 10px;
+         line-height: 40px;
+         color: $light-black;
+      }
+
+      .active {
+         border-bottom: 2px solid $blue;
+         color: $blue;
+      }
+   }
+
+   .databases-content {
+
+      display: flex;
+      justify-content: center;
+      padding-top: 10px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+
+      > * {
+         width: 45%;
+      }
+
+      .original-database {
+         margin: 0 20px 0 0;
+         @media screen and (max-width: 1400px) {
+            width: 95%;
+            margin: 0;
+         }
+      }
+
+      .copy-databases {
+         @media screen and (max-width: 1400px) {
+            width: 95%;
+            margin: 0;
+         }
+      }
+
+      .database-info {
+
+         .database-details {
+
+         }
+      }
+   }
+}
