@@ -1,5 +1,5 @@
 import axios from 'axios';
-import api from '../utility/api';
+import api from './path';
 
 
 const backups = {

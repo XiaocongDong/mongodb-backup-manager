@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
-import { STATUS } from 'utility/data';
+import { STATUS } from 'constants/backup';
 
 const statusOpts = STATUS.map(status => {
     return {

@@ -12,7 +12,7 @@ import timeUtil from "utility/time";
 import backupConfigUtil from "utility/backupConfig";
 
 
-export default class BackupConfig extends Component {
+export default class Config extends Component {
 
     constructor(props) {
         super(props);

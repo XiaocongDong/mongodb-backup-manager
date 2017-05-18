@@ -11,7 +11,7 @@ import ConnHistory from './ConnHistory';
 import input from 'utility/input';
 import object from 'utility/object';
 import backupConfigUtil from 'utility/backupConfig';
-import { AUTHSTATES } from 'utility/constants';
+import { AUTHSTATES } from 'constants/config';
 import localStore from 'utility/localStore';
 
 //api

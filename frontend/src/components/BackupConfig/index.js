@@ -3,17 +3,17 @@ import React, { Component } from 'react';
 
 //ui
 import Credential from './Credential';
-import BackupConfig from './Config';
+import Config from './Config';
 import Review from './Review';
 import Progress from './Progress';
 
 //utility
 import object from 'utility/object';
 import backupConfigUtil from 'utility/backupConfig';
-import { AUTHSTATES, SUBMITSTATES } from 'utility/constants';
+import { AUTHSTATES, SUBMITSTATES } from 'constants/config';
 
 
-class Config extends Component {
+class BackupConfig extends Component {
 
     constructor(props) {
         super(props);
@@ -86,13 +86,13 @@ class Config extends Component {
                                            handleNext = { this.handleNext.bind(this) }/>;
         formsDOM.push(credentialForm);
 
-        const backupConfigForm = <BackupConfig key = { 1 }
-                                               dbsColls = { this.dbsColls }
-                                               handleNext = { this.handleNext.bind(this) }
-                                               handleBack = { this.handleBack.bind(this) }
-                                               backupConfig = { backupConfig }
-                                               handleConfigChange = { this.handleConfigChange.bind(this) }
-                                               review = { review }/>;
+        const backupConfigForm = <Config key = { 1 }
+                                         dbsColls = { this.dbsColls }
+                                         handleNext = { this.handleNext.bind(this) }
+                                         handleBack = { this.handleBack.bind(this) }
+                                         backupConfig = { backupConfig }
+                                         handleConfigChange = { this.handleConfigChange.bind(this) }
+                                         review = { review }/>;
         formsDOM.push(backupConfigForm);
 
         const reviewForm = <Review key = { 2 }
@@ -117,5 +117,5 @@ class Config extends Component {
     }
 }
 
-Config.defaultProps = { backupConfig: backupConfigUtil.getInitBackupConfig() };
-export default Config;
+BackupConfig.defaultProps = { backupConfig: backupConfigUtil.getInitBackupConfig() };
+export default BackupConfig;

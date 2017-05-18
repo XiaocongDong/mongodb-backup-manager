@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Form from '../Form';
-import dataLoader from 'api/dataLoader';
 import { hashHistory } from 'react-router'
 
 //utility
@@ -8,7 +7,7 @@ import input from 'utility/input';
 import object from 'utility/object';
 import time from 'utility/time';
 import backupConfigUtil from 'utility/backupConfig';
-import { SUBMITSTATES } from 'utility/constants';
+import { SUBMITSTATES } from 'constants/config';
 
 
 //api
