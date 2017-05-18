@@ -175,6 +175,7 @@ export default class LocalDBs extends Component {
                                     return (
                                         <DB key={ index }
                                             database={ db }
+                                            updateRemoteDB={ this.props.updateRemoteDB }
                                             toggleOpen={ this.toggleDatabaseOpen.bind(this) }
                                             toggleCollectionSelect={ this.toggleCollectionSelect.bind(this) }
                                             toggleSelectAll={ this.toggleSelectAll.bind(this) }

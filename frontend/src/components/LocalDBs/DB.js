@@ -66,7 +66,8 @@ export default class DB extends Component {
     }
 
     restore(dbName) {
-        const { selectedCollections } = this.props;
+        const { selectedCollections, updateRemoteDB, database } = this.props;
+        const { id } = database;
 
         if(selectedCollections.length == 0) {
             this.setState({
@@ -98,6 +99,7 @@ export default class DB extends Component {
                         });
                         this.props.restore(dbName)
                             .then(() => {
+                                updateRemoteDB(id);
                                 modalController.showModal({
                                     type: 'info',
                                     title: 'restore succeeded',

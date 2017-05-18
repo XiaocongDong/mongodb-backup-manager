@@ -28,10 +28,10 @@ const dataLoader = {
                      })
     },
 
-    loadAllOriginalDatabases: () => {
+    loadAllRemoteDBs: () => {
         return databases.getAllOriginalDBs()
             .then(dbs => {
-                dispatch(dataActionsCreators.setData("originalDBs", dbs));
+                dispatch(dataActionsCreators.setData("remoteDBs", dbs));
             })
             .catch(err => {
                 console.error(`Failed to load all the original databases for ${ err.message }`);
@@ -59,10 +59,10 @@ const dataLoader = {
                       })
     },
 
-    updateOriginalDB: (backupId) => {
+    updateRemoteDB: (backupId) => {
         return databases.getOriginalDB(backupId)
             .then(originalDB => {
-                dispatch(dataActionsCreators.updateData("originalDBs", backupId, originalDB));
+                dispatch(dataActionsCreators.updateData("remoteDBs", backupId, originalDB));
             })
             .catch(err => {
                 console.error(`Failed to update original database for ${ backupId } for ${ err.message }`);
@@ -74,7 +74,7 @@ const dataLoader = {
         loads.push(dataLoader.loadBackupConfigs());
         loads.push(dataLoader.loadAllCopyDatabases());
         // original database can only be updating manually
-        //loads.push(dataLoader.loadAllOriginalDatabases());
+        //loads.push(dataLoader.loadAllRemoteDBs());
 
         return Promise.all(loads);
     },
@@ -83,7 +83,7 @@ const dataLoader = {
         const updates = [];
         updates.push(dataLoader.updateBackupConfig(backupID));
         updates.push(dataLoader.updateCopyDBs(backupID));
-        updates.push(dataLoader.updateOriginalDB(backupID));
+        updates.push(dataLoader.updateRemoteDB(backupID));
 
         return Promise.all(updates);
     }

@@ -3,7 +3,6 @@ import ModalWrapper from 'components/ModalWrapper';
 import CollectionViewer from 'components/CollectionViewer';
 import Portal from 'components/Portal';
 import collectionsAPI from 'api/collections';
-import dataLoader from 'api/dataLoader';
 
 
 export default class RemoteDatabase extends Component {
@@ -13,12 +12,7 @@ export default class RemoteDatabase extends Component {
         this.state = {
             open: false,
             collection: null,
-            updating: false,
         }
-    }
-
-    componentDidMount() {
-        this.updateOriginalDB.call(this, this.props.id);
     }
 
     toggleOpen() {
@@ -31,27 +25,12 @@ export default class RemoteDatabase extends Component {
         this.setState({ collection })
     }
 
-    updateOriginalDB(id) {
-        this.setState({
-            updating: true
-        });
-        dataLoader.updateOriginalDB(id)
-            .then(() => {
-                this.setState({
-                    updating: false
-                })
-            })
-            .catch(err => {
-                this.setState({updating: false});
-                console.error(`Failed to update original db for ${ id } for ${ err.message }`);
-            });
-    }
 
     render() {
-        const originalDB = this.props.originalDB;
+        const { remoteDB, updating } = this.props;
         const id = this.props.id;
-        const { open, collection, updating } = this.state;
-
+        const { open, collection } = this.state;
+        console.log(remoteDB);
         return (
             <div className="database-info original-database">
                 <div className="header">
@@ -66,25 +45,25 @@ export default class RemoteDatabase extends Component {
                         </div>
                         <i
                             className={"fa fa-refresh clickable" + (updating?" updating": "") }
-                            aria-hidden={ true } onClick={ this.updateOriginalDB.bind(this, id) }
+                            aria-hidden={ true } onClick={ this.props.updateRemoteDB.bind(this, id) }
                             title="update original database"
                         >
                         </i>
                     </div>
                 </div>
                 {
-                    originalDB &&
+                    remoteDB &&
                     (
                         <div className="database clickable">
                         <div className="database-name" onClick={ this.toggleOpen.bind(this) }>
-                            { originalDB.db }
+                            { remoteDB.db }
                         </div>
                         {
                             open &&
                             (
                                 <div className="database-details">
                                     {
-                                        originalDB.collections.map((collection, index) => {
+                                        remoteDB.collections.map((collection, index) => {
                                             return (
                                                 <div
                                                     className="database-collection"
@@ -105,7 +84,7 @@ export default class RemoteDatabase extends Component {
                                 <Portal>
                                     <ModalWrapper onClick={ this.showCollectionData.bind(this, null)}>
                                         <CollectionViewer title={ collection}
-                                                          promise={ collectionsAPI.getDataFromCollection(originalDB.id, originalDB.db, collection)}/>
+                                                          promise={ collectionsAPI.getDataFromCollection(remoteDB.id, remoteDB.db, collection)}/>
                                     </ModalWrapper>
                                 </Portal>
                             )

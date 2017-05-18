@@ -12,7 +12,7 @@ const initData = Immutable.Map({
         data: [],
         loaded: false
     }),
-    originalDBs: Immutable.Map({
+    remoteDBs: Immutable.Map({
         data: [],
         loaded: false
     })
