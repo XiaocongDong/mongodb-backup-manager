@@ -1,5 +1,5 @@
 import axios from 'axios';
-import api from './path';
+import api from './urlCreator';
 
 
 const collections = {
