@@ -1,0 +1,33 @@
+.backup-statistics {
+    width: 100%;
+
+    >:nth-child(2n) {
+        background-color: #fbfbfb;
+    }
+
+
+    .backup-statistics-summary {
+
+        .item {
+            display: inline-block;
+            width: calc(100%/3);
+            text-align: center;
+            padding: 30px;
+            font-size: 1.6rem;
+
+            .text {
+                padding-bottom: 10px;
+                color: #ccc;
+            }
+
+            .number {
+                color: $blue;
+            }
+        }
+    }
+
+    .backup-statistics-chart {
+        text-align: center;
+        padding: 60px 60px 0 60px;
+    }
+}

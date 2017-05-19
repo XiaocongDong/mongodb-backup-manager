@@ -3,21 +3,19 @@ import React, { Component } from 'react';
 
 export default class Tabs extends Component {
 
-    tabs = ["databases", "statistics", "notifications", "configurations"];
-
     setCurrentTab(tab) {
         this.props.setCurrentTab(tab);
     }
 
     render() {
-        const current = this.props.current;
+        const { current, tabs } = this.props;
 
-        const tabDOMs = this.tabs.map((tab, index) => {
+        const tabDOMs = tabs.map((tab, index) => {
            return (
                <div
-                   className={ "clickable subtitle-tab" + (current == index? " active": "") }
+                   className={ "clickable subtitle-tab" + (tab == current? " active": "") }
                    key={ index }
-                   onClick={ this.setCurrentTab.bind(this, index) }
+                   onClick={ this.setCurrentTab.bind(this, tab) }
                >
                    { tab }
                </div>

@@ -11,7 +11,7 @@ export default class Backup extends Component {
         const { backupConfig } = this.props;
 
         return (
-            <div className="backup-grid-wrapper clickable" onClick={ () => hashHistory.push('/backups/' + backupConfig.id) }>
+            <div className="backup-grid-wrapper clickable" onClick={ () => hashHistory.push('/backups/' + backupConfig.id + '?tab=databases') }>
                 <div className="backup-grid">
                     <div className="backup-grid-overview">
                         <div className="status-wrapper">

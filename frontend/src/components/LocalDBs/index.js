@@ -121,7 +121,6 @@ export default class LocalDBs extends Component {
         const copyDBs = this.filteredDBs;
         const { startTime, endTime } = this.timeFilters;
 
-        // console.log(this.copyDBs, copyDBs);
         const startTimeProps = {};
         if(startTime) {
             startTimeProps.defaultValue = startTime

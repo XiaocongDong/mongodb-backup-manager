@@ -2,46 +2,46 @@ import React, { Component } from 'react'
 import Title from './subpage/Title';
 import Tabs from './subpage/Tabs';
 import DBContent from './subpage/DBContent';
+import StatsContent from './subpage/StatsContent';
+import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 import object from 'utility/object';
 
 class BackupDetails extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            current: 0
-        }
-    }
+    tabs = ["databases", "statistics", "notifications", "configurations"];
 
     setCurrentTab(current) {
-        this.setState(
-            {
-                current
-            }
-        )
+        hashHistory.push(this.props.location.pathname + `?tab=${ current }`)
     }
 
     render() {
         const props = this.props;
-        const current = this.state.current;
+        console.log('render');
+        const current = props.location.query.tab || this.tabs[0];
 
         if(!props.backupConfig) {
             return null;
         }
 
-        const contents = [
-            <DBContent
-                remoteDB={ props.remoteDB }
-                copyDBs={ props.copyDBs }
-                id={ props.backupConfig.id }
-            />
-        ];
+        let contents = {};
+        contents['databases'] = <DBContent
+                                    remoteDB={ props.remoteDB }
+                                    copyDBs={ props.copyDBs }
+                                    id={ props.backupConfig.id }
+                                />;
+        contents['statistics'] = <StatsContent
+                                    backupConfig={ props.backupConfig }
+                                 />;
 
         return (
             <div className="backup-details">
                 <Title backupConfig={ props.backupConfig }/>
-                <Tabs current={ this.state.current } setCurrentTab={ this.setCurrentTab.bind(this) }/>
+                <Tabs
+                    tabs={ this.tabs }
+                    current={ current }
+                    setCurrentTab={ this.setCurrentTab.bind(this) }
+                />
                 { contents[current] }
             </div>
         )
