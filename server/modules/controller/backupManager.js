@@ -299,6 +299,10 @@ class BackupManager {
             .catch(err => {
                 log.error(`Failed to add log for ${ this.backupConfig.id } for ${ err.message }`);
                 throw err;
+            })
+            .finally(() => {
+                let eventName = this.backupConfig.id + '-logs';
+                this.serverSocket.emit(eventName)
             });
     }
 

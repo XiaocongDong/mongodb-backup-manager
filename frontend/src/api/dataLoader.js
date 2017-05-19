@@ -1,5 +1,7 @@
 import backups from './backups';
 import databases from './databases';
+import logs from './logs';
+
 import * as dataActionsCreators from 'actions/data';
 import { dispatch } from 'store/store'
 
@@ -23,7 +25,6 @@ const dataLoader = {
                          dispatch(dataActionsCreators.setData("copyDBs", copyDBs));
                      })
                      .catch(err => {
-                         console.log(err);
                          console.error(`Failed to load ${ backupId } for ${ err.message }`);
                      })
     },
@@ -35,6 +36,16 @@ const dataLoader = {
             })
             .catch(err => {
                 console.error(`Failed to load all the original databases for ${ err.message }`);
+            })
+    },
+
+    loadLogsWithId: (id) => {
+        return logs.getLogsWithId(id)
+            .then(logs => {
+                dispatch(dataActionsCreators.setData("logs", logs))
+            })
+            .catch(err => {
+                console.error(`Failed to load the logs dor ${ id } for ${ err.message }`);
             })
     },
 
@@ -54,7 +65,6 @@ const dataLoader = {
                           dispatch(dataActionsCreators.updateData("copyDBs", backupId, copyDbs));
                       })
                       .catch(err => {
-                          console.log(err);
                           console.error(`Failed to update copy dbs for ${ err.message }`);
                       })
     },
@@ -66,6 +76,18 @@ const dataLoader = {
             })
             .catch(err => {
                 console.error(`Failed to update original database for ${ backupId } for ${ err.message }`);
+            })
+    },
+
+    updateLogs: (name) => {
+        const id = name.substring(0, name.indexOf('-logs'));
+
+        return logs.getLogsWithId(id)
+            .then(logs => {
+                dispatch(dataActionsCreators.updateData("logs", id, logs))
+            })
+            .catch(err => {
+                console.log(`Failed to update logs for ${ id } for ${ err.message }`)
             })
     },
 

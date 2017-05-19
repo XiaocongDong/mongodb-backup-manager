@@ -13,8 +13,10 @@ const initData = Immutable.Map({
         loaded: false
     }),
     remoteDBs: Immutable.Map({
-        data: [],
-        loaded: false
+        data: []
+    }),
+    logs: Immutable.Map({
+        data: []
     })
 });
 

@@ -22,6 +22,13 @@ const clientSocket = {
         })
     },
 
+    startListenLogsChanges: (name) => {
+        clientSocket.socket.on(name, () => {
+            console.log('updated!', name);
+            dataLoader.updateLogs(name);
+        })
+    },
+
     stopListenChanges: (event) => {
          clientSocket.socket.off(event);
     }

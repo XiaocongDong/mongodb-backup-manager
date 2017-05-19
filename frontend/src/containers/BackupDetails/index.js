@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
+
 import Title from './subpage/Title';
 import Tabs from './subpage/Tabs';
 import DBContent from './subpage/DBContent';
 import StatsContent from './subpage/StatsContent';
+import LogsContent from './subpage/LogsContent';
+
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
 import object from 'utility/object';
@@ -17,7 +20,6 @@ class BackupDetails extends Component {
 
     render() {
         const props = this.props;
-        console.log('render');
         const current = props.location.query.tab || this.tabs[0];
 
         if(!props.backupConfig) {
@@ -33,6 +35,10 @@ class BackupDetails extends Component {
         contents['statistics'] = <StatsContent
                                     backupConfig={ props.backupConfig }
                                  />;
+        contents['notifications'] = <LogsContent
+                                    logs={ props.logs }
+                                    id={ props.backupConfig.id }
+                            />;
 
         return (
             <div className="backup-details">
@@ -51,11 +57,15 @@ class BackupDetails extends Component {
 const mapStateToProps = (state, ownProps) => {
     const backupConfigs = state.get("data").getIn(["backupConfigs", "data"]);
     const id = ownProps.params.backupId;
+
     const backupConfig = object.filterArrWithKeyValue("id", id, backupConfigs)[0];
     const allCopyDBs = state.get("data").getIn(["copyDBs", "data"]);
     const copyDBs = object.filterArrWithKeyValue("id", id, allCopyDBs);
+
     const remoteDBs = state.get("data").getIn(["remoteDBs", "data"]);
     const remoteDB = object.filterArrWithKeyValue("id", id, remoteDBs)[0];
+    const allLogs = state.get("data").getIn(["logs", "data"]);
+    const logs = object.filterArrWithKeyValue("id", id, allLogs);
 
     const ids = backupConfigs.map(backupConfig => backupConfig.id);
 
@@ -63,6 +73,7 @@ const mapStateToProps = (state, ownProps) => {
         backupConfig,
         copyDBs,
         remoteDB,
+        logs,
         ids
     }
 };

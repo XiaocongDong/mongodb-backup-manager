@@ -80,7 +80,6 @@ export default class History extends Component {
         this.setState({
             selectedIds
         });
-        console.log(selectedIds)
     }
 
     toggleSelectAll(event) {
@@ -88,10 +87,8 @@ export default class History extends Component {
         const connections = this.props.connections;
 
         let selectedIds = [];
-        console.log(checked);
         if(checked) {
             selectedIds = connections.map(conn => conn.id);
-            console.log(selectedIds);
         }
 
         this.setState({

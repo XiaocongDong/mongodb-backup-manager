@@ -16,8 +16,13 @@ const api = {
         let prefix = "api/collections";
 
         return prefix + action;
-    }
+    },
 
+    logsPath: (action) => {
+        let prefix = "api/logs";
+
+        return prefix + action;
+    }
 };
 
 export default api;
