@@ -74,6 +74,25 @@ const object = {
         }
 
         return filteredArr;
+    },
+
+    prettifyArr(arr) {
+        console.log(arr);
+        let ret = "";
+
+        if(!arr) {
+            return
+        }
+
+        for(let e of arr) {
+            ret += JSON.stringify(e, undefined, 8) + '\n'
+        }
+
+        if(ret.length !== 0) {
+            ret = ret.substring(0, ret.length - 1);
+        }
+
+        return ret;
     }
 };
 

@@ -83,7 +83,7 @@ export default class DB extends Component {
         modalController.showModal({
             type: 'info',
             title: `Are you sure to restore ${ dbName}?`,
-            text: `${ selectedCollections.join(', ') } of ${ dbName } will be written to the remote databases, the corresponding collections of the remote database will be removed`,
+            text: `${ selectedCollections.join(', ') } of ${ dbName } will be written to the remote database, the corresponding collections of the remote database will be removed`,
             buttons: [
                 {
                     text: 'cancel',

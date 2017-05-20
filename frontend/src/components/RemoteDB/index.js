@@ -10,7 +10,7 @@ export default class RemoteDatabase extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            open: false,
+            open: true,
             collection: null,
         }
     }

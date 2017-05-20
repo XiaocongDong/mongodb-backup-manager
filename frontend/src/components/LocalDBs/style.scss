@@ -63,6 +63,9 @@
       transition: all .25s;
 
       .database-header {
+         &:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, .12);
+         }
 
          .basic-info {
             display: flex;
@@ -112,7 +115,6 @@
       }
 
       .database-details {
-         background-color: #f0f0f0;
 
          .database-collection {
             display: flex;

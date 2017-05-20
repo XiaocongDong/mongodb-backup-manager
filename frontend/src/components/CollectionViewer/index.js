@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
+import object from 'utility/object';
 import input from 'utility/input';
+import Pagination from 'components/Pagination';
+
 const sift = require('sift');
 
 
 export default class CollectionViewer extends Component {
+
+    paginationLimits = [1, 10, 20, 50, 100];
 
     constructor(props) {
         super(props);
@@ -15,7 +20,9 @@ export default class CollectionViewer extends Component {
         this.inputKeyCode = 13;
         this.state = {
             loaded: this.dataLoaded,
-            error: false
+            error: false,
+            start: 0,
+            limit: this.paginationLimits[1]
         };
         this.keyDownHandler = this.keyDownHandler.bind(this);
     }
@@ -35,6 +42,7 @@ export default class CollectionViewer extends Component {
                     )
                 })
                 .catch(err => {
+                    console.error(err);
                     this.setState(
                         {
                             loaded: true,
@@ -50,9 +58,24 @@ export default class CollectionViewer extends Component {
         document.removeListener('keydown', this.keyDownHandler);
     }
 
+    setPaginationStart(start) {
+        this.setState({
+            start
+        })
+    }
+
+    setPaginationLimit(limit) {
+        this.setState({
+            start: 0,
+            limit
+        })
+    }
+
     onSearchClick(event) {
         event.preventDefault();
+
         const queryString = this.input.value;
+
         if(input.isEmpty(queryString)) {
             this.filteredData = this.data;
             this.queryStringError = null;
@@ -65,8 +88,15 @@ export default class CollectionViewer extends Component {
                 this.queryStringError = e.message;
             }
         }
+
         this.input.blur();
-        this.forceUpdate();
+        if(this.queryStringError) {
+            this.forceUpdate();
+        }else {
+            this.setState({
+                start: 0
+            })
+        }
     }
 
     keyDownHandler(event) {
@@ -77,8 +107,15 @@ export default class CollectionViewer extends Component {
     }
 
     render() {
-        const { loaded, error } = this.state;
-        const prettyData = JSON.stringify(this.filteredData, undefined, 8);
+        const { loaded, error, start, limit } = this.state;
+
+        let total, showData, prettyData;
+
+        if(this.filteredData) {
+            total = this.filteredData.length;
+            showData = this.filteredData.slice(start, start + limit);
+            prettyData = object.prettifyArr(showData);
+        }
 
         return (
             <div className="data-viewer">
@@ -102,12 +139,18 @@ export default class CollectionViewer extends Component {
                         <div className="data-content">
                             <div className="content-title">{ this.props.title }</div>
                             <div className="content-query">
-                                <div className="query-text">query</div>
+                                <div className="query-text">Query</div>
                                 <div className="query-search-field" data-error={ this.queryStringError }><input type="text" ref={ input => this.input = input }/></div>
                                 <div className="button yes query-search-button" onClick={ this.onSearchClick.bind(this)} >search</div>
                             </div>
                             <div className="content-pagination">
-
+                                <Pagination
+                                    start={ start }
+                                    total={ total }
+                                    limit={ limit }
+                                    onLimitChange={ this.setPaginationLimit.bind(this) }
+                                    onStartChange={ this.setPaginationStart.bind(this) }
+                                />
                             </div>
                             <div className="content-text">
                                 <textarea disabled="disabled" value={ prettyData }/>
