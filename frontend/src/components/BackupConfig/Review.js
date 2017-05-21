@@ -84,11 +84,11 @@ export default class Review extends Component {
     }
 
     render() {
-        const { backupConfig, submitState } = this.props;
+        const { backupConfig, submitState, review } = this.props;
         const uiKeys = backupConfigUtil.uiKeys;
         const submitError = this.submitErr;
 
-        const title = "Review";
+        const title = review? undefined: "Reviews";
         const items = Object.keys(backupConfig).map((key) => {
             const value = this.getValue(key);
 
@@ -102,10 +102,12 @@ export default class Review extends Component {
             )
         });
 
-        const buttons = [
-            (<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>),
-            (<div className={"button big yes button-right" + (submitState == SUBMITSTATES.SUBMITTING? " button-waiting": "")} onClick = { this.handleSubmit.bind(this) }>Submit</div>)
-        ];
+        let buttons = [];
+
+        if(!review) {
+            buttons.push(<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>);
+            buttons.push(<div className={"button big yes button-right" + (submitState == SUBMITSTATES.SUBMITTING? " button-waiting": "")} onClick = { this.handleSubmit.bind(this) }>Submit</div>)
+        }
 
         return (
             <Form className="review-form"

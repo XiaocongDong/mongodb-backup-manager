@@ -5,6 +5,8 @@ import Tabs from './subpage/Tabs';
 import DBContent from './subpage/DBContent';
 import StatsContent from './subpage/StatsContent';
 import LogsContent from './subpage/LogsContent';
+import ConfigContent from './subpage/ConfigContent';
+
 
 import { hashHistory } from 'react-router';
 import { connect } from 'react-redux';
@@ -40,6 +42,9 @@ class BackupDetails extends Component {
                                     id={ props.backupConfig.id }
                             />;
 
+        contents['configurations'] = <ConfigContent 
+                                        backupConfig={ props.backupConfig }
+                                     />
         return (
             <div className="backup-details">
                 <Title backupConfig={ props.backupConfig }/>

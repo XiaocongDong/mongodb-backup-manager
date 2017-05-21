@@ -63,12 +63,6 @@
           float: left;
           position: relative;
           overflow: hidden;
-          box-shadow: 1px 1px 1px 1px rgba(10, 10, 10, .2);
-          transition: all .2s ease-in-out;
-
-          &:hover {
-            box-shadow: 1px 1px 1px 1px rgba(10, 10, 10, .4);
-          }
 
           .cell {
             display: inline-block;
@@ -131,11 +125,11 @@
     .delete {
       display: inline-block;
       padding: 1px 4px;
-      background-color: $green;
+      border-radius: 2px;
     }
 
     .select {
-      background-color: $green;
+      background-color: $blue;
       margin-right: 5px;
     }
 
@@ -154,6 +148,11 @@
       top: 2px;
       font-size: 1.2rem;
       color: #ccc;
+      transition: all .25 ease-in-out;
+
+      &:hover {
+        color: #ddd;
+      }
     }
   }
 

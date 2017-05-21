@@ -8,7 +8,9 @@ export default class Form extends Component {
 
         return (
             <div className={"form " + (className? className: "")}>
-                <div className="form-title">{ title }</div>
+                {
+                    title && <div className="form-title">{ title }</div>
+                }
                 <div className="form-content">
                     {
                         items.map((item, i) => {

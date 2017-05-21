@@ -24,6 +24,24 @@ const object = {
        return JSON.parse(JSON.stringify(obj))
     },
 
+    cloneWithKeysFilter: (obj, keys) => {
+        let removedKeys = [];
+        let ret = object.clone(obj);
+
+        for(let k in obj) {
+            if (!keys.includes(k)) {
+                removedKeys.push(k);
+            }
+        }
+
+
+        for(let rmKey of removedKeys) {
+            delete ret[rmKey];
+        }
+
+        return ret;
+    },
+
     assign: (key, value, obj) => {
         if(!Array.isArray(key)) {
             obj[key] = value;

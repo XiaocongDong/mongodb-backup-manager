@@ -23,7 +23,7 @@ export default class DB extends Component {
         event.stopPropagation();
         modalController.showModal({
             type: 'info',
-            title: `delete ${ db }`,
+            title: `delete ${ db }?`,
             text: `all the collections in this database will be deleted`,
             buttons: [
                 {
@@ -103,7 +103,7 @@ export default class DB extends Component {
                                 modalController.showModal({
                                     type: 'info',
                                     title: 'restore succeeded',
-                                    text: `successfully restore ${ dbName }`,
+                                    text: `${ selectedCollections.join(', ') } of ${ dbName } has been written to the remote database, the corresponding collections of the remote database has been removed`,
                                     buttons: [
                                         {
                                             text: 'ok',

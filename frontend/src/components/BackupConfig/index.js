@@ -19,9 +19,8 @@ class BackupConfig extends Component {
         super(props);
         this.totalSteps = 3;
         this.state = {
-            update: props.update ||  false,
             review: props.review || false,
-            step: (props.review? 3: 0),
+            step: (props.review? 2:0),
             authState: AUTHSTATES.UNAUTHENTICATED,
             submitState: SUBMITSTATES.UNSUBMITTED,
             backupConfig: (props.backupConfig)
@@ -68,7 +67,7 @@ class BackupConfig extends Component {
     }
 
     render() {
-        const { step, backupConfig, update, review, authState, submitState } = this.state;
+        const { step, backupConfig, review, authState, submitState } = this.state;
         const totalStep = this.totalSteps;
         const stagesDOM = [];
         for(let i = 0; i < totalStep; i++) {
@@ -97,6 +96,7 @@ class BackupConfig extends Component {
 
         const reviewForm = <Review key = { 2 }
                                    backupConfig = { backupConfig }
+                                   review = { review }
                                    submitState = { submitState }
                                    setSubmitState = { this.setSubmitState.bind(this) }
                                    handleBack = { this.handleBack.bind(this) }/>;
@@ -104,9 +104,14 @@ class BackupConfig extends Component {
 
         return (
             <div className="configurations-container">
-                <div className="side-bar">
-                    <Progress step={ step }/>
-                </div>
+                {
+                    !review &&
+                    (
+                        <div className="side-bar">
+                            <Progress step={ step }/>
+                        </div>
+                    )
+                }
                 <div className="content">
                     <div className="form-wrapper">
                         { formsDOM[step] }

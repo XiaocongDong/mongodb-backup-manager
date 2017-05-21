@@ -22,7 +22,7 @@ class HistoryHeader extends  Draggable {
                 >
                     delete
                 </div>
-                <div className="close clickable" onClick={ this.props.onClickClose }>x</div>
+                <i className="fa fa-times close clickable" onClick={ this.props.onClickClose } aria-hidden={ true }></i>
             </div>
         )
     }
@@ -67,11 +67,10 @@ export default class History extends Component {
         this.props.setCredentials(backupConfig);
     }
 
-    toggleSingleId(id, event) {
-        const checked = event.target.checked;
+    toggleSingleId(id) {
         let selectedIds = object.clone(this.state.selectedIds);
 
-        if(checked) {
+        if(!selectedIds.includes(id)) {
             selectedIds.push(id);
         }else {
             selectedIds = selectedIds.filter(selectedId => selectedId != id);
@@ -149,14 +148,21 @@ export default class History extends Component {
                                 (<input
                                     type="checkbox"
                                     checked={ selectedIds.includes(conn.id) }
-                                    onChange={ this.toggleSingleId.bind(this, conn.id)}
                                 />)
                         }
                     </div>
                 )
             });
 
-            connDOM = <div className={"tr" + (selectedIds.includes(conn.id)?" selected": "")} key={ index }>{ connDOM }</div>
+            connDOM = (
+                        <div 
+                                className={"tr clickable" + (selectedIds.includes(conn.id)?" selected": "") } 
+                                key={ index }
+                                onClick={ this.toggleSingleId.bind(this, conn.id) }
+                        >
+                            { connDOM }
+                        </div>
+                    )
 
             return connDOM;
         });

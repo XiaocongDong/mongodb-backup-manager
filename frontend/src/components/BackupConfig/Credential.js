@@ -155,7 +155,7 @@ export default class Credential extends Component {
                                                         showHistory &&
                                                         (
                                                             <Portal>
-                                                                <ModalWrapper style={{ backgroundColor: 'transparent' }}>
+                                                                <ModalWrapper style={{ backgroundColor: 'transparent' }} onClick={ this.toggleHistory.bind(this) }>
                                                                     <ConnHistory connections={ this.connections }
                                                                                  onClickClose={ this.toggleHistory.bind(this) }
                                                                                  setCredentials={ this.setCredentials.bind(this) }

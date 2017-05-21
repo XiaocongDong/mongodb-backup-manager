@@ -1,5 +1,7 @@
 import timeUtil from './time';
 import object from './object';
+import input from './input';
+
 
 const backupConfig = {
 
@@ -34,12 +36,17 @@ const backupConfig = {
         }
     },
 
-    getBackupConfigFromInput: (inputBackupConfig) => {
-        const ret = object.clone(inputBackupConfig);
+    prepareReviewBackupConfig: (inputBackupConfig) => {
+        const reviewKeys = backupConfig.credentialKeys.concat(backupConfig.configKeys);
+        const ret = object.cloneWithKeysFilter(inputBackupConfig, reviewKeys);
 
         for(const key of backupConfig.configKeys) {
             if(!ret.hasOwnProperty(key)) {
                 ret[key] = null;
+            }
+
+            if((key === 'duration' || key === 'interval') && (!input.isEmpty(ret[key]))) {
+                ret[key] = timeUtil.convertToTime(ret[key]);
             }
         }
 
