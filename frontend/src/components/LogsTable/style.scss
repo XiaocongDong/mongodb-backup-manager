@@ -1,3 +1,35 @@
 .backup-logs-table {
     width: 100%;
+
+    .theader {
+    	&:not(:last-child) {
+    		border-bottom: 1px solid rgba(0, 0, 0, .15);
+    	}
+
+    	.td {
+    		color: $blue;
+    	}
+    }
+
+    .tbody {
+    	height: 500px;
+    	overflow: auto;
+    }
+
+    .tr {
+
+    	.td {
+    		display: inline-block;	
+    		padding: 10px;
+
+    		.sort-arrow {
+    			padding: 0 10px;
+    		}
+    	}
+    }
+
+    .table-pagination {
+    	border-top: 1px solid rgba(0, 0, 0, .15);
+    	padding: 6px;
+    }
 }

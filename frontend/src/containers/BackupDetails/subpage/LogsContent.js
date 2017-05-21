@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import object from 'utility/object';
 import dataLoader from 'api/dataLoader';
 import socket from 'api/socket';
 
@@ -28,6 +28,7 @@ export default class LogsContent extends Component {
         socket.stopListenChanges(this.eventName);
     }
 
+   
     render() {
         const logs = this.props.logs;
 

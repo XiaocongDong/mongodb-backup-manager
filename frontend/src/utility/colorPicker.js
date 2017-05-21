@@ -2,6 +2,8 @@ const red = '#ed281a';
 const green = '#4cd139';
 const yellow = '#fff23f';
 const blue = '#2a9ced';
+const grey = '#cccccc';
+const black = '#333';
 
 const statusColorMap =  {
     'PENDING': yellow,
@@ -28,6 +30,11 @@ const modalTypeColorMap = {
     'error': red
 };
 
+const levelColorMap = {
+  'info': black,
+  'error': red
+}
+
 const colorPicker = {
 
    getColorWithStatus: (status) => {
@@ -44,6 +51,10 @@ const colorPicker = {
 
    getColorWithType: (type) => {
         return modalTypeColorMap[type];
+   },
+
+   getColorWithLevel: (level) => {
+        return levelColorMap[level];
    }
 
 };

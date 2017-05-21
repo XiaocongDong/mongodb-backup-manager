@@ -148,6 +148,7 @@ export default class CollectionViewer extends Component {
                                     start={ start }
                                     total={ total }
                                     limit={ limit }
+                                    limits={ this.limits }
                                     onLimitChange={ this.setPaginationLimit.bind(this) }
                                     onStartChange={ this.setPaginationStart.bind(this) }
                                 />

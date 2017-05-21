@@ -77,7 +77,6 @@ const object = {
     },
 
     prettifyArr(arr) {
-        console.log(arr);
         let ret = "";
 
         if(!arr) {
@@ -93,8 +92,25 @@ const object = {
         }
 
         return ret;
+    },
+
+    sortArrByKey(arr, key, order) {
+        if(!key || !order) {
+            return arr;
+        }
+
+        return arr.sort((a, b) => {
+            let ret;
+
+            ret = a[key] > b[key]? 1: a[key] < b[key]? -1: 0;   
+
+            if(order === 'desc') {
+                ret = -ret
+            }
+
+            return ret;
+        })
     }
 };
 
 export default object;
-
