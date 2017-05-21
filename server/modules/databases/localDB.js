@@ -1,4 +1,4 @@
-const MongoDB = require('modules/controller/mongoDB');
+const MongoDB = require('modules/databases/mongoDB');
 const databaseConfig = require('modules/config').database;
 
 

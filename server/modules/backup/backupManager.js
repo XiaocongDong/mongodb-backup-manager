@@ -1,7 +1,7 @@
 const backupCons = require('modules/constants/backup');
 const log = require('modules/utility/logger');
 const config = require('modules/config');
-const MongoDB = require('modules/controller/mongoDB');
+const MongoDB = require('modules/databases/mongoDB');
 const object = require('modules/utility/object');
 const backupUtil = require('modules/utility/backup');
 

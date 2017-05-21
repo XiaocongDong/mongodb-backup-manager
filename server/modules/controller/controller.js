@@ -1,9 +1,9 @@
-const BackupManager = require('modules/controller/backupManager');
+const BackupManager = require('modules/backup/backupManager');
 const object = require('modules/utility/object');
 const constants = require('modules/constants');
 const response = require('modules/helper/response');
 const backupUtil = require('modules/utility/backup');
-const MongoDB = require('modules/controller/mongoDB');
+const MongoDB = require('modules/databases/mongoDB');
 const log = require('modules/utility/logger');
 const backupCons = require('modules/constants/backup');
 
@@ -22,6 +22,10 @@ class Controller {
 
     setServerSocket(serverSocket) {
         this.serverSocket = serverSocket;
+    }
+
+    getBackupManager(backupId) {
+        return this.backUpsHash.get(backupId);
     }
 
     newBackup(backupConfig, next) {
