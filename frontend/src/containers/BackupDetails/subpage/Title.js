@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import GoBackButton from 'components/GobackButton';
+import GoBackButton from 'components/GoBackButton';
 import Status from 'components/Status';
 import Timer from 'components/Timer';
 
