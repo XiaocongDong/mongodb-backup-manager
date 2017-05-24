@@ -34,17 +34,28 @@ export default class Review extends Component {
 
         if(!input.isEmpty(value) && (key == "duration" || key == "interval")) {
             let displayValue = "";
-            for(const k in value) {
-                displayValue += `${ value[k] } ${ k } `;
+
+            if(key == "duration" || key == "interval") {
+                for(const k in value) {
+                    displayValue += `${ value[k] } ${ k } `;
+                }
             }
+            
             value = displayValue;
+        }
+
+        if(!input.isEmpty(value) && (key == "startTime")) {
+             value = new Date(value).toLocaleString();
+
         }
 
         if(key == "collections" && !input.isEmpty(value)) {
             let displayValue = "";
+
             for(const i in value) {
                 displayValue += value[i] + (i !== value.length - 1? "   ": "");
             }
+
             value = displayValue;
         }
 

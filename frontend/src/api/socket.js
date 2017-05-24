@@ -4,7 +4,7 @@ import dataLoader from './dataLoader';
 const clientSocket = {
 
     startSocket: () => {
-        clientSocket.socket = io("http://localhost:8080");
+        clientSocket.socket = io();
         clientSocket.socket.on('connect', () => {
             console.log('socket connected to server successfully');
         });
