@@ -5,7 +5,6 @@ const response = require('modules/helper/response');
 const backupUtil = require('modules/utility/backup');
 const MongoDB = require('modules/databases/mongoDB');
 const log = require('modules/utility/logger');
-const backupCons = require('modules/constants/backup');
 
 
 class Controller {
@@ -74,6 +73,8 @@ class Controller {
             .then(() => {
                 log.info(`Created backup config for ${ backupConfig.id }`);
                 const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig, this.serverSocket));
+
+                backupManager.start();
                 this.backUpsHash.set(backupConfig.id, backupManager);
                 this.getBackupStatus(backupConfig.id, next);
             })
@@ -99,7 +100,7 @@ class Controller {
             .then(() => {
                 const nextBackupTime = backupManager.nextBackupTime;
                 const result = {
-                    status: backupCons.result.SUCCEED,
+                    status: constants.backup.result.SUCCEED,
                 };
                 (nextBackupTime) && (result.nextBackupTime = nextBackupTime);
                 next(response.success(result))
@@ -107,7 +108,7 @@ class Controller {
             .catch(err => {
                 const nextBackupTime = backupManager.nextBackupTime;
                 const result = {
-                    status: backupCons.result.FAILED,
+                    status: constants.backup.result.FAILED,
                     reason: err.message
                 };
                 (nextBackupTime) && (result.nextBackupTime = nextBackupTime);
@@ -169,14 +170,13 @@ class Controller {
         }
 
         const backupManager = this.backUpsHash.get(backupID);
-        if(backupManager.backupStatus != backupCons.status.STOP) {
+        if(backupManager.backupStatus != constants.backup.status.STOP) {
             return next(response.error(`Failed to resume backup for ${ backupID } for current status is ${ backupManager.backupStatus}`))
         }
 
-        // TODO change the resume
-        backupManager.updateBackupStatus(backupCons.status.PENDING)
+        backupManager.updateBackupConfigToDB({status: constants.backup.status.PENDING})
             .then(() => {
-                backupManager.start();
+                backupManager.restart();
                 next(response.success(`Resumed backup for ${ backupID } successfully`));
             })
             .catch(err => {
@@ -194,7 +194,7 @@ class Controller {
         const nextBackupTime = backupManager.nextBackupTime;
         const result = { status, id: backupID };
 
-        if(status == backupCons.status.WAITING && nextBackupTime) {
+        if(status == constants.backup.status.WAITING && nextBackupTime) {
             result.nextBackupTime = nextBackupTime.toLocaleString();
         }
 
@@ -207,6 +207,10 @@ class Controller {
         }
 
         const backupManager = this.backUpsHash.get(backupID);
+        if(backupManager.backupStatus == constants.backup.status.RUNNING) {
+            return next(response.error(`Failed to delete running backup`));
+        }
+
         backupManager.clear(clearLog, clearDBs)
             .then(() => {
                 this.backUpsHash.delete(backupID);
@@ -377,8 +381,7 @@ class Controller {
                     const backupManager = object.selfish(new BackupManager(this.localDB, backupConfig, this.serverSocket));
                     log.debug(`Added ${ backupConfig.id } to the backup controller`);
                     this.backUpsHash.set(backupConfig.id, backupManager);
-                    backupManager.deleteExtraCopyDBs();
-                    backupManager.deleteOverdueCopyDBs();
+                    backupManager.restart();
                 })
             })
     }

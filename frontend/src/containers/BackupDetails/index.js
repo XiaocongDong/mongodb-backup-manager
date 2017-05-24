@@ -32,7 +32,7 @@ class BackupDetails extends Component {
         contents['databases'] = <DBContent
                                     remoteDB={ props.remoteDB }
                                     copyDBs={ props.copyDBs }
-                                    id={ props.backupConfig.id }
+                                    backupConfig={ props.backupConfig }
                                 />;
         contents['statistics'] = <StatsContent
                                     backupConfig={ props.backupConfig }

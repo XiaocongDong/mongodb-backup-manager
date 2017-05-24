@@ -27,14 +27,14 @@ export default class RemoteDatabase extends Component {
 
 
     render() {
-        const { remoteDB, updating } = this.props;
-        const id = this.props.id;
+        const { remoteDB, updating, backupConfig } = this.props;
+        console.log(backupConfig.id);
         const { open, collection } = this.state;
         return (
             <div className="database-info original-database">
                 <div className="header">
                     <div className="title">
-                        remote
+                        { backupConfig.server }
                     </div>
                     <div className="db-refresh">
                         <div className="last-update-time">
@@ -44,7 +44,7 @@ export default class RemoteDatabase extends Component {
                         </div>
                         <i
                             className={"fa fa-refresh clickable" + (updating?" updating": "") }
-                            aria-hidden={ true } onClick={ this.props.updateRemoteDB.bind(this, id) }
+                            aria-hidden={ true } onClick={ this.props.updateRemoteDB.bind(this, backupConfig.id) }
                             title="update original database"
                         >
                         </i>

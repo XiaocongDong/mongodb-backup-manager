@@ -56,30 +56,31 @@ const backupUtil = {
 
         const now = new Date();
 
+        // try to get nextBackup time from nextBackupTime first
         if(nextBackupTime) {
-            console.log("get next backup time", nextBackupTime);
             const nextBackupDateTime = new Date(nextBackupTime);
             if(nextBackupDateTime > now) {
-                console.log("in");
                 return nextBackupDateTime
             }
         }
 
-        if(!startTime) {
-            return null;
-        }
-
-        startTime = new Date(Date.parse(startTime));
         if(startTime) {
+            startTime = new Date(startTime);
+
             // if the original startTime has past, change it to today
             if(startTime < now) {
                 startTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
                     startTime.getHours(), startTime.getMinutes(), startTime.getSeconds(), startTime.getMilliseconds());
+
                 if(startTime < now ) {
                     // next Day
                     startTime = new Date(startTime.valueOf() + 24*60*60*1000);
                 }
             }
+        }
+
+        if(!startTime) {
+            startTime = now;
         }
 
         return startTime;
@@ -93,6 +94,7 @@ const backupUtil = {
                 success: 0,
                 failures: 0
             };
+
             backupConfig.createdTime = new Date().toLocaleString();
         }
     }

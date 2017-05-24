@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-router.use('/', logger);
+//router.use('/', logger);
 
 router.get('/', (req, res) => {
    res.sendFile(frontend.indexFile);

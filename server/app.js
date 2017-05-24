@@ -9,15 +9,17 @@ const http = require('http');
 const router = require('modules/router');
 const config = require('modules/config');
 const object = require('modules/utility/object');
-const LocalDB = require('modules/controller/localDB');
+const LocalDB = require('modules/databases/localDB');
 const controller = require('modules/controller/controller');
 const log = require('modules/utility/logger');
-
-object.deployPromiseFinally();
+const taskPool = require('modules/task/taskPool');
 
 const app = express();
 const server = http.createServer(app);
 const serverSocket = io(server);
+
+object.deployPromiseFinally();
+
 serverSocket.on('connection', () => {
    console.log('connected');
 });
@@ -28,14 +30,18 @@ const localDB = object.selfish(new LocalDB(config.database));
 
 localDB.connect()
        .then(() => {
-           controller.setLocalDB(localDB);
-           controller.setServerSocket(serverSocket);
            server.listen(config.server.port, (err, result) => {
                if(err) {
                    log.error(`Failed to start the server for ${ err.message }`)
                }else {
                    log.info(`Listening at ${config.server.port}`);
+                   
+                   controller.setLocalDB(localDB);
+                   controller.setServerSocket(serverSocket);
+                   taskPool.setController(controller);
+
                    controller.restart();
+                   taskPool.start(config.server.interval);
                }
            });
        })

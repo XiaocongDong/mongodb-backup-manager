@@ -132,7 +132,7 @@ export default class DB extends Component {
     }
 
     render() {
-        const { database,selectedCollections, open } = this.props;
+        const { database,selectedCollections, backupConfig, open } = this.props;
         const { collection, restoreErr } = this.state;
 
         return (
@@ -153,7 +153,7 @@ export default class DB extends Component {
                             <span>{ database.createdTime }</span>
                         </div>
                         {
-                            database.deletedTime &&
+                            database.deletedTime && backupConfig.status !== "STOP" &&
                             (
                                 <div className="time deleted-time">
                                     <i className="fa fa-times-circle-o" aria-hidden={ true }></i>

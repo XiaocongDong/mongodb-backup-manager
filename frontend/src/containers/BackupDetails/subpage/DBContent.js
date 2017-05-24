@@ -32,26 +32,24 @@ export default class DatabasesContent extends Component {
     }
 
     componentDidMount() {
-        this.updateRemoteDB(this.props.id);
+        this.updateRemoteDB(this.props.backupConfig.id);
     }
 
     render() {
-        const { remoteDB, copyDBs } = this.props;
+        const { remoteDB, copyDBs, backupConfig } = this.props;
         const { remoteUpdating } = this.state;
-
-        const id = this.props.id;
 
         return (
             <div className="backup-content databases-content">
                 <RemoteDB
                     remoteDB={ remoteDB }
-                    id={ id }
+                    backupConfig={ backupConfig }
                     updating = { remoteUpdating }
                     updateRemoteDB = { this.updateRemoteDB }
                 />
                 <LocalDBs
                     copyDBs={ copyDBs }
-                    id={ id }
+                    backupConfig={ backupConfig }
                     updateRemoteDB = { this.updateRemoteDB }
                 />
             </div>

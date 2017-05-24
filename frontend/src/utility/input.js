@@ -12,15 +12,15 @@ const input = {
         },
         hours: {
             min: 0,
-            max: 24
+            max: 23
         },
         minutes: {
             min: 0,
-            max: 60
+            max: 59
         },
         seconds: {
             min: 0,
-            max: 60
+            max: 59
         },
         maxBackupNumber: {
             min: 1

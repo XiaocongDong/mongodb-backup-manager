@@ -29,7 +29,8 @@ const time = {
         let remainder = milliseconds;
         let ret = {};
         timesMap.forEach((v, k) => {
-            ret[k] = parseInt(remainder/v);
+            let value = remainder/v >= 0? remainder/v: 0;
+            ret[k] = parseInt(value);
             remainder = remainder % v;
         });
 

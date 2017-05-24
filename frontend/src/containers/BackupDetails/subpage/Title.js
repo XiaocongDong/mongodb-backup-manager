@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import GoBackButton from 'components/GobackButton';
 import Status from 'components/Status';
+import Timer from 'components/Timer';
+
 import modalController from 'utility/modal';
 import { hashHistory } from 'react-router';
 import backups from 'api/backups';
@@ -52,7 +54,7 @@ export default class title extends Component {
                                     modalController.showModal({
                                         type: 'error',
                                         title: `failed to delete ${ id }`,
-                                        text: err.message,
+                                        text: err,
                                         buttons: [
                                             {
                                                 text: 'ok',
@@ -89,6 +91,11 @@ export default class title extends Component {
                 <div className="panel">
                     <div className="status-wrapper">
                         <Status status={ status }/>
+                         {
+                            (status == "WAITING") && (
+                                <div className="next-backup-time"><Timer endTime={ backupConfig.nextBackupTime }/></div>
+                            )
+                        }
                     </div>
                     <div className="operations-wrapper">
                         <div className="operation backup clickable yes" onClick={ this.runBackup.bind(this, id)}>run backup</div>

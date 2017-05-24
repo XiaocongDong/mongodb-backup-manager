@@ -26,17 +26,29 @@
       }
 
       .panel {
-         height: 50px;
+         height: 60px;
          display: flex;
-         justify-content: flex-end;
+         justify-content: space-between;
          align-items: center;
 
          .status-wrapper {
-            width: 20%;
-            height: 100%;
+            //width: 20%;
             text-align: center;
             font-size: 1.2rem;
+            
+            > * {
+                display: inline;
+            }
+
+            .next-backup-time {
+                margin-left: 20px;
+                text-align: center;
+                font-size: 1rem;
+                color: $grey;
+            }
          }
+
+         
 
          .operations-wrapper {
             width: 30%;

@@ -5,6 +5,7 @@ import input from 'utility/input';
 
 import backups from 'api/backups';
 
+
 export default class LocalDBs extends Component {
 
     constructor(props) {
@@ -71,7 +72,7 @@ export default class LocalDBs extends Component {
     }
 
     restore(dbName) {
-        const id = this.props.id;
+        const id = this.props.backupConfig.id;
         const collections = this.dbToggleMap[dbName].collections;
 
         return backups.restore(id, dbName, collections);
@@ -120,6 +121,7 @@ export default class LocalDBs extends Component {
     render() {
         const copyDBs = this.filteredDBs;
         const { startTime, endTime } = this.timeFilters;
+        const { backupConfig } = this.props;
 
         const startTimeProps = {};
         if(startTime) {
@@ -175,6 +177,7 @@ export default class LocalDBs extends Component {
                                         <DB key={ index }
                                             database={ db }
                                             updateRemoteDB={ this.props.updateRemoteDB }
+                                            backupConfig={ backupConfig }
                                             toggleOpen={ this.toggleDatabaseOpen.bind(this) }
                                             toggleCollectionSelect={ this.toggleCollectionSelect.bind(this) }
                                             toggleSelectAll={ this.toggleSelectAll.bind(this) }
