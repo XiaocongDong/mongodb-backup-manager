@@ -1,5 +1,5 @@
 const server = {
-  port: 8000,
+  port: 8080,
   interval: 2000,
   logLevel: 'info'
 };
