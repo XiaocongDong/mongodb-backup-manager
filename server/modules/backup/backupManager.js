@@ -27,28 +27,24 @@ class BackupManager {
     }
 
     start() {
-        try {
-            if (!this.checkBackupAvailable()) {
-                return;
-            }
+        if (!this.checkBackupAvailable()) {
+            return;
+        }
 
-            const nextBackupTime = backupUtil.getNextBackupTime(this.backupConfig);
-            this.updateBackupConfigToDB(
+        const nextBackupTime = backupUtil.getNextBackupTime(this.backupConfig);
+        this.updateBackupConfigToDB(
                     {
                         nextBackupTime: nextBackupTime? nextBackupTime.toLocaleString(): null ,
                         status: constants.backup.status.WAITING
                     }
                 );
             
-            const backupTask = task.newTask(this.backupConfig.id, 
-                                            nextBackupTime.valueOf(), 
-                                            constants.task.BACKUP, 
-                                            {interval: this.backupConfig.interval});
+        const backupTask = task.newTask(this.backupConfig.id, 
+                                        nextBackupTime.valueOf(), 
+                                        constants.task.BACKUP, 
+                                        {interval: this.backupConfig.interval});
             
-            taskPool.addTask(backupTask);
-        }catch(e) {
-            console.log(e);
-        }
+        taskPool.addTask(backupTask);        
     }
 
     restart() {
@@ -81,7 +77,7 @@ class BackupManager {
             })
             .then(() => {
                 this.removeAllTasksFromTaskPool();
-                this.addLog(`Stop all the backup tasks`);
+                return this.addLog(`Stop all the backup tasks`);
             })
             .catch(err => {
                 this.addLog(`Failed to stop backup for ${ err.message }`, 'error');
@@ -101,9 +97,9 @@ class BackupManager {
                     throw new Error(`backup is running`);
                 }
 
-                this.addLog(`Start to backup ${ this.backupConfig.db }`);
-                return this.backupDB.connect()
+                return this.addLog(`Start to backup ${ this.backupConfig.db }`);
             })
+            .then( this.backupDB.connect )
             .then(() => {
                 return this.updateBackupConfigToDB({status: constants.backup.status.RUNNING});
             })
@@ -164,23 +160,14 @@ class BackupManager {
         const dbDuration = this.backupConfig.duration;
         const deleteTime = dbDuration ? new Date(now.valueOf() + dbDuration) : null;
 
-        return this.addBackupCopyDB(backupCopyDBName, now, deleteTime)
+        return this.addBackupCopyDB(backupCopyDBName, now, deleteTime)          
             .then(() => {
-                this.addLog(`Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`);
-                const statistics = this.backupConfig.statistics;
-                statistics.total += 1;
-                statistics.success += 1;
-                const lastBackupResult = constants.backup.result.SUCCEED;
-                const nextStatus = this.getNextStatus(prevStatus);
-                const lastBackupTime = new Date().toLocaleString();
-
-                const updates = {
-                    lastBackupResult,
-                    statistics,
-                    status: nextStatus,
-                    lastBackupTime
-                };
-                
+                return this.addLog(`Backup ${ this.backupConfig.db } to ${ backupCopyDBName } successfully`);
+            })
+            .then(() => {
+                return this.deleteExtraCopyDBs();
+            })
+            .then(() => {                
                 if( deleteTime ) {
                     const deleteTask = task.newTask(this.backupConfig.id,
                                                     deleteTime.valueOf(),
@@ -191,8 +178,7 @@ class BackupManager {
                     log.debug(`${ backupCopyDBName } will be deleted at ${ deleteTime.toLocaleString() }`);
                 }
 
-                this.deleteExtraCopyDBs();
-                return this.updateBackupConfigToDB(updates);
+                return this.updateBackupConfigAfterBackup(prevStatus, constants.backup.result.SUCCEED);
             })
             .catch(err => {
                 throw err;
@@ -203,7 +189,7 @@ class BackupManager {
         this.addLog(`Backup ${ this.backupConfig.db } failed for ${ err.message }`, "error");
         return this.updateBackupConfigAfterBackup(prevStatus, constants.backup.result.FAILED)
                    .finally(() => {
-                        this.localDB.deleteDatabase(backupCopyDBName);
+                        this.localDB.deleteCopyDB(backupCopyDBName);
                    })
     }
 
@@ -303,7 +289,7 @@ class BackupManager {
         const newLog = {
             id: this.backupConfig.id,
             level: level,
-            time: new Date().toLocaleString(),
+            time: new Date().valueOf(),
             content: content
         };
         this.localDB.addLog(newLog)
@@ -371,10 +357,14 @@ class BackupManager {
 
     deleteCopyDB(dbName) {
         // TODO need to fix the order of delete, db first then log?
-        log.info(`Started to delete ${ dbName }`);
+        log.debug(`Started to delete ${ dbName }`);
         return this.localDB.deleteCopyDBByIDAndName(this.backupConfig.id, dbName)
             .then(() => {
                 return this.localDB.deleteDatabase(dbName);
+            })
+            .then(() => {
+                const now = new Date();
+                return this.addLog(`Deleted ${ dbName } at ${ now.toLocaleString() }`)
             })
             .catch(err => {
                 this.addLog(`Failed to delete ${ dbName } for ${ err.message }`, "error");
@@ -400,7 +390,7 @@ class BackupManager {
         if(dbName != this.backupConfig.db) {
             return this.localDB.deleteCollections(dbName, collections)
                 .then(() => {
-                    this.addLog(`Deleted ${ collections } of ${ dbName }`);
+                    return this.addLog(`Deleted ${ collections } of ${ dbName }`);
                 })
                 .catch(err => {
                     this.addLog(`Failed to delete ${ collections } of ${ dbName } for ${ err.message } `, 'error');
@@ -489,7 +479,7 @@ class BackupManager {
 
                 if(copyDBs) {
                     const clearDBsTasks = Promise.resolve()
-                        .then(() => this.localDB.getAllCopyDBs(id))
+                        .then(() => this.localDB.getBackupCopyDBsWithId(id))
                         .then(dbs => {
                             const dbNames = dbs.map(db => db.name);
                             this.deleteCopyDBs(dbNames)

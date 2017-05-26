@@ -1,5 +1,7 @@
+const log = require('modules/utility/logger');
+
 const logger = (req, resp, next) => {
-    console.log('Request from', req.originalUrl);
+    log.debug(`Request from ${ req.originalUrl }`);
     next();
 };
 

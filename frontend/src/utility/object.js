@@ -119,7 +119,7 @@ const object = {
 
         return arr.sort((a, b) => {
             let ret;
-
+            
             ret = a[key] > b[key]? 1: a[key] < b[key]? -1: 0;   
 
             if(order === 'desc') {

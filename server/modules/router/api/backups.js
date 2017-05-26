@@ -37,8 +37,7 @@ backups.patch('/update', (req, res, next) => {
 
 backups.post('/stop', (req, res, next) => {
     const backupID = req.body.id;
-    console.log(req.body);
-
+    
     controller.stop(backupID, next)
 });
 

@@ -46,6 +46,14 @@ const time = {
         }
 
         return ret;
+    },
+
+    convertTimeToLocaleString(keys, obj) {
+        keys.forEach(k => {
+            if(obj.hasOwnProperty(k)) {
+                obj[k] = new Date(obj[k]).toLocaleString();
+            }
+        })
     }
 };
 

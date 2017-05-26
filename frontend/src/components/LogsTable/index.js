@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Pagination from 'components/Pagination';
 import colorPicker from 'utility/colorPicker';
 import object from 'utility/object';
+import time from 'utility/time';
 
 
 export default class LogsTable extends Component {
@@ -76,7 +77,12 @@ export default class LogsTable extends Component {
 
         const { sort, start, limit } = this.state;
         const total = logs.length;
+        
         const showedLogs = logs.slice(start, start + limit);
+        showedLogs.map(log => {
+            return time.convertTimeToLocaleString(['time'], log);
+        })  
+
         const sortedLogs = object.sortArrByKey(showedLogs, sort.key, sort.order);
 
         return (

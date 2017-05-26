@@ -41,7 +41,7 @@ class MongoDB {
 
                 return MongoClient.connect(this.url)
                         .then(db => {
-                            log.info(`connected to ${ this.url }`);
+                            log.debug(`connected to ${ this.url }`);
                             this.db = db;
                         })
                         .catch(err => {
@@ -62,7 +62,7 @@ class MongoDB {
                 }
 
                 if (this.db == null) {
-                    log.info(`${ this.url } is not connected`);
+                    log.debug(`${ this.url } is not connected`);
                     return;
                 }
 
@@ -238,7 +238,7 @@ class MongoDB {
                     throw errors[0];
                 }
 
-                log.info(`Finished read data from the ${ collections } of ${ db }`);
+                log.debug(`Finished read data from the ${ collections } of ${ db }`);
                 return results;
             });
     }
@@ -261,7 +261,7 @@ class MongoDB {
                     log.error(`Failed to backup all the data to ${ db } for ${errors[0].message}`);
                     throw errors[0];
                 }
-                log.info(`wrote all the data to ${ db }`);
+                log.debug(`wrote all the data to ${ db }`);
             })
     }
 
@@ -276,10 +276,10 @@ class MongoDB {
                     }
 
                     if(docs.length == 0) {
-                        log.info(`${ collectionName } is empty`);
+                        log.debug(`${ collectionName } is empty`);
                         this.getDBByName(dbName).createCollection(collectionName)
                             .then(() => {
-                                log.info(`Created empty ${ collectionName } in ${ dbName }`);
+                                log.debug(`Created empty ${ collectionName } in ${ dbName }`);
                                 resolve();
                             })
                             .catch(err => {

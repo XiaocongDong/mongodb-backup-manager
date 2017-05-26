@@ -46,7 +46,6 @@ class Controller {
                 return backupDB.getAvailableBackupCollections()
             })
             .then(dbsCollections => {
-                console.log(dbsCollections);
                 let dbCollections = dbsCollections.filter(dbCollection => {
                     return dbCollection.db == db;
                 });

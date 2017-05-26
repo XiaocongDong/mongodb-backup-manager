@@ -39,21 +39,3 @@ object.sortByTime = (objects, key, reverse=false) => {
 };
 
 module.exports = object;
-
-// let a = [
-//     {
-//         "createdTime" : "3/18/2017, 1:50:26 PM",
-//         "deletedTime" : ""
-//     },
-//     {
-//         "createdTime" : "3/18/2017, 1:50:24 PM",
-//         "deletedTime" : ""
-//     },
-//     {
-//         "createdTime" : "3/18/2017, 1:50:27 PM",
-//         "deletedTime" : ""
-//     },
-// ];
-//
-// let b = object.sortByTime(a, "createdTime", true);
-// console.log(b);
