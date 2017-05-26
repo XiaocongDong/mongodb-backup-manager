@@ -210,7 +210,8 @@ class BackupManager {
         const updates = {
             lastBackupResult,
             statistics,
-            status: nextStatus
+            status: nextStatus,
+            lastBackupTime
         };
 
         return this.updateBackupConfigToDB(updates);
