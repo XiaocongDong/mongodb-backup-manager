@@ -15,6 +15,7 @@ const dataLoader = {
                         dispatch(dataActionsCreators.setData("backupConfigs", configs))
                     })
                     .catch(err => {
+                        console.log(err)
                         console.error('Failed to load the backup configs for ', err.message);
                         throw err;
                     })

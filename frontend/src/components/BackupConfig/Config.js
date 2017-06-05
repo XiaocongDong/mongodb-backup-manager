@@ -127,7 +127,7 @@ export default class Config extends Component {
     }
 
     render() {
-        const { backupConfig, dbsColls } = this.props;
+        const { backupConfig, dbsColls, update } = this.props;
         const uiKeys = backupConfigUtil.uiKeys;
         const { db, collections, startTime, interval, duration, maxBackupNumber } = backupConfig;
         const errors = this.errors;
@@ -161,6 +161,7 @@ export default class Config extends Component {
                         value = { db }
                         placeholder={ "please select backup database" }
                         options = { dbOpts }
+                        disabled = { update }
                         onChange = { this.handleConfigChange.bind(this, "db") }
                 />
                 <div className="error-message">{ this.getError("db") }</div>
@@ -254,8 +255,14 @@ export default class Config extends Component {
             </div>)
         ];
 
-        const buttons= [(<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>),
-            (<div className="button big yes button-right" onClick = { this.handleNext.bind(this)}>Next</div>)];
+        let buttons = [];
+        if(update) {
+            buttons.push(<div className='button big yes button-middle' onClick = { this.handleNext.bind(this) }>Next</div>);
+        }else {
+            buttons.push(<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>);
+            buttons.push(<div className="button big yes button-right" onClick = { this.handleNext.bind(this)}>Next</div>)
+        }
+
         return(
             <Form
                 className="configuration-form"

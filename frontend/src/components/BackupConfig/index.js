@@ -20,11 +20,37 @@ class BackupConfig extends Component {
         this.totalSteps = 3;
         this.state = {
             review: props.review || false,
+            update: props.update,
             step: (props.review? 2:0),
             authState: AUTHSTATES.UNAUTHENTICATED,
             submitState: SUBMITSTATES.UNSUBMITTED,
             backupConfig: (props.backupConfig)
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const { review, update, dbsColls } = nextProps;
+        console.log('config', nextProps, dbsColls);
+        if(review !== this.state.review ||
+           update !== this.state.update) {
+            console.log('update')
+            let step = 0;
+
+            if(review) {
+                step = 2;
+            }
+
+            if(update) {
+                step = 1;
+                this.dbsColls = dbsColls;
+            }
+
+            this.setState({
+                update,
+                review,
+                step
+            })
+        }
     }
 
     handleBack() {
@@ -67,9 +93,11 @@ class BackupConfig extends Component {
     }
 
     render() {
-        const { step, backupConfig, review, authState, submitState } = this.state;
+        const { step, update, backupConfig, review, authState, submitState } = this.state;
         const totalStep = this.totalSteps;
         const stagesDOM = [];
+        console.log(this.dbsColls);
+
         for(let i = 0; i < totalStep; i++) {
             stagesDOM.push(<div className={ "step" + (i == step?" current": (i > step?" pending": " past")) } key={ i }>{ i < step? '': i + 1 }</div>)
         }
@@ -82,16 +110,19 @@ class BackupConfig extends Component {
                                            setAuthState = { this.setAuthState.bind(this) }
                                            handleConfigChange = { this.handleConfigChange.bind(this) }
                                            authenticated = { this.authenticated.bind(this) }
-                                           handleNext = { this.handleNext.bind(this) }/>;
+                                           handleNext = { this.handleNext.bind(this) }
+                              />;
         formsDOM.push(credentialForm);
 
         const backupConfigForm = <Config key = { 1 }
                                          dbsColls = { this.dbsColls }
+                                         update = { update }
                                          handleNext = { this.handleNext.bind(this) }
                                          handleBack = { this.handleBack.bind(this) }
                                          backupConfig = { backupConfig }
                                          handleConfigChange = { this.handleConfigChange.bind(this) }
-                                         review = { review }/>;
+                                         review = { review }
+                                 />;
         formsDOM.push(backupConfigForm);
 
         const reviewForm = <Review key = { 2 }
@@ -99,13 +130,15 @@ class BackupConfig extends Component {
                                    review = { review }
                                    submitState = { submitState }
                                    setSubmitState = { this.setSubmitState.bind(this) }
-                                   handleBack = { this.handleBack.bind(this) }/>;
+                                   handleBack = { this.handleBack.bind(this) }
+                            />;
+
         formsDOM.push(reviewForm);
 
         return (
             <div className="configurations-container">
                 {
-                    !review &&
+                    !review && !update &&
                     (
                         <div className="side-bar">
                             <Progress step={ step }/>
