@@ -1,6 +1,7 @@
 import backups from './backups';
 import databases from './databases';
 import logs from './logs';
+import modalController from 'utility/modal';
 
 import * as dataActionsCreators from 'actions/data';
 import { dispatch } from 'store/store'
@@ -14,8 +15,8 @@ const dataLoader = {
                         dispatch(dataActionsCreators.setData("backupConfigs", configs))
                     })
                     .catch(err => {
-                        console.error(err);
                         console.error('Failed to load the backup configs for ', err.message);
+                        throw err;
                     })
     },
 
@@ -26,6 +27,7 @@ const dataLoader = {
                      })
                      .catch(err => {
                          console.error(`Failed to load ${ backupId } for ${ err.message }`);
+                         throw err;
                      })
     },
 
@@ -36,6 +38,7 @@ const dataLoader = {
             })
             .catch(err => {
                 console.error(`Failed to load all the original databases for ${ err.message }`);
+                throw err;
             })
     },
 
@@ -46,6 +49,7 @@ const dataLoader = {
             })
             .catch(err => {
                 console.error(`Failed to load the logs dor ${ id } for ${ err.message }`);
+                throw err;
             })
     },
 
@@ -56,6 +60,7 @@ const dataLoader = {
                     })
                     .catch(err => {
                         console.error(`Failed to update backup config for ${ err.message }`);
+                        throw err;
                     })
     },
 
@@ -66,6 +71,7 @@ const dataLoader = {
                       })
                       .catch(err => {
                           console.error(`Failed to update copy dbs for ${ err.message }`);
+                          throw err;
                       })
     },
 
@@ -76,6 +82,7 @@ const dataLoader = {
             })
             .catch(err => {
                 console.error(`Failed to update original database for ${ backupId } for ${ err.message }`);
+                throw err;
             })
     },
 
@@ -87,7 +94,8 @@ const dataLoader = {
                 dispatch(dataActionsCreators.updateData("logs", id, logs))
             })
             .catch(err => {
-                console.log(`Failed to update logs for ${ id } for ${ err.message }`)
+                console.log(`Failed to update logs for ${ id } for ${ err.message }`);
+                throw err;
             })
     },
 
@@ -98,7 +106,19 @@ const dataLoader = {
         // original database can only be updating manually
         //loads.push(dataLoader.loadAllRemoteDBs());
 
-        return Promise.all(loads);
+        return Promise.all(loads)
+                      .then(
+                          () => {
+                              dispatch(dataActionsCreators.setData("loaded", true))
+                          },
+                          error => {
+                              modalController.modalController.showModal({
+                                type: 'error',
+                                title: `failed to fetch the backup data from database`,
+                                text: error.message,
+                            })
+                          }
+                       );
     },
 
     updateWithBackupID: (backupID) => {

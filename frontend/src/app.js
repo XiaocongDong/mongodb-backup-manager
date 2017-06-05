@@ -11,6 +11,7 @@ import Content from 'components/Content';
 import Dashboard from 'containers/Dashboard';
 import BackupDetails from 'containers/BackupDetails';
 import NewConfig from 'containers/NewBackup';
+import Loading from 'containers/Loading';
 
 import dataLoader from 'api/dataLoader';
 import clientSocket from 'api/socket';
@@ -18,8 +19,7 @@ import clientSocket from 'api/socket';
 import store from 'store/store';
 
 
-dataLoader.loadAll();
-
+dataLoader.loadAll()
 clientSocket.startSocket();
 clientSocket.startListenBackupConfigsChanges();
 clientSocket.startListenCopyDBsChanges();
@@ -28,6 +28,7 @@ clientSocket.startListenCopyDBsChanges();
 const PlaceHolder = ({ children, location }) => {
      return (
          <div className="mongo-backup-manager">
+             <Loading/>
              <Header/>
              <Content>
                  { children }
