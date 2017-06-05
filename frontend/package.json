@@ -4,7 +4,7 @@
   "license": "MIT",
   "version": "0.0.1",
   "scripts": {
-    "start": "NODE_ENV=dev webpack --watch"
+    "start": "NODE_ENV=dev webpack --watch --progress"
   },
   "devDependencies": {
     "babel-core": "^6.24.0",

@@ -36,7 +36,7 @@ export default class title extends Component {
                                 content: 'progress',
                                 buttons: []
                             });
-                            backups.deleteBackup(id, true, true)
+                            backups.deleteBackup(id)
                                 .then(() => {
                                     modalController.showModal({
                                         type: 'info',

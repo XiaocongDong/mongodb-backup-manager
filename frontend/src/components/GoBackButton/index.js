@@ -7,7 +7,7 @@ export default class GoBackButton extends Component {
     render() {
 
         return (
-            <div className="go-back-button clickable" onClick={ () => hashHistory.goBack() }>
+            <div className="go-back-button clickable" onClick={ () => hashHistory.push('/')}>
             </div>
         )
 

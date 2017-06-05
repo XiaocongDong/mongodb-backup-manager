@@ -466,31 +466,14 @@ class BackupManager {
             })
     }
 
-    clear(log=true, copyDBs=false) {
+    clear() {
         // clear logic, clear log, dbs,
         const id = this.backupConfig.id;
 
         return this.stop()
-            .then(() => {
-                if(!log && !copyDBs) {
-                    return Promise.resolve();
-                }
-                const clearTasks = [];
-                (log) && (clearTasks.push(this.localDB.clearLogsByID(id)));
-
-                if(copyDBs) {
-                    const clearDBsTasks = Promise.resolve()
-                        .then(() => this.localDB.getBackupCopyDBsWithId(id))
-                        .then(dbs => {
-                            const dbNames = dbs.map(db => db.name);
-                            this.deleteCopyDBs(dbNames)
-                        });
-
-                    clearTasks.push(clearDBsTasks)
-                }
-
-                return Promise.all(clearTasks);
-            })
+            .then(() => this.localDB.getBackupCopyDBsWithId(id))
+            .then(dbs =>  this.deleteCopyDBs(dbs.map(db => db.name)))
+            .then(() => this.localDB.clearLogsByID(id))
             .then(() => this.localDB.deleteBackupConfig(id))
             .finally(() => {
                 this.serverSocket.emit('backupConfigs', this.backupConfig.id)

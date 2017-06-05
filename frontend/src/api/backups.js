@@ -35,13 +35,9 @@ const backups = {
         return axios.post(api.backupsPath('/restore'), { id: backupId, db, collections });
     },
 
-    deleteBackup: (id, clearLog, clearDBs) => {
+    deleteBackup: (id) => {
         return axios.delete(api.backupsPath('/delete'), {
-            params: {
-                id,
-                clearLog,
-                clearDBs
-            }
+            params: { id }
         })
     },
 

@@ -53,9 +53,9 @@ backups.post('/restore', (req, res, next) => {
 });
 
 backups.delete('/delete', (req, res, next) => {
-    const { id, clearLog, clearDBs } = req.query;
+    const { id } = req.query;
 
-    controller.deleteBackup(id,clearLog, clearDBs, next)
+    controller.deleteBackup(id, next)
 });
 
 backups.delete('/:backupID/databases/:dbName', (req, res, next) => {

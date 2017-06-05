@@ -200,7 +200,7 @@ class Controller {
         return next(response.success(result));
     }
 
-    deleteBackup(backupID, clearLog=true, clearDBs=false, next) {
+    deleteBackup(backupID, next) {
         if(!this.backUpsHash.has(backupID)) {
             return next(response.error(`backupID ${ backupID } doesn't exist`, 404));
         }
@@ -210,7 +210,7 @@ class Controller {
             return next(response.error(`Failed to delete running backup`));
         }
 
-        backupManager.clear(clearLog, clearDBs)
+        backupManager.clear()
             .then(() => {
                 this.backUpsHash.delete(backupID);
                 next(response.success(`Successfully deleted ${ backupID }`))

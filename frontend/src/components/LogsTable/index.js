@@ -78,12 +78,11 @@ export default class LogsTable extends Component {
         const { sort, start, limit } = this.state;
         const total = logs.length;
         
-        const showedLogs = logs.slice(start, start + limit);
-        showedLogs.map(log => {
+        let showedLogs = object.clone(logs.slice(start, start + limit));
+        let sortedLogs = object.sortArrByKey(showedLogs, sort.key, sort.order);
+        sortedLogs.forEach(log => {
             return time.convertTimeToLocaleString(['time'], log);
         })  
-
-        const sortedLogs = object.sortArrByKey(showedLogs, sort.key, sort.order);
 
         return (
             <div className="backup-logs-table">
@@ -112,7 +111,7 @@ export default class LogsTable extends Component {
                 </div>  
                 <div className="tbody">
                     {
-                        showedLogs.map((log, index) => {
+                        sortedLogs.map((log, index) => {
                             return (
                                 <div 
                                     className='tr' key={ index }
