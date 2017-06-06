@@ -12,6 +12,7 @@ import Dashboard from 'containers/Dashboard';
 import BackupDetails from 'containers/BackupDetails';
 import NewConfig from 'containers/NewBackup';
 import Loading from 'containers/Loading';
+import Login from 'containers/Login';
 
 import dataLoader from 'api/dataLoader';
 import clientSocket from 'api/socket';
@@ -43,6 +44,7 @@ const App = () => {
             <Router history={ hashHistory }>
                 <Route path='/' component={ PlaceHolder }>
                     <IndexRoute component={ Dashboard }/>
+                    <Route path='/sign_in' component={ Login }/>
                     <Route path='/newConfig' component={ NewConfig }/>
                     <Route path='/backups'>
                         <Route path='/backups/:backupId' component={ BackupDetails }/>

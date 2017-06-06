@@ -1,13 +1,13 @@
 const express = require('express');
 
-const controller = require('modules/controller/controller');
+const backupController = require('modules/controller/backup');
 
 const logs = express.Router();
 
 logs.get('/', (req, res, next) => {
     const backupID = req.query.id;
 
-    controller.getAllBackupLogs(backupID, next);
+    backupController.getAllBackupLogs(backupID, next);
 });
 
 module.exports = logs;

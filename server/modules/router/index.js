@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const logger = require('modules/middleware/logger');
 const responseHandler = require('modules/middleware/response_handler');
 const frontend = require('./frontend');
+const user = require('./user');
 
 const router = express.Router();
 
@@ -19,6 +20,8 @@ router.get('/', (req, res) => {
 router.use('/dist', frontend.publicPath);
 
 router.use('/api', api);
+
+roter.user('/user', user);
 
 router.use('/', responseHandler);
 

@@ -10,6 +10,7 @@ class LocalDB extends MongoDB {
         this.configCollectionName = "configurations";
         this.logsCollectionName = "logs";
         this.copyDBsCollectionName = "copyDatabases";
+        this.tokenCollectionName = "token";
     }
 
     getBackupConfigs() {
@@ -60,6 +61,13 @@ class LocalDB extends MongoDB {
         return this.deleteDocs(this.backupConfigDBName, this.logsCollectionName, { id })
     }
 
+    setToken(token) {
+        return this.writeToCollection(this.backupConfigDBName, this.tokenCollectionName, token);
+    }
+
+    getToken(query) {
+        return this.readFromCollection(this.backupConfigDBName, this.tokenCollectionName, query);
+    }
 }
 
 module.exports = LocalDB;

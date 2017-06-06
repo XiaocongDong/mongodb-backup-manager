@@ -22,6 +22,18 @@ const api = {
         let prefix = "api/logs";
 
         return prefix + action;
+    },
+
+    userAuthPath: (action) => {
+        let prefix = "user/auth";
+
+        return prefix + action;
+    },
+
+    userOperationPath: (action) => {
+        let prefix = "user/operation";
+
+        return prefix + action;
     }
 };
 

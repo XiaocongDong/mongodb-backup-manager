@@ -10,7 +10,8 @@ const router = require('modules/router');
 const config = require('modules/config');
 const object = require('modules/utility/object');
 const LocalDB = require('modules/databases/localDB');
-const controller = require('modules/controller/controller');
+const backupController = require('modules/controller/backup');
+const userController = require('modules/controller/user');
 const log = require('modules/utility/logger');
 const taskPool = require('modules/task/taskPool');
 
@@ -36,11 +37,13 @@ localDB.connect()
                }else {
                    log.info(`Listening at ${config.server.port}`);
                    
-                   controller.setLocalDB(localDB);
-                   controller.setServerSocket(serverSocket);
-                   taskPool.setController(controller);
+                   backupController.setLocalDB(localDB);
+                   backupController.setServerSocket(serverSocket);
+                   taskPool.setController(backupController);
 
-                   controller.restart();
+                   userController.setLocalDB(localDB);
+
+                   backupController.restart();
                    taskPool.start(config.server.interval);
                }
            });
