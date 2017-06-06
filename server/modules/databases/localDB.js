@@ -33,7 +33,11 @@ class LocalDB extends MongoDB {
     }
 
     updateBackupConfig(backUpConfig) {
-        return this.updateDocInCollection(this.backupConfigDBName, this.configCollectionName, backUpConfig)
+        return this.updateDocInCollection(this.backupConfigDBName, this.configCollectionName, backUpConfig, { id: backUpConfig.id })
+    }
+
+    updateCopyDB(copyDB) {
+        return this.updateDocInCollection(this.backupConfigDBName, this.copyDBsCollectionName, copyDB, { id: copyDB.id, name: copyDB.name })
     }
 
     addCopyDB(copyDB) {

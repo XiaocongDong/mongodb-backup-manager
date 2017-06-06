@@ -47,6 +47,8 @@ const constants = require('modules/constants');
 
 const backupUtil = {
 
+    optionalKeys: ['collections', 'startTime', 'interval', 'maxBackupNumber', 'duration'],
+
     getBackupID: (backupConfig) => {
         return `${ backupConfig.db }@${ backupConfig.server }`;
     },
@@ -97,6 +99,16 @@ const backupUtil = {
 
             backupConfig.createdTime = new Date().toLocaleString();
         }
+    },
+
+    updateBackupConfigFromUpdates(backupConfig, updates) {
+        Object.assign(backupConfig, updates);
+        // remove the optional key from backupConfig if necessary
+        backupUtil.optionalKeys.forEach(key => {
+            if(!(key in updates) && (key in backupConfig)) {
+                delete backupConfig[key];
+            }
+        })
     }
 };
 

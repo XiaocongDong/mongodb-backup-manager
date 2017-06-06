@@ -28,7 +28,6 @@ export default class RemoteDatabase extends Component {
 
     render() {
         const { remoteDB, updating, backupConfig } = this.props;
-        console.log(backupConfig.id);
         const { open, collection } = this.state;
         return (
             <div className="database-info original-database">

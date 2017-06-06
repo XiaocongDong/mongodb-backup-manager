@@ -63,7 +63,7 @@ export default class Review extends Component {
     }
 
     handleSubmit() {
-        const { submitState, setSubmitState } = this.props;
+        const { submitState, setSubmitState, update, id } = this.props;
 
         if(submitState == SUBMITSTATES.SUBMITTING) {
             return;
@@ -82,20 +82,35 @@ export default class Review extends Component {
             }
         }
 
-        backups.newBackupConfig(backupConfig)
-            .then(response => {
-                this.submitErr = response.data.message;
-                // redirect to the main page
-                hashHistory.push('/');
-            })
-            .catch(({ response }) => {
-                this.submitErr = response.data.message;
-                setSubmitState(SUBMITSTATES.UNSUBMITTED);
-            })
+        if(!update) {
+            //create a new backup
+            backups.newBackupConfig(backupConfig)
+                    .then(response => {
+                        this.submitErr = response.data.message;
+                        // redirect to the main page
+                        hashHistory.push('/');
+                    })
+                    .catch(({ response }) => {
+                        this.submitErr = response.data.message;
+                        setSubmitState(SUBMITSTATES.UNSUBMITTED);
+                    })
+        }else {
+            // update backup config
+            backups.updateBackup(id, backupConfig)
+                    .then(response => {
+                        this.submitErr = response.data.message;
+                        // redirect to the main page
+                        hashHistory.push(`/backups/${ id }`);
+                    })
+                    .catch(({ response }) => {
+                        this.submitErr = response.data.message;
+                        setSubmitState(SUBMITSTATES.UNSUBMITTED);
+                    })
+        }
     }
 
     render() {
-        const { backupConfig, submitState, review } = this.props;
+        const { backupConfig, submitState, review, update } = this.props;
         const uiKeys = backupConfigUtil.uiKeys;
         const submitError = this.submitErr;
 
@@ -115,9 +130,23 @@ export default class Review extends Component {
 
         let buttons = [];
 
+        if(review) {
+            this.submitErr = null;
+        }
+
         if(!review) {
-            buttons.push(<div className="button big no button-left" onClick = { this.props.handleBack }>Go Back</div>);
-            buttons.push(<div className={"button big yes button-right" + (submitState == SUBMITSTATES.SUBMITTING? " button-waiting": "")} onClick = { this.handleSubmit.bind(this) }>Submit</div>)
+            buttons.push(<div 
+                                className="button big no button-left"
+                                onClick = { this.props.handleBack }
+                         >
+                             Go Back
+                         </div>);
+            buttons.push(<div 
+                                className={"button big yes button-right" + (submitState == SUBMITSTATES.SUBMITTING? " button-waiting": "")} 
+                                onClick = { this.handleSubmit.bind(this) }
+                         >
+                            { update?'Update': 'Submit' }
+                         </div>)
         }
 
         return (

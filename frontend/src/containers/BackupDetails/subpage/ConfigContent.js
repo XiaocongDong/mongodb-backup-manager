@@ -79,6 +79,7 @@ export default class ConfigContent extends Component {
 					update={ update }
 					backupConfig={ reviewBackupConfig }
 					dbsColls={ this.dbsColls }
+					id={ backupConfig.id }
 				/>
 				{ 
 					review &&

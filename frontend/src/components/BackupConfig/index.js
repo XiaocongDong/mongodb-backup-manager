@@ -18,6 +18,9 @@ class BackupConfig extends Component {
     constructor(props) {
         super(props);
         this.totalSteps = 3;
+        // if it is in the update config mode
+        // we need the backup id
+        this.id = this.props.id;
         this.state = {
             review: props.review || false,
             update: props.update,
@@ -30,10 +33,8 @@ class BackupConfig extends Component {
 
     componentWillReceiveProps(nextProps) {
         const { review, update, dbsColls } = nextProps;
-        console.log('config', nextProps, dbsColls);
         if(review !== this.state.review ||
            update !== this.state.update) {
-            console.log('update')
             let step = 0;
 
             if(review) {
@@ -96,7 +97,6 @@ class BackupConfig extends Component {
         const { step, update, backupConfig, review, authState, submitState } = this.state;
         const totalStep = this.totalSteps;
         const stagesDOM = [];
-        console.log(this.dbsColls);
 
         for(let i = 0; i < totalStep; i++) {
             stagesDOM.push(<div className={ "step" + (i == step?" current": (i > step?" pending": " past")) } key={ i }>{ i < step? '': i + 1 }</div>)
@@ -128,9 +128,11 @@ class BackupConfig extends Component {
         const reviewForm = <Review key = { 2 }
                                    backupConfig = { backupConfig }
                                    review = { review }
+                                   update = { update }
                                    submitState = { submitState }
                                    setSubmitState = { this.setSubmitState.bind(this) }
                                    handleBack = { this.handleBack.bind(this) }
+                                   id ={  this.id } 
                             />;
 
         formsDOM.push(reviewForm);

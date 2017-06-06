@@ -12,7 +12,7 @@
     }
 
     .tbody {
-    	height: 500px;
+    	height: 600px;
     	overflow: auto;
     }
 
@@ -21,6 +21,8 @@
     	.td {
     		display: inline-block;	
     		padding: 10px;
+			vertical-align: top;	
+			line-height: 2rem;
 
     		.sort-arrow {
     			padding: 0 10px;

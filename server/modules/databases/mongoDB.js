@@ -178,7 +178,7 @@ class MongoDB {
             });
     }
 
-    updateDocInCollection(dbName, collectionName, doc) {
+    updateDocInCollection(dbName, collectionName, doc, query) {
         return new Promise((resolve, reject) => {
             this.getDBByName(dbName).collection(collectionName, {strict: false},
                 (err, collection) => {
@@ -186,7 +186,7 @@ class MongoDB {
                         return reject(err);
                     }
 
-                    collection.updateOne({ id: doc.id }, doc, { upsert: true, w: 1 })
+                    collection.updateOne(query, doc, { upsert: true, w: 1 })
                         .then(result => {
                             resolve();
                         })

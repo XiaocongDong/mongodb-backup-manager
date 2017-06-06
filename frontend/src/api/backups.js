@@ -31,6 +31,10 @@ const backups = {
         return axios.post(api.backupsPath('/resume'), { id: backupId });
     },
 
+    updateBackup: (backupId, updates) => {
+        return axios.patch(api.backupsPath('/update'), { id: backupId, updates })
+    },
+
     restore: (backupId, db, collections) => {
         return axios.post(api.backupsPath('/restore'), { id: backupId, db, collections });
     },

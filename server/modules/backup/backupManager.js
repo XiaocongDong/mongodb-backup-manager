@@ -310,30 +310,59 @@ class BackupManager {
     updateBackupConfig(updates) {
         // when update the backupConfig first
         // need to stop all the current activities
+        const { id, duration } = this.backupConfig;
+        backupUtil.updateBackupConfigFromUpdates(this.backupConfig, updates);
+
         return Promise.resolve()
             .then(() => {
                 return this.stop();
             })
             .then(() => {
-                return this.updateBackupConfigToDB(updates)
+                // use the update method provied by the localDB
+                // for this kind of update
+                return this.localDB.updateBackupConfig(this.backupConfig)
             })
             .then(() => {
-                this.addLog(`Updated backup config with ${ JSON.stringify(this.backupConfig) }`)
-                this.backupDB.setConnectionParams(this.backupConfig);
-                this.updateBackupConfigToDB({status: constants.backup.status.PENDING});
-                this.start();
+                this.serverSocket.emit('backupConfigs', id)
             })
-            .catch(err => {
-                this.addLog(`Failed to update backup config for ${ this.backupConfig.id } for ${ err.message }`, 'error');
-                throw err;
-            });
+            .then(() => {
+                this.backupDB.setConnectionParams(this.backupConfig);
+                return this.updateBackupConfigToDB({status: constants.backup.status.PENDING});
+            })
+            .then(() => {
+                if(updates.hasOwnProperty('duration') && 
+                   updates.duration !== duration) {
+                        return this.localDB.getBackupCopyDBsWithId(id);
+                }else {
+                    return;
+                }
+            })
+            .then(dbs =>{
+                if(dbs == null) {
+                    return;
+                }
+
+                dbs.forEach(db => {
+                    db.deletedTime =  updates.duration? new Date(new Date(db.createdTime).valueOf() + updates.duration).toLocaleString() : null;
+                });
+
+                return Promise.all(dbs.map(db => {
+                    return this.localDB.updateCopyDB(db);
+                }))
+            })
+            .then(() => {
+                // notifiy the client side that copy dbs has been changed
+                this.serverSocket.emit('copyDBs', id);
+            })
+            .then(() => {
+                return this.restart();
+            })
     }
 
     updateBackupConfigToDB(updates) {
         Object.assign(this.backupConfig, updates);
         return this.localDB.updateBackupConfig(this.backupConfig)
                     .finally(() => {
-                        // when backup config updated, push directly the new backup config to the client side
                         this.serverSocket.emit('backupConfigs', this.backupConfig.id);
                     });
     }
@@ -357,7 +386,6 @@ class BackupManager {
     }
 
     deleteCopyDB(dbName) {
-        // TODO need to fix the order of delete, db first then log?
         log.debug(`Started to delete ${ dbName }`);
         return this.localDB.deleteCopyDBByIDAndName(this.backupConfig.id, dbName)
             .then(() => {
