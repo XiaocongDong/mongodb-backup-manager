@@ -1,14 +1,14 @@
 import axios from 'axios';
 import api from './urlCreator';
 
-const user = {
+const userApi = {
 
     login: user => {
-        axios.post(
-             api.userAuthPath('/create'), 
+        return axios.post(
+             api.userAuthPath('/login'), 
              user
         )
-        ,then(response => {
+        .then(response => {
             return response.data;
         })
         .catch(error => {
@@ -17,4 +17,4 @@ const user = {
     }
 }
 
-export default user;
+export default userApi;

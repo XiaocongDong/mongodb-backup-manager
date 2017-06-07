@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import userApi from 'api/user';
+import { setUser } from 'actions/user';
+import { dispatch } from 'store/store'; 
+import dataLoader from 'api/dataLoader';
+import userUtil from 'utility/user';
 
 
 class Login extends Component {
@@ -10,16 +14,34 @@ class Login extends Component {
             disbaled: false,
             error: null,
         }
+        this.inputs={};
     }
 
     handleSubmit() {
         const username = this.inputs['name'].value;
         const password = this.inputs['password'].value;
 
-        user.userApi.login({
+        userApi.login({
             username,
             password
         })
+        .then(
+            () => {
+                // set user to the localStorage if login succeed
+                userUtil.setUserToLocalStorage(username);
+                dispatch(setUser({name: username}))
+                // redirect to the home page
+                dataLoader.loadAll();
+                this.props.router.push('/');  
+            },
+            error => {
+                console.error(error)
+                this.setState({
+                    disbaled: false,
+                    error: error.message
+                })
+            }
+        )
     }
 
     render() {

@@ -5,7 +5,7 @@ const userController = require('modules/controller/user');
 
 auth.post('/login', (req, res, next) => {
     const user = req.body;
-
+    
     userController.validateUser(user, req, res, next);
 })
 

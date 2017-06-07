@@ -2,9 +2,11 @@ import backups from './backups';
 import databases from './databases';
 import logs from './logs';
 import modalController from 'utility/modal';
-
+import userUtil from 'utility/user';
+import * as userActionsCreators from 'actions/user';
 import * as dataActionsCreators from 'actions/data';
-import { dispatch } from 'store/store'
+import { dispatch } from 'store/store';
+import { hashHistory } from 'react-router';
 
 
 const dataLoader = {
@@ -107,19 +109,25 @@ const dataLoader = {
         // original database can only be updating manually
         //loads.push(dataLoader.loadAllRemoteDBs());
 
+        // if the token doesn't expired login the user
         return Promise.all(loads)
-                      .then(
-                          () => {
-                              dispatch(dataActionsCreators.setData("loaded", true))
-                          },
-                          error => {
-                              modalController.modalController.showModal({
-                                type: 'error',
-                                title: `failed to fetch the backup data from database`,
-                                text: error.message,
-                            })
-                          }
-                       );
+                    .then(() => {
+                        const name = userUtil.getUserFromLocalStorage();
+                        dispatch(dataActionsCreators.setData("loaded", true))
+                        // set the user
+                        if(name != null) {
+                            dispatch(userActionsCreators.setUser({name}))
+                        }        
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        const status = error.response.status;
+
+                        if(status == 401) {
+                            
+                            hashHistory.push('/sign_in');
+                        }
+                    });
     },
 
     updateWithBackupID: (backupID) => {

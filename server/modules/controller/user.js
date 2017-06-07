@@ -1,17 +1,19 @@
 const token = require('modules/auth/token');
 const userHelper = require('modules/helper/user');
 const response = require('modules/helper/response');
+const tokenManager = require('modules/auth/token');
 
 
-const user = {
+const userController = {
 
     localDB: null,
 
     validateUser: (user, req, res, next) => {
+        console.log(user);
         if(userHelper.isAdmin(user)) {
             let t = token.newToken(req);
 
-            user.localDB.setToken(t)
+            tokenManager.setTokenToDB(t)
                 .then(
                     () => {
                         // set cookie
@@ -23,13 +25,10 @@ const user = {
                         next(response.error(error.message));
                     }
                 )
+        }else {
+
         }
-    },
-
-    setLocalDB: localDB => {
-        user.localDB = localDB;
     }
-
 }   
 
-module.exports = user;
+module.exports = userController;

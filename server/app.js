@@ -11,7 +11,7 @@ const config = require('modules/config');
 const object = require('modules/utility/object');
 const LocalDB = require('modules/databases/localDB');
 const backupController = require('modules/controller/backup');
-const userController = require('modules/controller/user');
+const tokenManager = require('modules/auth/token');
 const log = require('modules/utility/logger');
 const taskPool = require('modules/task/taskPool');
 
@@ -41,7 +41,7 @@ localDB.connect()
                    backupController.setServerSocket(serverSocket);
                    taskPool.setController(backupController);
 
-                   userController.setLocalDB(localDB);
+                   tokenManager.setDB(localDB);
 
                    backupController.restart();
                    taskPool.start(config.server.interval);
