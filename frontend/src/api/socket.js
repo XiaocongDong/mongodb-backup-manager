@@ -24,7 +24,6 @@ const clientSocket = {
 
     startListenLogsChanges: (name) => {
         clientSocket.socket.on(name, () => {
-            console.log('updated!', name);
             dataLoader.updateLogs(name);
         })
     },

@@ -3,7 +3,7 @@
     > .header {
         height: $header-height;
         width: 100%;
-        line-height: #{$header-height};
+        line-height: $header-height;
         background-color: $black;
         color: white;
         user-select: none;
@@ -13,6 +13,10 @@
         }
 
         .title {
+            
+            > * {
+                vertical-align: top;
+            }
 
             .logo {
                 padding-left: 15px;
@@ -22,11 +26,6 @@
             .text {
                 font-size: 1.2rem;
                 padding-left: 15px;
-            }
-
-            > * {
-                display: inline-block;
-                vertical-align: top;
             }
         }
 
@@ -38,16 +37,16 @@
                 vertical-align: top;
             }
 
-            .item {
-                width: 130px;
+            .icon {
                 text-align: center;
-                border-left: 2px solid lighten($black, 10%);
-                transition: all .2s ease-in-out;
+                line-height: $header-height;
+                padding: 0 20px;
+                font-size: 1.5rem;
+                transition: all ease .2s;
 
                 &:hover {
-                    background-color: lighten($black, 10%);
-                    color: #bbb;
                     cursor: pointer;
+                    background: #555;
                 }
             }
         }

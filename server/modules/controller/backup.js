@@ -78,7 +78,6 @@ class Controller {
                 this.getBackupStatus(backupConfig.id, next);
             })
             .catch(err => {
-                console.log(err);
                 next(response.error(err.message));
             })
             .finally(() => {

@@ -1,7 +1,8 @@
-const token = require('modules/auth/token');
 const userHelper = require('modules/helper/user');
 const response = require('modules/helper/response');
 const tokenManager = require('modules/auth/token');
+const request = require('modules/helper/request');
+const authError = require('modules/error/auth');
 
 
 const userController = {
@@ -9,9 +10,8 @@ const userController = {
     localDB: null,
 
     validateUser: (user, req, res, next) => {
-        console.log(user);
         if(userHelper.isAdmin(user)) {
-            let t = token.newToken(req);
+            let t = tokenManager.newToken(req);
 
             tokenManager.setTokenToDB(t)
                 .then(
@@ -26,8 +26,43 @@ const userController = {
                     }
                 )
         }else {
-
+            next(response.error(authError.AUTH_ERROR, authError.CODE));
         }
+    },
+
+    logoutUser: (token, req, res, next) => {
+        const ip = request.getIp(req);
+        const user_agent = request.getUserAgent(req);
+
+        tokenManager.getTokensFromDB({
+            token,
+            ip,
+            user_agent,
+            valid: true
+        })
+        .then(tokens => {
+            if(tokens.length === 0) {
+                next(response.error(authError.AUTH_ERROR, authError.code));
+                return;
+            }
+
+            return tokenManager
+                         .invalidateTokens({
+                             token,
+                             ip,
+                             user_agent,
+                             valid: true
+                         })
+                         .then(() => {
+                             res.cookie('token', null);
+                         })
+        })
+        .then(() => {
+            next(response.success());
+        })
+        .catch(err => {
+            next(response.error(authError.AUTH_ERROR, authError.CODE));
+        })
     }
 }   
 

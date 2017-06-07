@@ -14,7 +14,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.use(cookieParser());
 
 //router.use('/', logger);
-router.use('/', tokenHandler.validate);
+router.use(tokenHandler.validate);
 
 router.get('/', (req, res) => {
    res.sendFile(frontend.indexFile);
@@ -26,6 +26,6 @@ router.use('/api', api);
 
 router.use('/user', user);
 
-router.use('/', responseHandler);
+router.use(responseHandler);
 
 module.exports = router;

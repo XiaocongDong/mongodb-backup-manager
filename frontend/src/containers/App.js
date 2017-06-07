@@ -11,7 +11,6 @@ class App extends Component {
         const props = this.props;
 
         if(!props.user && props.location.pathname != '/sign_in') {
-            console.log('in');
             return null;
         }
 
@@ -31,7 +30,6 @@ class App extends Component {
 
 const mapStateToProps = state => {
     const user = state.get('user').get('user').toJS();
-    console.log(user.name);
     return {
         user: user.name
     }

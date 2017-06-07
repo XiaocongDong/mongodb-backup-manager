@@ -1,5 +1,6 @@
 import axios from 'axios';
 import api from './urlCreator';
+import errorHandler from 'error/error_handler';
 
 
 const databases = {
@@ -8,6 +9,7 @@ const databases = {
         return axios.get(api.databasesPath('/availableDBs'), {
             params: credential
         })
+        .catch(err => errorHandler.handleHTTPError(err));
     },
 
     getCopyDbs: (backupId) => {
@@ -16,6 +18,7 @@ const databases = {
         }).then( response => {
             return response.data;
         })
+        .catch(err => errorHandler.handleHTTPError(err));
     },
 
     getAllCopyDbs: () => {
@@ -23,6 +26,7 @@ const databases = {
                 .then(response => {
                     return response.data;
                 })
+                .catch(err => errorHandler.handleHTTPError(err));
     },
 
     getAllOriginalDBs: () => {
@@ -30,6 +34,7 @@ const databases = {
             .then(response => {
                 return response.data;
             })
+            .catch(err => errorHandler.handleHTTPError(err));
     },
 
     getOriginalDB: (backupID) => {
@@ -39,12 +44,14 @@ const databases = {
             .then(response => {
                 return response.data;
             })
+            .catch(err => errorHandler.handleHTTPError(err));
     },
 
     deleteCopyDB: (id, db) => {
         return axios.delete(api.databasesPath('/'), {
             params: {id, db}
         })
+        .catch(err => errorHandler.handleHTTPError(err));
     }
 };
 

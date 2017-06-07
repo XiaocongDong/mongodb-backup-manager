@@ -1,5 +1,6 @@
 import axios from 'axios';
 import api from './urlCreator';
+import errorHandler from 'error/error_handler';
 
 
 const collections = {
@@ -11,7 +12,8 @@ const collections = {
                 db,
                 collection
             }})
-            .then(response => response.data);
+            .then(response => response.data)
+            .catch(err => errorHandler.handleHTTPError(err));
     }
 
 };

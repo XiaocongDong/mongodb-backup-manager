@@ -135,6 +135,13 @@ class BackupManager {
                         return this.backupDB.deleteCollections(this.backupConfig.db, collections)
                                    .then(() => this.backupDB.writeToCollections(this.backupConfig.db, collsDocs))
                     })
+                    .then(() => {
+                        return this.addLog(`Retored ${ collections.join(' and ') } from ${ fromDB } to the ${ this.backupConfig.id } successfully`);
+                    })
+                    .catch(err => {
+                        this.addLog(`Failed to restore ${ collections.join(' and ') } from ${ fromDB } to ${ this.backupConfig.id } for ${ err.message }`);
+                        throw err;
+                    })
                     .finally(() => {
                         this.backupDB.close()
                     })

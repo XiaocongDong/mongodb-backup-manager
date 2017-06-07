@@ -178,7 +178,7 @@ class MongoDB {
             });
     }
 
-    updateDocInCollection(dbName, collectionName, doc, query) {
+    updateDocsInCollection(dbName, collectionName, update, query, multi= false) {
         return new Promise((resolve, reject) => {
             this.getDBByName(dbName).collection(collectionName, {strict: false},
                 (err, collection) => {
@@ -186,13 +186,20 @@ class MongoDB {
                         return reject(err);
                     }
 
-                    collection.updateOne(query, doc, { upsert: true, w: 1 })
-                        .then(result => {
-                            resolve();
-                        })
-                        .catch(err => {
-                            reject(err);
-                        })
+                    let operation = null;
+
+                    if(!multi) {
+                        operation = collection.updateOne(query, update, { upsert: true, w: 1 });
+                    }else {
+                        operation = collection.updateMany(query, update, { upsert: false })
+                    }
+
+                    operation.then(result => {
+                                  resolve();
+                              })
+                              .catch(err => {
+                                  reject(err);
+                              })
             } )
         })
     }

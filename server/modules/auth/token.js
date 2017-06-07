@@ -14,14 +14,15 @@ const tokenManager = {
 
         token.crt = new Date().valueOf();
         token.exp_time = token.crt + config.auth.token_exp_time;
-        token.token = tokenManager.generateToken();
+        token.token = tokenManager._generateToken();
         token.ip = request.getIp(req);
         token.user_agent = request.getUserAgent(req);
+        token.valid = true;
 
         return token;
     },  
 
-    generateToken: () => {
+    _generateToken: () => {
         let token = '';
         let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -36,15 +37,12 @@ const tokenManager = {
         return tokenManager.localDB.setToken(token);
     },
 
-    getTokensFromDB: (token, ip, user_agent, now) => {
-        return tokenManager.localDB.getToken(
-            {
-                token,
-                ip, 
-                user_agent,
-                exp_time: {'$gt': now}
-            }
-         )
+    getTokensFromDB: (query) => {
+        return tokenManager.localDB.getToken(query)
+    },
+
+    invalidateTokens: (query) => {
+        return tokenManager.localDB.updateTokens({'$set': {valid: false}}, query);
     }
 };
 

@@ -49,7 +49,6 @@ localDB.connect()
            });
        })
        .catch(err => {
-           console.log(err.message);
            localDB.close();
            process.exit(1);
        });

@@ -40,7 +40,6 @@ export default class ConfigContent extends Component {
 							})
 						})
 						.catch( (error)  => {
-							console.log(error);
 						    const err = response.data.message;
 
 							modalController.showModal({

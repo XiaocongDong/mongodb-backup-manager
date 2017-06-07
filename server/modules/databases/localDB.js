@@ -34,11 +34,11 @@ class LocalDB extends MongoDB {
     }
 
     updateBackupConfig(backUpConfig) {
-        return this.updateDocInCollection(this.backupConfigDBName, this.configCollectionName, backUpConfig, { id: backUpConfig.id })
+        return this.updateDocsInCollection(this.backupConfigDBName, this.configCollectionName, backUpConfig, { id: backUpConfig.id })
     }
 
     updateCopyDB(copyDB) {
-        return this.updateDocInCollection(this.backupConfigDBName, this.copyDBsCollectionName, copyDB, { id: copyDB.id, name: copyDB.name })
+        return this.updateDocsInCollection(this.backupConfigDBName, this.copyDBsCollectionName, copyDB, { id: copyDB.id, name: copyDB.name })
     }
 
     addCopyDB(copyDB) {
@@ -66,8 +66,11 @@ class LocalDB extends MongoDB {
     }
 
     getToken(query) {
-        console.log(query);
         return this.readFromCollection(this.backupConfigDBName, this.tokenCollectionName, query);
+    }
+
+    updateTokens(update, query) {
+        return this.updateDocsInCollection(this.backupConfigDBName, this.tokenCollectionName, update, query, true);
     }
 }
 

@@ -1,5 +1,8 @@
 import axios from 'axios';
 import api from './urlCreator';
+import localStore from 'utility/localStore';
+import { hashHistory } from 'react-router';
+
 
 const userApi = {
 
@@ -12,7 +15,19 @@ const userApi = {
             return response.data;
         })
         .catch(error => {
-            console.log(error);
+            throw error.response.data
+        })
+    },
+
+    logout: () => {
+        return axios.post(
+            api.userAuthPath('/logout'),
+        )
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            throw error.response.data;
         })
     }
 }

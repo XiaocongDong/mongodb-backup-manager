@@ -1,4 +1,5 @@
 import store from 'store/store';
+import localStore from 'utility/localStore';
 
 
 const user = {
@@ -10,13 +11,13 @@ const user = {
     },
 
     getUserFromLocalStorage: () => {
-        const name = localStorage.getItem('user_name');
+        const name = localStore.getItem('user_name');
 
         return name;
     },
 
     setUserToLocalStorage: name => {
-        localStorage.setItem('user_name', name);
+        localStore.setItem('user_name', name);
     }
 }
 

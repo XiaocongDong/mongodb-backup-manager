@@ -12,8 +12,6 @@ const userReducer = (state=initialState, action) => {
 
         case actions.SET_USER:
             const user = action.payload.value;
-            console.log(user);
-            console.log(Immutable.fromJS(user));
             return state.set('user', Immutable.fromJS(user));
 
         default:

@@ -1,27 +1,21 @@
 const response = require('modules/helper/response');
 const request = require('modules/helper/request');
 const tokenManager = require('modules/auth/token');
+const authError = require('modules/error/auth');
+const log = require('modules/utility/logger');
 
 
 const tokenHandler = {
     
     validate: (req, res, next) => {
-        const url = req.originalUrl;
-
-        console.log(url);
-
-        if(url === '/' ||
-           url == '/user/auth/login' ||
-           url.indexOf('dist') >= 0) {
-           // don't need to authenticate the request for frontend and sign in
-           next();
-           return; 
+        if(!tokenHandler.neededAuthenticated(req)) {
+            return next();
         }
 
         const token = req.cookies.token;
 
         if(token == null) {
-            response.send(res, response.error('authentication failed', 401));
+            response.send(res, response.error(authError.AUTH_ERROR, authError.CODE));
             return;
         }
 
@@ -29,12 +23,19 @@ const tokenHandler = {
         const user_agent = request.getUserAgent(req);
         const now = new Date().valueOf();
         
-        tokenManager.getTokensFromDB(token, ip, user_agent, now)
+        tokenManager.getTokensFromDB(
+                        {
+                            token, 
+                            ip, 
+                            user_agent, 
+                            valid: true,
+                            exp_time: {'$gt': now}
+                        }
+                    )
                     .then(tokens => {
-                        console.log(tokens);
                         if(tokens.length == 0) {
-                            response.send(res, response.error('authentication failed', 401));
-                            return;
+                            
+                            throw undefined;
                         }
 
                         // token authenticated
@@ -42,12 +43,20 @@ const tokenHandler = {
                     })
                     .catch(error => {
                         console.error(error);
-                        response.send(res, response.error('authentication failed', 401));
+                        response.send(res, response.error(authError.AUTH_ERROR, authError.CODE));
                     })
     },
 
-    refresh: (req, res, next) => {
+    neededAuthenticated: req => {
+        const url = req.originalUrl;
 
+        if(url === '/' ||
+           url == '/user/auth/login' ||
+           url.indexOf('dist') >= 0) {
+           // don't need to authenticate the request for frontend and sign in
+           return false; 
+        }
+        return true;
     }
 }
 
