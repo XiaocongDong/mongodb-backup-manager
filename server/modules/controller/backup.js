@@ -172,9 +172,8 @@ class Controller {
             return next(response.error(`Failed to resume backup for ${ backupID } for current status is ${ backupManager.backupStatus}`))
         }
 
-        backupManager.updateBackupConfigToDB({status: constants.backup.status.PENDING})
+        backupManager.resume()
             .then(() => {
-                backupManager.restart();
                 next(response.success(`Resumed backup for ${ backupID } successfully`));
             })
             .catch(err => {

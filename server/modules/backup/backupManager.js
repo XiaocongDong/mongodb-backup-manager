@@ -47,6 +47,16 @@ class BackupManager {
         taskPool.addTask(backupTask);        
     }
 
+    resume() {
+        // go back to the status before stop
+        return this.updateBackupConfigToDB(
+            {
+                status: this.backupConfig.statusBeforeStop,
+                nextBackupTime: this.backupConfig.nextBackupTimeBeforeStop
+            })
+            .then(() => this.restart())
+    }
+
     restart() {
         if(this.backupStatus == constants.backup.status.STOP) {
             return;
@@ -71,7 +81,9 @@ class BackupManager {
                 return this.updateBackupConfigToDB(
                     {
                         status:constants.backup.status.STOP,
-                        nextBackupTime: null
+                        nextBackupTime: null,
+                        nextBackupTimeBeforeStop: this.backupConfig.nextBackupTime,
+                        statusBeforeStop: this.backupConfig.status
                     }
                 );
             })
