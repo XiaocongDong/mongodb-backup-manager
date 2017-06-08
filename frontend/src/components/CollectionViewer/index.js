@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import object from 'utility/object';
 import input from 'utility/input';
 import Pagination from 'components/Pagination';
-
-const sift = require('sift');
+import sift from 'sift';
 
 
 export default class CollectionViewer extends Component {

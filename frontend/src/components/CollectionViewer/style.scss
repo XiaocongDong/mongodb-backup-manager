@@ -25,12 +25,12 @@
             padding: 10px;
             color: $dark-grey;
             text-align: center;
-            border-bottom: $border;
         }
 
         .content-pagination {
             padding: 10px;
-            border: 1px solid rgba(0, 0, 0, .2);
+            border: none;
+            border-top: 1px solid rgba(0, 0, 0, .2);
         }
 
         .content-text {
@@ -42,18 +42,21 @@
                 height: 100%;
                 resize: none;
                 font-size: 1.1rem;
+                outline: none;
+                border: none;
+                border-top: 1px solid rgba(0, 0, 0, .2);
             }
         }
 
         .content-query {
             padding: 12px;
             height: 40px;
-            border: 1px solid rgba(0, 0, 0, .2);
             border-bottom: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 1.3rem;
+            margin-bottom: 10px;
 
             .query-text {
                 display: inline-block;
@@ -81,6 +84,9 @@
                   display: inline-block;
                   width: 100%;
                   font-size: 1.3rem;
+                  outline: none;
+                  border: 1px solid #aaa;
+                  border-radius: 5px;
                 }
             }
 
