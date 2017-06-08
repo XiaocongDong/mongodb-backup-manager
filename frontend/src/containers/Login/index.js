@@ -13,7 +13,7 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            disbaled: false,
+            disabled: false,
             error: null,
         }
         this.inputs={};
@@ -73,7 +73,7 @@ class Login extends Component {
             error => {
                 console.error(error)
                 this.setState({
-                    disbaled: false,
+                    disabled: false,
                     error: error.message
                 })
             }
@@ -82,7 +82,7 @@ class Login extends Component {
 
     render() {
         const props = this.props;
-        const { disbaled, error } = this.state;
+        const { disabled, error } = this.state;
 
         return (
             <div className='login'>
@@ -102,10 +102,10 @@ class Login extends Component {
                     />
                     <div className='error'>{ error }</div>
                     <div 
-                            className={ 'login-button button yes' + (disbaled?' disabled':'')}
+                            className={ 'login-button button yes' + (disabled?' button-waiting':'')}
                             onClick={ this.handleSubmit.bind(this) }
                     >
-                        Submit
+                        { disabled? 'Communiting': 'Submit' }
                     </div>
                 </div>
             </div>
