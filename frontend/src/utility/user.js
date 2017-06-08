@@ -4,10 +4,10 @@ import localStore from 'utility/localStore';
 
 const user = {
     
-    isSigned: () => {
-        const user = store.getState().get('user').getIn(['user', 'name']);
+    userExists: () => {
+        const name = user.getUserFromLocalStorage();
 
-        return user != null;
+        return name != null;
     },
 
     getUserFromLocalStorage: () => {

@@ -33,9 +33,9 @@ export default class Header extends Component {
                     <span className="text">MongoBackup Manager</span>
                 </div>
                 <div className="navigation">
-                    <Link to="/" className="link icon"><i className="fa fa-home"></i></Link>
-                    <Link to="/newConfig" className="link icon"><i className="fa fa-plus"></i></Link>
-                    <div className='icon fa fa-sign-out' onClick={ this.handleLogout.bind(this) }></div>
+                    <Link to="/" className="link icon" title='dashboard' alt="dashboard"><i className="fa fa-home"></i></Link>
+                    <Link to="/newConfig" className="link icon" title='create a backup' alt='create a backup'><i className="fa fa-plus"></i></Link>
+                    <div className='icon fa fa-sign-out' onClick={ this.handleLogout.bind(this) } title='sign out' alt='sign out'></div>
                 </div>
             </div>
         )

@@ -15,11 +15,18 @@ import PlaceHolder from 'containers/App'
 
 import dataLoader from 'api/dataLoader';
 import clientSocket from 'api/socket';
+import userUtil from 'utility/user';
 
 import store from 'store/store';
 import user from 'utility/user';
 
-dataLoader.loadAll();
+if(userUtil.userExists()) {
+    dataLoader.loadAll();
+}else {
+    // redirect to the sign_in page
+    hashHistory.push('/sign_in');
+}
+
 clientSocket.startSocket();
 clientSocket.startListenBackupConfigsChanges();
 clientSocket.startListenCopyDBsChanges();
