@@ -98,18 +98,18 @@ export default class title extends Component {
                         }
                     </div>
                     <div className="operations-wrapper">
-                        <div className="operation backup clickable yes" onClick={ this.runBackup.bind(this, id)}>run backup</div>
+                        <div className="operation backup clickable yes" onClick={ this.runBackup.bind(this, id)}>run</div>
                         {
                             (status == "WAITING" || status == "RUNNING") && (
-                                <div className="operation stop clickable" onClick={ this.handleStop.bind(this, id) }>stop backup</div>
+                                <div className="operation stop clickable" onClick={ this.handleStop.bind(this, id) }>stop</div>
                             )
                         }
                         {
                             (status == "STOP") && (
-                                <div className="operation resume clickable" onClick={ this.handleResume.bind(this, id) }>resume backup</div>
+                                <div className="operation resume clickable" onClick={ this.handleResume.bind(this, id) }>resume</div>
                             )
                         }
-                        <div className="operation delete clickable" onClick={ this.handleDelete.bind(this, id) }>delete backup</div>
+                        <div className="operation delete clickable" onClick={ this.handleDelete.bind(this, id) }>delete</div>
                     </div>
                 </div>
             </div>

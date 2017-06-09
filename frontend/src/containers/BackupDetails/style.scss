@@ -52,14 +52,16 @@
 
          .operations-wrapper {
             width: 30%;
+            display: flex;
+            justify-content: flex-end;
 
             .operation {
                padding: 10px;
-               width: 120px;
+               width: 60px;
                text-align: center;
                display: inline-block;
                color: $white;
-               margin-right: 10px;
+               margin-right: 20px;
                border-radius: 5px;
                font-size: 1.1rem;
             }

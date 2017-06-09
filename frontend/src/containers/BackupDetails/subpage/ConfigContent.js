@@ -92,7 +92,7 @@ export default class ConfigContent extends Component {
 					update && 
 					(
 						<div className='cancel-wrapper'>
-							<div className='cancel clickable' onClick = { this.handleCancel.bind(this)}>
+							<div className='cancel clickable' onClick = { this.handleCancel.bind(this)} title='cancel edit'>
 								<i className='fa fa-times'></i>
 							</div>
 						</div>
