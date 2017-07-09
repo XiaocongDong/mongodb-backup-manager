@@ -5,7 +5,7 @@
 
     .form-title {
         text-align: center;
-        font-weight: 600;
+        font-weight: 300;
         font-size: 1.8rem;
         color: $blue;
     }
@@ -77,6 +77,7 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+            width: 100px;
         }
 
         .error-message {

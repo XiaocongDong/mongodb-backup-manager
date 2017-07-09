@@ -181,7 +181,7 @@ export default class Credential extends Component {
                     className={ "button big yes button-middle" + ((authState == AUTHSTATES.AUTHENTICATING)? " button-waiting": "") }
                     onClick={ this.handleAuthenticate.bind(this)}
                 >
-                    { authState == AUTHSTATES.AUTHENTICATING? "Connecting": "Connect to DB" }
+                    { authState == AUTHSTATES.AUTHENTICATING? "Connecting": "Connect" }
                 </div>)
         ];
 
