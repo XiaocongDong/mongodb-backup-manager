@@ -76,7 +76,13 @@ class BackupManager {
     }
 
     stop() {
-        return this.backupDB.close()
+        return Promise.resolve()
+            .then(() => {
+                if(this.backupStatus == constants.backup.status.RUNNING) {
+                    throw new Error('Failed to stop backup schedule, because backup is still running');
+                }
+            }) 
+            .then(() => this.backupDB.close())
             .then(() => {
                 return this.updateBackupConfigToDB(
                     {
