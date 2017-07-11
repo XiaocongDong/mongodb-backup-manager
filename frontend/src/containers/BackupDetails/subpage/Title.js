@@ -11,7 +11,21 @@ import backups from 'api/backups';
 export default class title extends Component {
 
     handleStop(id) {
-        backups.stopBackup(id);
+        backups.stopBackup(id)
+               .catch(({ response }) => {
+                   const err = response.data.message;
+                   modalController.showModal({
+                       type: 'error',
+                       title: `Failed to stop ${ id }`,
+                       text: `${ err }`,
+                       buttons: [
+                           {
+                               text: 'ok',
+                               onClick: modalController.closeModal
+                           }
+                       ]
+                   })
+               })
     }
 
     setStateWithKeyValues(keyValues, callback=null) {
