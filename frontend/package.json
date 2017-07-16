@@ -20,9 +20,7 @@
     "file-loader": "^0.10.1",
     "sass-loader": "^6.0.3",
     "webpack": "^2.2.0",
-    "node-sass": "^4.0.0"
-  },
-  "dependencies": {
+    "node-sass": "^4.0.0",
     "axios": "^0.16.1",
     "immutable": "^3.8.1",
     "moment": "^2.16.0",
