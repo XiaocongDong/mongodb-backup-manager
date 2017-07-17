@@ -1,19 +1,26 @@
-{
+{   
+    // authentication for the MDBBM system
     "auth": {
-        "username" : "admin",
-        "password": "admin",
-        "token_exp_time": 3600000
+        "username" : "admin", // user name of the system
+        "password": "admin", // user password of the system
+        "token_exp_time": 3600000 // token expiration time (ms)
     },
+    // the database info of the local database,
+    // local database is used to store the backup configuartions, logs and all the backup data
     "database": {
-        "server": "localhost",
-        "port": 27017,
-        "backup_config_db": "backup",
-        "database_backup_roles": ["readWrite", "dbOwner"],
-        "all_database_backup_roles": ["readWriteAnyDatabase"]
+        "server": "localhost", // MongoDB server address
+        "port": 27017, // MongoDB server port
+        // username: "", // username 
+        // password: "", // password
+        // authDB: "amin", // authentication DB
+        "backup_config_db": "backup", // database that is used to store the configurations, logs and copy databases data.
+        "database_backup_roles": ["readWrite", "dbOwner"], // the role that can backup a specific database
+        "all_database_backup_roles": ["readWriteAnyDatabase"] // the role that can backup all the databases
     },
+    // configuration for MDBBM server
     "server": {
-        "port": 8082,
-        "interval": 2000,
-        "logLevel": "info"
+        "port": 8082, // the port number that MDBBM will listen at
+        "interval": 2000, // the interval time that MDBBM scans the task pool (ms)
+        "logLevel": "info" // log level of the system
     }
 }

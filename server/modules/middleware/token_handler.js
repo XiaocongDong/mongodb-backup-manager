@@ -42,7 +42,6 @@ const tokenHandler = {
                         next();
                     })
                     .catch(error => {
-                        console.error(error);
                         response.send(res, response.error(authError.AUTH_ERROR, authError.CODE));
                     })
     },

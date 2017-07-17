@@ -6,7 +6,9 @@ const clientSocket = {
     startSocket: () => {
         clientSocket.socket = io();
         clientSocket.socket.on('connect', () => {
-            console.log('socket connected to server successfully');
+            if(__DEV__) {
+                console.log('socket connected to server successfully');
+            }
         });
     },
 
