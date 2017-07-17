@@ -1,6 +1,6 @@
 const constants = require('modules/constants');
 const log = require('modules/utility/logger');
-const config = require('modules/config');
+const config = require('modules/config').config;
 const MongoDB = require('modules/databases/mongoDB');
 const object = require('modules/utility/object');
 const backupUtil = require('modules/utility/backup');

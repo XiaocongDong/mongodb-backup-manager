@@ -1,4 +1,4 @@
-const config = require('modules/config');
+const config = require('modules/config').config;
 
 const user = {
     

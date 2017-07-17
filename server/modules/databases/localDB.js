@@ -1,5 +1,5 @@
 const MongoDB = require('modules/databases/mongoDB');
-const databaseConfig = require('modules/config').database;
+const databaseConfig = require('modules/config').config.database;
 
 
 class LocalDB extends MongoDB {

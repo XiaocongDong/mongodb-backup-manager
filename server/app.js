@@ -1,33 +1,39 @@
-const path = require('path');
-const express = require('express');
-const io = require('socket.io');
-const http = require('http');
+const start = (configFile) => {
+    const path = require('path');
+    const express = require('express');
+    const io = require('socket.io');
+    const http = require('http');
 
-const router = require('modules/router');
-const config = require('modules/config');
-const object = require('modules/utility/object');
-const LocalDB = require('modules/databases/localDB');
-const backupController = require('modules/controller/backup');
-const tokenManager = require('modules/auth/token');
-const log = require('modules/utility/logger');
-const taskPool = require('modules/task/taskPool');
+    const conf = require('modules/config');
+    conf.setConfigFile(configFile);
+    conf.readConfig();
+    const config = conf.config;
 
-const app = express();
-const server = http.createServer(app);
-const serverSocket = io(server);
+    const router = require('modules/router');
 
-object.deployPromiseFinally();
+    const object = require('modules/utility/object');
+    const LocalDB = require('modules/databases/localDB');
+    const backupController = require('modules/controller/backup');
+    const tokenManager = require('modules/auth/token');
+    const taskPool = require('modules/task/taskPool');
 
-serverSocket.on('connection', () => {
-});
-//Routers
-app.use('/', router);
+    const app = express();
+    const httpServer = http.createServer(app);
+    const serverSocket = io(httpServer);
+    const log = require('modules/utility/logger');
 
-const localDB = object.selfish(new LocalDB(config.database));
+    object.deployPromiseFinally();
 
-localDB.connect()
+    serverSocket.on('connection', () => {
+    });
+    //Routers
+    app.use('/', router);
+
+    const localDB = object.selfish(new LocalDB(config.database));
+
+    localDB.connect()
        .then(() => {
-           server.listen(config.server.port, (err, result) => {
+           httpServer.listen(config.server.port, (err, result) => {
                if(err) {
                    log.error(`Failed to start the server for ${ err.message }`)
                }else {
@@ -48,5 +54,8 @@ localDB.connect()
            localDB.close();
            process.exit(1);
        });
+}
 
-
+module.exports = {
+    start: start
+}

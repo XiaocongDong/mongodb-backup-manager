@@ -1,7 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const databaseUtil = require('modules/utility/database');
 const object = require('modules/utility/object');
-const databaseConfig = require('modules/config').database;
+const databaseConfig = require('modules/config').config.database;
 const log = require('modules/utility/logger');
 
 

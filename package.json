@@ -6,10 +6,10 @@
   "target": "node",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./dist/server.js",
+    "start": "node index.js",
     "build": "rm -rf ./dist && NODE_ENV=production webpack --progress",
     "dev-client-build": "webpack --config client.webpack.production.config.js --watch --progress",
-    "dev-server-build": "webpack --config server.webpack.config.js --watch --progress"
+    "dev-server-build": "webpack --config server.webpack.config.js --progress"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,10 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/XiaocongDong/mongodb-backup-manager/issues"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "mongodb-backup-manager": "./index.js"
   },
   "homepage": "https://github.com/XiaocongDong/mongodb-backup-manager#readme",
   "devDependencies": {
@@ -59,12 +63,13 @@
     "socket.io-client": "^1.7.3"
   },
   "dependencies": {
-    "strip-json-comments": "^2.0.1",
     "basic-logger": "^0.4.4",
     "body-parser": "^1.17.1",
+    "commander": "^2.11.0",
     "cookie-parser": "^1.4.3",
     "express": "^4.15.2",
     "mongodb": "^2.2.24",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "strip-json-comments": "^2.0.1"
   }
 }

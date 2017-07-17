@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const fs = require('fs');
 
+
 const nodeModules = {};
 fs.readdirSync('node_modules')
   .filter(function(x) {
@@ -18,6 +19,8 @@ module.exports = {
     output: {
         filename: 'server.js',
         path: path.resolve(__dirname, 'dist'),
+        library: "mongodb-backup-manager-server",
+        libraryTarget: "commonjs-module"
     },
     externals: nodeModules,
     target: "node",

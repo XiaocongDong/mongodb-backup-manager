@@ -2,7 +2,24 @@ const fs = require('fs');
 const path = require('path');
 const stripJsonComments = require('strip-json-comments');
 
-let config = fs.readFileSync(path.join(__dirname, "../backup.config.json"), "utf-8");
-config = JSON.parse(stripJsonComments(config));
+const config = {
+
+    configFile: path.join(__dirname, "../backup.config.json"),
+
+    config: null,
+
+    setConfigFile: (configFile) => {
+        (configFile) && (config.configFile = configFile);
+    },
+
+    readConfig: () => {
+        let conf = fs.readFileSync(config.configFile, "utf-8");
+        conf = JSON.parse(stripJsonComments(conf));
+
+        config.config = conf;
+    }
+}
+
+
 
 module.exports = config;
