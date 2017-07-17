@@ -12,8 +12,8 @@
         "all_database_backup_roles": ["readWriteAnyDatabase"]
     },
     "server": {
-        "port": 8083,
+        "port": 8082,
         "interval": 2000,
-        "logLevel": "debug"
+        "logLevel": "info"
     }
 }

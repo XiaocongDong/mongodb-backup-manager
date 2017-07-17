@@ -3,14 +3,13 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-
-module.exports= {
-    devtool: 'source-map',
+module.exports =  {
     entry: {
-        app: path.resolve(__dirname, './src/app.js')
+        app: path.resolve(__dirname, './frontend/src/app.js')
     },
+    target: 'web',
     output: {
-        filename: '[name].js',
+        filename: 'app.js',
         path: path.resolve(__dirname, 'dist'),
         publicPath: '/'
     },
@@ -42,35 +41,44 @@ module.exports= {
                     }
                 }
             }
-
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({
+			'process.env': {
+				'NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+			}
+		}),
         new CopyWebpackPlugin([
             {
-                from: 'src/index.html', to: 'index.html'
+                from: './frontend/src/index.html', to: 'index.html'
             }
         ]),
         new ExtractTextPlugin('style.css'),
         new webpack.DefinePlugin({
             __DEV__: JSON.stringify(JSON.parse(process.env.NODE_ENV == 'dev' || 'false'))
 
-        }),
-        new webpack.LoaderOptionsPlugin({
-            options: {
-                context: '/', // <- putting this line right under "options" did the trick
-                sassLoader: {
-                    includePaths: [
-                        path.resolve('./src'),
-                    ]
-                }
-            }
-        })
+		}),
+		new webpack.optimize.OccurrenceOrderPlugin(),
+		new webpack.optimize.UglifyJsPlugin({
+			compress: {
+				//supresses warnings, usually from module minification
+				warnings: false
+			}
+		}),
     ],
     resolve: {
-        modules: [
-            path.resolve('./src'),
-            path.resolve('./node_modules')
-        ]
+        alias: {
+            actions: path.resolve(__dirname, "./frontend/src/actions"),
+            api: path.resolve(__dirname, "./frontend/src/api"),
+            components: path.resolve(__dirname, "./frontend/src/components"),
+            constants: path.resolve(__dirname, "./frontend/src/constants"),
+            containers: path.resolve(__dirname, "./frontend/src/containers"),
+            error: path.resolve(__dirname, "./frontend/src/error"),
+            reducers: path.resolve(__dirname, "./frontend/src/reducers"),
+            static: path.resolve(__dirname, "./frontend/src/static"),
+            store: path.resolve(__dirname, "./frontend/src/store"),
+            utility: path.resolve(__dirname, "./frontend/src/utility")
+        }    
     }
-};
+}

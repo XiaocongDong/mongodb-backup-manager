@@ -1,7 +1,9 @@
 const middleware = {
 
     logAction: store => next => action => {
-        console.log(action);
+        if(__DEV__) {
+            console.log(action);
+        }
         next(action);
     }
 };

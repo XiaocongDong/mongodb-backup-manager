@@ -1,5 +1,3 @@
-require('app-module-path').addPath(__dirname);
-
 const path = require('path');
 const express = require('express');
 const io = require('socket.io');
@@ -21,7 +19,6 @@ const serverSocket = io(server);
 object.deployPromiseFinally();
 
 serverSocket.on('connection', () => {
-   console.log('connected');
 });
 //Routers
 app.use('/', router);
