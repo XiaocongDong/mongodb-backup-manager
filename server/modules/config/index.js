@@ -1,11 +1,8 @@
-const server = require('./server.js');
-const database = require('./database');
-const auth = require('./auth');
+const fs = require('fs');
+const path = require('path');
+const stripJsonComments = require('strip-json-comments');
 
-const config = {
-    server,
-    database,
-    auth
-};
+let config = fs.readFileSync(path.join(__dirname, "../backup.config.json"), "utf-8");
+config = JSON.parse(stripJsonComments(config));
 
 module.exports = config;
