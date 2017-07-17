@@ -1,0 +1,19 @@
+{
+    "auth": {
+        "username" : "admin",
+        "password": "admin",
+        "token_exp_time": 3600000
+    },
+    "database": {
+        "server": "localhost",
+        "port": 27017,
+        "backup_config_db": "backup",
+        "database_backup_roles": ["readWrite", "dbOwner"],
+        "all_database_backup_roles": ["readWriteAnyDatabase"]
+    },
+    "server": {
+        "port": 8083,
+        "interval": 2000,
+        "logLevel": "debug"
+    }
+}

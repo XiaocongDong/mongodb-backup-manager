@@ -5,7 +5,6 @@ const express = require('express');
 const io = require('socket.io');
 const http = require('http');
 
-
 const router = require('modules/router');
 const config = require('modules/config');
 const object = require('modules/utility/object');
