@@ -26,6 +26,14 @@
   },
   "homepage": "https://github.com/XiaocongDong/mongodb-backup-manager#readme",
   "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-plugin-root-import": "^5.1.0",
+    "babel-preset-es2015": "^6.24.0",
+    "webpack": "^2.2.0"
+  },
+  "dependencies": {
+    "strip-json-comments": "^2.0.1",
     "app-module-path": "^2.2.0",
     "basic-logger": "^0.4.4",
     "body-parser": "^1.17.1",
@@ -33,11 +41,6 @@
     "express": "^4.15.2",
     "mongodb": "^2.2.24",
     "parse-mongo-url": "^1.1.1",
-    "socket.io": "^1.7.3",
-    "babel-core": "^6.24.0",
-    "babel-loader": "^6.4.1",
-    "babel-plugin-root-import": "^5.1.0",
-    "babel-preset-es2015": "^6.24.0",
-    "webpack": "^2.2.0"
+    "socket.io": "^1.7.3"
   }
 }
