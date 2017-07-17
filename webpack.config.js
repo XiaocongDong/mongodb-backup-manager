@@ -12,13 +12,12 @@ fs.readdirSync('node_modules')
   });
 
 module.exports= {
-    devtool: 'source-map',
     entry: {
         app: path.resolve(__dirname, './server/app.js')
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
     },
     externals: nodeModules,
     target: "node",
@@ -44,6 +43,13 @@ module.exports= {
             }
         ]
     },
+    plugins: [
+		new webpack.optimize.UglifyJsPlugin({
+	        compress: {
+	          warnings: false
+	        }
+    	}),
+    ],
     resolve: {
         alias: {
             modules: path.resolve(__dirname, "./server/modules/")
