@@ -1,6 +1,6 @@
 {
   "name": "mongodb-backup-manager",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "a webserver to manager the backup and restore of multiple mongoDBs",
   "main": "app.js",
   "target": "node",
@@ -19,7 +19,10 @@
     "mongodb",
     "backup",
     "retore",
-    "multiple"
+    "multiple",
+    "real-time",
+    "system",
+    "notifications"
   ],
   "author": "Xiaocong Dong",
   "license": "MIT",
