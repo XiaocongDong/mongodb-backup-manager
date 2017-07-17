@@ -64,22 +64,39 @@
                margin-right: 20px;
                border-radius: 5px;
                font-size: 1.1rem;
+               transition: all ease-in-out .25s;
             }
 
             .stop {
                background-color: $red;
+
+               &:hover {
+                   background-color: darken($red, 10%);
+               }
             }
 
             .resume {
                background-color: $green;
+
+               &:hover {
+                    background-color: darken($green, 10%);
+               }
             }
 
             .delete {
                background-color: $dark-grey;
+
+               &:hover {
+                    background-color: darken($dark-grey, 10%);
+               }
             }
 
             .backup {
                background-color: $blue;
+
+               &:hover {
+                    background-color: darken($blue, 10%);
+               }
             }
          }
       }
