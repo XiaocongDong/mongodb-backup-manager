@@ -1,14 +1,13 @@
-const start = (configFile) => {
+const start = (managerConfig) => {
+    // set configuraion
+    const conf = require('modules/config');
+    conf.setConfig(managerConfig);
+    const config = conf.config;
+
     const path = require('path');
     const express = require('express');
     const io = require('socket.io');
     const http = require('http');
-
-    const conf = require('modules/config');
-    conf.setConfigFile(configFile);
-    conf.readConfig();
-    const config = conf.config;
-
     const router = require('modules/router');
 
     const object = require('modules/utility/object');
@@ -20,7 +19,6 @@ const start = (configFile) => {
     const app = express();
     const httpServer = http.createServer(app);
     const serverSocket = io(httpServer);
-    const log = require('modules/utility/logger');
 
     object.deployPromiseFinally();
 
@@ -35,10 +33,12 @@ const start = (configFile) => {
        .then(() => {
            httpServer.listen(config.server.port, (err, result) => {
                if(err) {
-                   log.error(`Failed to start the server for ${ err.message }`)
+                   console.error(`Failed to start the server for ${ err.message }`)
                }else {
-                   log.info(`Listening at ${config.server.port}`);
-                   
+                   console.log(`*`.repeat(60))
+                   console.log(`MongoDB Backup Manager now is listening at ${ config.server.port }!`);
+                   console.log(`*`.repeat(60))
+
                    backupController.setLocalDB(localDB);
                    backupController.setServerSocket(serverSocket);
                    taskPool.setController(backupController);
