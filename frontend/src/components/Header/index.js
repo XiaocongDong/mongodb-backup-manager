@@ -30,7 +30,7 @@ export default class Header extends Component {
             <div className="header">
                 <div className="title">
                     <span className="logo flaticon-storing"></span>
-                    <span className="text">MongoBackup Manager</span>
+                    <span className="text">MDBBMr</span>
                 </div>
                 <div className="navigation">
                     <Link to="/" className="link icon" title='dashboard' alt="dashboard"><i className="fa fa-home"></i></Link>

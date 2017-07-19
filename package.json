@@ -1,8 +1,8 @@
 {
   "name": "mongodb-backup-manager",
   "version": "0.1.0",
-  "description": "a webserver to manager the backup and restore of multiple mongoDBs",
-  "main": "app.js",
+  "description": "A full-stack MongoDB backup and restore System.",
+  "main": "index.js",
   "target": "node",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -33,7 +33,7 @@
   "bin": {
     "mongodb-backup-manager": "./index.js"
   },
-  "homepage": "https://github.com/XiaocongDong/mongodb-backup-manager#readme",
+  "homepage": "https://xiaocongdong.github.io/mongodb-backup-manager",
   "devDependencies": {
     "babel-core": "^6.24.0",
     "babel-loader": "^6.4.1",
