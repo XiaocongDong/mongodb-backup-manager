@@ -16,7 +16,11 @@ homepage: [mongodb-backup-manager](https://xiaocongdong.github.io/mongodb-backup
 npm install mongob-backup-manager -g 
 
 # run MDBBM with optional arguments
-mongodb-backup-manager -p 8080 
+mongodb-backup-manager
 ```
+2. Visit and login MDBBM
+go to http://localhost:8082, login with username: admin, password: admin
+**Notes** 8082 and the admin/admin are the default configuration of the MDBBM if you want to run it with other options, 
+please take a look at [System Configuration](https://xiaocongdong.github.io/mongodb-backup-manager/#/docs?tab=setup).
 ## Notes
 MDBBM use a MongoDB to store all the backup data, you can either connect MDBBM to your local database or remote database. If you haven't install MongoDB in your local environment please follow the guidlines in [MongoDB](https://www.mongodb.com) to download and install it.
