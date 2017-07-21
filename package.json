@@ -1,6 +1,6 @@
 {
   "name": "mongodb-backup-manager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A full-stack MongoDB backup and restore System.",
   "main": "index.js",
   "target": "node",
