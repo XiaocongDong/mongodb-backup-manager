@@ -1,4 +1,4 @@
-# 🌿MongoDB Backup Manager
+# 🌿 MongoDB Backup Manager
 MongoDB backup manager (MDBBM) is a full-stack system that you can backup and restore multiple MongoDBs. With MDBBM you can:
 * Create a backup schedule to backup your database at a given frequency ( XX days XX hours XX minutes XX seconds).
 * Get the real-time information of the backup status, copy databases number and backup logs, etc.
