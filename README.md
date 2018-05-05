@@ -10,8 +10,23 @@ MongoDB backup manager (MDBBM) is a full-stack system that you can backup and re
 ## Docs
 homepage: [mongodb-backup-manager](https://xiaocongdong.github.io/mongodb-backup-manager/#)
 ## Get Started
+### Via github
+1. Clone this repository from github
+```base
+git clone https://github.com/XiaocongDong/mongodb-backup-manager.git
+```
+2. run mongodb-backup-manager
+```
+# run it under the root directory
+node index.js
+
+# link it globally and run it as a command
+npm link
+mongodb-backup-manager
+```
+### Via npm
 1. Install MDBBM.
-```baseh
+```base
 # install MDBBM globally
 npm install mongob-backup-manager -g 
 
