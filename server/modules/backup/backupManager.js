@@ -214,7 +214,7 @@ class BackupManager {
         this.addLog(`Backup ${ this.backupConfig.db } failed for ${ err.message }`, "error");
         return this.updateBackupConfigAfterBackup(prevStatus, constants.backup.result.FAILED)
                    .finally(() => {
-                        this.localDB.deleteCopyDB(backupCopyDBName);
+                        this.deleteCopyDB(backupCopyDBName);
                    })
     }
 
@@ -402,7 +402,7 @@ class BackupManager {
             name: copyDBName,
                 collections: this.currentBackupCollections,
                 createdTime: createdTime.toLocaleString(),
-                deletedTime: deletedTime.toLocaleString()
+                deletedTime: deletedTime && deletedTime.toLocaleString()
         };
         return this.localDB.addCopyDB(newBackupCopyDB)
             .finally(() => {
