@@ -71,7 +71,7 @@
     "commander": "^2.11.0",
     "cookie-parser": "^1.4.3",
     "express": "^4.15.2",
-    "mongodb": "^2.2.24",
+    "mongodb": "^3.6.1",
     "socket.io": "^1.7.3",
     "strip-json-comments": "^2.0.1"
   }
